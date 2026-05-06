@@ -1,0 +1,23 @@
+<!doctype html><html lang=es><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Cliente</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+body{background:#f3f6fb}.brand{background:linear-gradient(135deg,#0f4c81,#16a085)}
+.card{background:#fff;border-radius:1.5rem;box-shadow:0 10px 25px #0001;padding:1.25rem}
+.input{border:1px solid #d1d5db;border-radius:.9rem;padding:.75rem;width:100%}
+.btn{padding:.75rem 1rem;border-radius:.9rem;font-weight:700}
+.preview{height:90px;width:90px;object-fit:cover;border-radius:14px;border:1px solid #ddd}
+</style></head><body><main class="max-w-5xl mx-auto p-6"><header class="brand text-white rounded-3xl p-7 mb-6"><h1 class="text-3xl font-bold">Pedir servicio</h1></header><section class=card><input id=o class="input mb-2" placeholder="Origen"><input id=d class="input mb-2" placeholder="Destino"><select id=td class="input mb-2"><option value=salud>Salud</option><option value=compras>Compras</option><option value=recreacion>Recreación</option><option value=visita_privada>Visita privada</option></select><label><input id=ac type=checkbox> Acompañante</label><label class=ml-4><input id=sr type=checkbox> Silla de ruedas</label><button class="btn bg-green-600 text-white w-full mt-4" onclick=pedir()>PEDIR SERVICIO</button><p id=msg class="font-bold mt-3"></p></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fileToBase64(input){return new Promise(res=>{let f=input.files[0]; if(!f)return res(null); let r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f);})}
+function previewFile(inputId,imgId){let f=document.getElementById(inputId).files[0]; if(!f)return; let r=new FileReader(); r.onload=()=>{let img=document.getElementById(imgId); img.src=r.result; img.classList.remove('hidden')}; r.readAsDataURL(f);}
+async function profile(){let s=await supabaseClient.auth.getSession(); if(!s.data.session)return null; let id=s.data.session.user.id; let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single(); return r.data}
+async function need(roles){let p=await profile(); if(!p){location.href="login.html";return null} if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null} return p}
+async function logout(){await supabaseClient.auth.signOut(); location.href="login.html"}
+</script>
+<script>let pr=null;document.addEventListener('DOMContentLoaded',async()=>{pr=await need(['cliente','admin'])});async function pedir(){if(!o.value||!d.value)return alert('Completa origen y destino');let km=5+Math.random()*8,total=300+km*55+(ac.checked?1000:0)+(sr.checked?250:0);let x=await supabaseClient.from('servicios').insert([{cliente_id:pr.id,origen:o.value,destino:d.value,distancia_km:km,tipo_servicio:ac.checked?'con_acompanante':'transporte',estado:'buscando_chofer',usa_silla_ruedas:sr.checked,costo_total:total,anticipo:total*.5,tipo_destino:td.value,es_destino_privado:td.value==='visita_privada',pagado:false}]).select().single();if(x.error)return msg.textContent=x.error.message;location.href='tracking.html?servicio='+x.data.id}</script></body></html>

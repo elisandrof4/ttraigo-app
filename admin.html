@@ -1,0 +1,23 @@
+<!doctype html><html lang=es><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Admin</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+body{background:#f3f6fb}.brand{background:linear-gradient(135deg,#0f4c81,#16a085)}
+.card{background:#fff;border-radius:1.5rem;box-shadow:0 10px 25px #0001;padding:1.25rem}
+.input{border:1px solid #d1d5db;border-radius:.9rem;padding:.75rem;width:100%}
+.btn{padding:.75rem 1rem;border-radius:.9rem;font-weight:700}
+.preview{height:90px;width:90px;object-fit:cover;border-radius:14px;border:1px solid #ddd}
+</style></head><body><main class="max-w-7xl mx-auto p-6"><header class="brand text-white rounded-3xl p-7 mb-6"><h1 class="text-3xl font-bold">Admin Ttraigo</h1></header><section class=card><button class="btn bg-blue-700 text-white" onclick=serv()>Servicios</button><button class="btn bg-purple-700 text-white ml-2" onclick=drivers()>Verificar choferes</button></section><section id=out class="mt-4 space-y-3"></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fileToBase64(input){return new Promise(res=>{let f=input.files[0]; if(!f)return res(null); let r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f);})}
+function previewFile(inputId,imgId){let f=document.getElementById(inputId).files[0]; if(!f)return; let r=new FileReader(); r.onload=()=>{let img=document.getElementById(imgId); img.src=r.result; img.classList.remove('hidden')}; r.readAsDataURL(f);}
+async function profile(){let s=await supabaseClient.auth.getSession(); if(!s.data.session)return null; let id=s.data.session.user.id; let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single(); return r.data}
+async function need(roles){let p=await profile(); if(!p){location.href="login.html";return null} if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null} return p}
+async function logout(){await supabaseClient.auth.signOut(); location.href="login.html"}
+</script>
+<script>document.addEventListener('DOMContentLoaded',async()=>{await need(['admin']);serv()});async function serv(){let x=await supabaseClient.from('servicios').select('*').order('creado_en',{ascending:false});out.innerHTML=(x.data||[]).map(s=>`<div class=card><b>${esc(s.origen)} → ${esc(s.destino)}</b><p>${money(s.costo_total)} | ${s.estado}</p></div>`).join('')||'<div class=card>No hay servicios</div>'}async function drivers(){let x=await supabaseClient.from('choferes').select('*');out.innerHTML=(x.data||[]).map(d=>`<div class=card><b>${esc(d.nombre||'Chofer')}</b><p>Licencia: ${esc(d.licencia)} | Placa: ${esc(d.placa)} | Estado: ${d.estado_verificacion||'pendiente'} | Score: ${d.score_ia||0}</p><div class="grid grid-cols-2 md:grid-cols-4 gap-2 my-3">${img(d.foto_vehiculo)}${img(d.foto_licencia)}${img(d.foto_seguro)}${img(d.foto_documento)}</div><button class="btn bg-purple-700 text-white" onclick="ai('${d.id}')">IA</button><button class="btn bg-green-700 text-white ml-2" onclick="ver('${d.id}','aprobado')">Aprobar</button><button class="btn bg-red-700 text-white ml-2" onclick="ver('${d.id}','rechazado')">Rechazar</button></div>`).join('')||'<div class=card>No hay choferes</div>'}function img(s){return s?`<a href="${s}" target=_blank><img src="${s}" class="h-24 w-full object-cover rounded-xl"></a>`:'<div class="bg-gray-100 rounded-xl p-3 text-xs">No subido</div>'}async function ai(id){let x=await supabaseClient.from('choferes').select('*').eq('id',id).single();let d=x.data,score=(d.foto_vehiculo?20:0)+(d.foto_licencia?25:0)+(d.foto_seguro?25:0)+(d.foto_documento?20:0)+(d.licencia?5:0)+(d.placa?5:0);let estado=score>=90?'pre_aprobado':score>=65?'revision_manual':'rechazado';await supabaseClient.from('choferes').update({score_ia:score,estado_verificacion:estado,resultado_ia:'IA simulada score '+score}).eq('id',id);drivers()}async function ver(id,e){await supabaseClient.from('choferes').update({estado_verificacion:e}).eq('id',id);drivers()}</script></body></html>

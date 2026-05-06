@@ -1,0 +1,16 @@
+<!doctype html><html lang=es><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Tracking</title><link rel=stylesheet href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>body{margin:0}#map{height:100vh}.panel{position:absolute;top:10px;left:10px;background:white;padding:12px;border-radius:12px;z-index:999}</style></head><body><div class=panel><b>Seguimiento en vivo</b><p id=estado>Conectando...</p></div><div id=map></div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fileToBase64(input){return new Promise(res=>{let f=input.files[0]; if(!f)return res(null); let r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f);})}
+function previewFile(inputId,imgId){let f=document.getElementById(inputId).files[0]; if(!f)return; let r=new FileReader(); r.onload=()=>{let img=document.getElementById(imgId); img.src=r.result; img.classList.remove('hidden')}; r.readAsDataURL(f);}
+async function profile(){let s=await supabaseClient.auth.getSession(); if(!s.data.session)return null; let id=s.data.session.user.id; let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single(); return r.data}
+async function need(roles){let p=await profile(); if(!p){location.href="login.html";return null} if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null} return p}
+async function logout(){await supabaseClient.auth.signOut(); location.href="login.html"}
+</script>
+<script>let sid=new URLSearchParams(location.search).get('servicio'),cid=null,map=L.map('map').setView([18.4861,-69.9312],13),mk=null;L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);async function init(){let x=await supabaseClient.from('servicios').select('*').eq('id',sid).single();if(!x.data)return estado.textContent='Servicio no encontrado';cid=x.data.chofer_id;estado.textContent='Estado: '+x.data.estado;supabaseClient.channel('t'+sid).on('postgres_changes',{event:'UPDATE',schema:'public',table:'servicios'},p=>{if(p.new.id===sid){estado.textContent='Estado: '+p.new.estado;cid=p.new.chofer_id}}).subscribe();setInterval(pos,3000)}async function pos(){if(!cid)return;let x=await supabaseClient.from('disponibilidad_choferes').select('*').eq('chofer_id',cid).single();if(x.data){if(!mk){mk=L.marker([x.data.latitud,x.data.longitud]).addTo(map);map.setView([x.data.latitud,x.data.longitud],15)}else mk.setLatLng([x.data.latitud,x.data.longitud])}}init()</script></body></html>

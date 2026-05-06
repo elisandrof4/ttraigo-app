@@ -1,0 +1,74 @@
+<!doctype html><html lang=es><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Login Ttraigo</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+body{background:#f3f6fb}.brand{background:linear-gradient(135deg,#0f4c81,#16a085)}
+.card{background:#fff;border-radius:1.5rem;box-shadow:0 10px 25px #0001;padding:1.25rem}
+.input{border:1px solid #d1d5db;border-radius:.9rem;padding:.75rem;width:100%}
+.btn{padding:.75rem 1rem;border-radius:.9rem;font-weight:700}
+.preview{height:90px;width:90px;object-fit:cover;border-radius:14px;border:1px solid #ddd}
+</style></head>
+<body><main class="max-w-6xl mx-auto p-6"><header class="brand text-white rounded-3xl p-7 mb-6"><h1 class="text-3xl font-bold">Registro / Login Ttraigo</h1><p>Versión completa con fotos y documentos.</p></header>
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class=card><h2 class="text-xl font-bold text-blue-800 mb-3">Crear cuenta</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<input id=n class=input placeholder="Nombre completo"><input id=t class=input placeholder="Teléfono">
+<input id=c class=input placeholder="Cédula / ID"><input id=e class=input placeholder="Email">
+<input id=p type=password class=input placeholder="Contraseña"><select id=r class=input onchange=roleFields()><option value=cliente>Cliente</option><option value=chofer>Chofer</option><option value=acompanante>Acompañante</option><option value=admin>Admin</option></select>
+</div>
+
+<div class="mt-4 bg-gray-50 rounded-xl p-3"><label class="font-bold">Foto de perfil obligatoria</label><input id=f type=file accept=image/* class="input mt-2" onchange="previewFile('f','prevPerfil')"><img id=prevPerfil class="preview hidden mt-2"></div>
+
+<div id=driverFields class="hidden mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4">
+<h3 class="font-bold text-blue-800 mb-3">Documentos obligatorios del chofer</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<input id=lic class=input placeholder="Número de licencia">
+<input id=marca class=input placeholder="Marca vehículo">
+<input id=modelo class=input placeholder="Modelo vehículo">
+<input id=placa class=input placeholder="Placa">
+<div><label class=font-semibold>Foto del vehículo</label><input id=fveh type=file accept=image/* class=input onchange="previewFile('fveh','pveh')"><img id=pveh class="preview hidden mt-2"></div>
+<div><label class=font-semibold>Foto de licencia</label><input id=flic type=file accept=image/* class=input onchange="previewFile('flic','plic')"><img id=plic class="preview hidden mt-2"></div>
+<div><label class=font-semibold>Foto del seguro</label><input id=fseg type=file accept=image/* class=input onchange="previewFile('fseg','pseg')"><img id=pseg class="preview hidden mt-2"></div>
+<div><label class=font-semibold>Matrícula o carta de ruta</label><input id=fdoc type=file accept=image/* class=input onchange="previewFile('fdoc','pdoc')"><img id=pdoc class="preview hidden mt-2"></div>
+</div></div>
+
+<div id=compFields class="hidden mt-4 bg-purple-50 border border-purple-100 rounded-xl p-4">
+<h3 class="font-bold text-purple-800 mb-3">Datos del acompañante</h3>
+<textarea id=exp class=input placeholder="Experiencia con pacientes, adultos mayores o acompañamiento"></textarea>
+</div>
+
+<button class="btn bg-green-600 text-white w-full mt-4" onclick=reg()>Crear cuenta</button><p id=m1 class="mt-3 font-semibold"></p></div>
+
+<div class=card><h2 class="text-xl font-bold text-blue-800 mb-3">Iniciar sesión</h2>
+<input id=le class="input mb-2" placeholder="Email"><input id=lp type=password class="input mb-2" placeholder="Contraseña">
+<button class="btn bg-blue-700 text-white w-full" onclick=log()>Entrar</button><button class="btn bg-gray-800 text-white w-full mt-2" onclick=logout()>Cerrar sesión</button><p id=m2 class="mt-3 font-semibold"></p></div>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fileToBase64(input){return new Promise(res=>{let f=input.files[0]; if(!f)return res(null); let r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f);})}
+function previewFile(inputId,imgId){let f=document.getElementById(inputId).files[0]; if(!f)return; let r=new FileReader(); r.onload=()=>{let img=document.getElementById(imgId); img.src=r.result; img.classList.remove('hidden')}; r.readAsDataURL(f);}
+async function profile(){let s=await supabaseClient.auth.getSession(); if(!s.data.session)return null; let id=s.data.session.user.id; let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single(); return r.data}
+async function need(roles){let p=await profile(); if(!p){location.href="login.html";return null} if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null} return p}
+async function logout(){await supabaseClient.auth.signOut(); location.href="login.html"}
+</script>
+<script>
+function roleFields(){driverFields.classList.toggle('hidden',r.value!=='chofer');compFields.classList.toggle('hidden',r.value!=='acompanante')}
+async function reg(){
+ let perfil=await fileToBase64(f), veh=await fileToBase64(fveh), licfoto=await fileToBase64(flic), seg=await fileToBase64(fseg), doc=await fileToBase64(fdoc);
+ if(!n.value||!t.value||!c.value||!e.value||!p.value||!perfil){m1.textContent='Completa datos básicos y foto de perfil';m1.className='text-red-600 mt-3 font-semibold';return}
+ if(r.value==='chofer'&&(!lic.value||!marca.value||!modelo.value||!placa.value||!veh||!licfoto||!seg||!doc)){m1.textContent='Chofer debe subir vehículo, licencia, seguro y matrícula/carta de ruta';m1.className='text-red-600 mt-3 font-semibold';return}
+ let a=await supabaseClient.auth.signUp({email:e.value,password:p.value,options:{data:{nombre:n.value,telefono:t.value,cedula:c.value,rol:r.value}}});
+ if(a.error){m1.textContent=a.error.message;return}
+ let id=a.data.user?.id;
+ let b=await supabaseClient.from('usuarios').insert([{id,nombre:n.value,telefono:t.value,email:e.value,rol:r.value,cedula_id:c.value,foto_base64:perfil,verificado:r.value==='cliente'}]);
+ if(b.error){m1.textContent='Error perfil: '+b.error.message;return}
+ if(r.value==='chofer'){let ch=await supabaseClient.from('choferes').insert([{usuario_id:id,nombre:n.value,licencia:lic.value,vehiculo_marca:marca.value,vehiculo_modelo:modelo.value,placa:placa.value,foto_vehiculo:veh,foto_licencia:licfoto,foto_seguro:seg,foto_documento:doc,estado_verificacion:'pendiente'}]); if(ch.error){m1.textContent='Error chofer: '+ch.error.message;return}}
+ if(r.value==='acompanante'){await supabaseClient.from('acompanantes').insert([{usuario_id:id,cedula:c.value,experiencia:exp.value,foto_base64:perfil,estado_verificacion:'pendiente'}])}
+ m1.textContent='Cuenta creada correctamente';m1.className='text-green-700 mt-3 font-semibold';
+}
+async function log(){let a=await supabaseClient.auth.signInWithPassword({email:le.value,password:lp.value});if(a.error){m2.textContent=a.error.message;return}let pr=await profile();location.href=pr.rol==='chofer'?'chofer.html':pr.rol==='acompanante'?'acompanante.html':pr.rol==='admin'?'admin.html':'cliente.html'}
+</script></body></html>

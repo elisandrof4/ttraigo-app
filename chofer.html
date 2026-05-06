@@ -1,0 +1,96 @@
+<!doctype html><html lang=es><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Chofer</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+body{background:#f3f6fb}.brand{background:linear-gradient(135deg,#0f4c81,#16a085)}
+.card{background:#fff;border-radius:1.5rem;box-shadow:0 10px 25px #0001;padding:1.25rem}
+.input{border:1px solid #d1d5db;border-radius:.9rem;padding:.75rem;width:100%}
+.btn{padding:.75rem 1rem;border-radius:.9rem;font-weight:700}
+</style></head><body><main class="max-w-5xl mx-auto p-6">
+<header class="brand text-white rounded-3xl p-7 mb-6"><h1 class="text-3xl font-bold">Chofer en vivo</h1><p>Solo choferes aprobados pueden aceptar servicios.</p></header>
+<section id="verifyBox" class="card mb-4 hidden"></section>
+<section id="controlBox" class=card><button class="btn bg-blue-700 text-white" onclick=load()>Actualizar</button><button class="btn bg-gray-800 text-white ml-2" onclick=logout()>Salir</button></section>
+<section id=list class="mt-4 space-y-3"></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function profile(){let s=await supabaseClient.auth.getSession(); if(!s.data.session)return null; let id=s.data.session.user.id; let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single(); return r.data}
+async function need(roles){let p=await profile(); if(!p){location.href="login.html";return null} if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null} return p}
+async function logout(){await supabaseClient.auth.signOut(); location.href="login.html"}
+
+let pr=null;
+let driverProfile=null;
+let driverAllowed=false;
+
+document.addEventListener('DOMContentLoaded',async()=>{
+  pr=await need(['chofer','admin']);
+  if(!pr) return;
+
+  const {data,error}=await supabaseClient
+    .from('choferes')
+    .select('*')
+    .eq('usuario_id',pr.id)
+    .single();
+
+  if(error || !data){
+    blockDriver('No encontramos tu perfil de chofer. Debes completar el registro de chofer.');
+    return;
+  }
+
+  driverProfile=data;
+  const estado=data.estado_verificacion || 'pendiente';
+
+  if(!['aprobado','pre_aprobado'].includes(estado)){
+    blockDriver('Tu cuenta de chofer está en estado: '+estado+'. El administrador debe validar tus documentos antes de que puedas aceptar servicios.');
+    return;
+  }
+
+  driverAllowed=true;
+  verifyBox.classList.remove('hidden');
+  verifyBox.innerHTML='<b class="text-green-700">Chofer habilitado:</b> documentos '+estado+'. Puedes recibir servicios.';
+  gps();
+  load();
+  setInterval(load,5000);
+});
+
+function blockDriver(message){
+  driverAllowed=false;
+  verifyBox.classList.remove('hidden');
+  verifyBox.innerHTML='<div class="text-red-700 font-bold">Acceso bloqueado</div><p class="mt-2">'+message+'</p><p class="mt-2 text-sm text-gray-600">Cuando el administrador apruebe tus documentos, vuelve a entrar.</p>';
+  controlBox.classList.add('hidden');
+  list.innerHTML='';
+}
+
+function gps(){
+  if(!navigator.geolocation||!pr||!driverAllowed)return;
+  navigator.geolocation.watchPosition(async p=>{
+    await supabaseClient.from('disponibilidad_choferes').upsert([{
+      chofer_id:pr.id,
+      latitud:p.coords.latitude,
+      longitud:p.coords.longitude,
+      disponible:true,
+      actualizado_en:new Date().toISOString()
+    }])
+  })
+}
+
+async function load(){
+  if(!driverAllowed) return;
+  let x=await supabaseClient.from('servicios').select('*').in('estado',['buscando_chofer','confirmado','en_camino','en_progreso']).order('creado_en',{ascending:false});
+  list.innerHTML=(x.data||[]).map(s=>`<div class=card><b>${esc(s.origen)} → ${esc(s.destino)}</b><p>${money(s.costo_total)} | ${s.estado}</p><button class="btn bg-green-600 text-white" onclick="acc('${s.id}')">Aceptar</button><button class="btn bg-indigo-700 text-white ml-2" onclick="st('${s.id}','en_camino')">En camino</button><button class="btn bg-teal-700 text-white ml-2" onclick="st('${s.id}','en_progreso')">Iniciar</button><button class="btn bg-gray-900 text-white ml-2" onclick="st('${s.id}','finalizado')">Finalizar</button></div>`).join('')||'<div class=card>No hay servicios</div>'
+}
+
+async function acc(id){
+  if(!driverAllowed) return alert('Tu cuenta no está aprobada.');
+  await supabaseClient.from('servicios').update({estado:'confirmado',chofer_id:pr.id,aceptado_en:new Date().toISOString()}).eq('id',id).eq('estado','buscando_chofer');
+  load()
+}
+
+async function st(id,estado){
+  if(!driverAllowed) return alert('Tu cuenta no está aprobada.');
+  await supabaseClient.from('servicios').update({estado}).eq('id',id);
+  load()
+}
+</script></body></html>
