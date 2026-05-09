@@ -34,3 +34,6 @@ V13 FIX MOCKUPS: rellena el panel visual vacío del login con mapa, ruta, vehíc
 
 
 V14 LOGIN CORREGIDO SIN PÉRDIDAS: login completo reescrito para evitar panel vacío, conservando registro por rol, documentos, Supabase, PWA y Firebase.
+
+
+V15 FASE 10 ADMIN FINANCIERO: dashboard financiero ejecutivo con pagos, facturas, wallet, servicios, KPIs, CSV y realtime. No requiere SQL nuevo si Fase 9 está aplicada.
