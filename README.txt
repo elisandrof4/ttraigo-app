@@ -10,3 +10,9 @@ V5 FASE 2 PREMIUM: cliente.html y tracking.html rediseñados con mapa fullscreen
 
 
 V6 FASE 3 PREMIUM: rediseño completo de chofer.html, acompanante.html y admin.html. Panel chofer tipo Uber Driver, acompañante premium y admin corporativo. No requiere cambios en Supabase.
+
+
+V7 FASE 4 REALTIME: GPS en vivo, Supabase Realtime, matching automático por cercanía, ofertas a choferes, tracking vivo y movimiento del chofer. Incluye sql_fase4_realtime.sql para ejecutar en Supabase.
+
+
+V8 FASE 5 PWA: app instalable, manifest completo, iconos premium, service worker, pantalla offline y preparación para APK Android. No requiere cambios en Supabase.

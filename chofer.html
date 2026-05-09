@@ -12,7 +12,17 @@
 .toast{position:fixed;top:76px;left:14px;right:14px;z-index:60;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}.hidden{display:none!important}.loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.16);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .leaflet-control-attribution{display:none!important}
 @media(min-width:900px){.sheet{left:50%;right:auto;width:430px;transform:translateX(-50%)}.topbar{left:28px;right:28px}}@media(max-width:430px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.sheet{border-radius:28px}}
-body{overflow:auto}#map{position:relative;height:42vh;border-radius:30px;overflow:hidden;margin-top:10px}</style></head><body><div id="toast" class="toast"></div><main style="padding:14px"><div class="topbar" style="position:relative;top:auto;left:auto;right:auto;margin-bottom:12px"><div class="brand"><div class="mark">T</div><div><b>Ttraigo Driver</b><div class="muted" style="font-size:12px">GPS + ofertas realtime</div></div></div><button class="icon" onclick="logout()">↗</button></div><div id="verifyBox" class="sheet hidden" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-bottom:12px"></div><div id="map"></div><section class="sheet" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-top:12px"><div class="handle"></div><div class="badge"><span class="pulse"></span> Online y recibiendo ofertas</div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="offerCount">0</b><span>Ofertas</span></div><div class="mini"><b id="todayMoney">RD$0</b><span>Estimado</span></div><div class="mini"><b>GPS</b><span>Activo</span></div></div><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+body{overflow:auto}#map{position:relative;height:42vh;border-radius:30px;overflow:hidden;margin-top:10px}</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#05070A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ttraigo">
+<link rel="icon" href="/ttraigo-icon.svg">
+<link rel="apple-touch-icon" href="/icon-512.svg">
+
+</head><body><div id="toast" class="toast"></div><main style="padding:14px"><div class="topbar" style="position:relative;top:auto;left:auto;right:auto;margin-bottom:12px"><div class="brand"><div class="mark">T</div><div><b>Ttraigo Driver</b><div class="muted" style="font-size:12px">GPS + ofertas realtime</div></div></div><button class="icon" onclick="logout()">↗</button></div><div id="verifyBox" class="sheet hidden" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-bottom:12px"></div><div id="map"></div><section class="sheet" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-top:12px"><div class="handle"></div><div class="badge"><span class="pulse"></span> Online y recibiendo ofertas</div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="offerCount">0</b><span>Ofertas</span></div><div class="mini"><b id="todayMoney">RD$0</b><span>Estimado</span></div><div class="mini"><b>GPS</b><span>Activo</span></div></div><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -34,4 +44,13 @@ function listen(){supabaseClient.channel('ofertas-'+pr.id).on('postgres_changes'
 async function load(){if(!driverAllowed)return;let o=await supabaseClient.from('ofertas_servicio').select('*').eq('chofer_id',pr.id).eq('estado','pendiente').order('creado_en',{ascending:false});let ids=(o.data||[]).map(x=>x.servicio_id);let servicios=[];if(ids.length){let s=await supabaseClient.from('servicios').select('*').in('id',ids);servicios=s.data||[];}let mine=await supabaseClient.from('servicios').select('*').eq('chofer_id',pr.id).in('estado',['confirmado','en_camino','en_progreso']).order('creado_en',{ascending:false});servicios=[...servicios,...(mine.data||[])];offerCount.textContent=servicios.length;todayMoney.textContent=money(servicios.reduce((a,b)=>a+Number(b.costo_total||0),0));list.innerHTML=servicios.map(s=>`<div class="driver"><div class="avatar">🚘</div><div style="flex:1"><b>${esc(s.origen)} → ${esc(s.destino)}</b><div class="muted">${s.estado} · ${Number(s.distancia_km||0).toFixed(1)} km · ${money(s.costo_total)}</div></div></div><div style="display:grid;gap:8px;margin:10px 0 18px"><button class="btn primary" onclick="accept('${s.id}')">Aceptar</button><button class="btn dark" onclick="state('${s.id}','en_camino')">En camino</button><button class="btn dark" onclick="state('${s.id}','en_progreso')">Iniciar</button><button class="btn dark" onclick="state('${s.id}','finalizado')">Finalizar</button></div>`).join('')||'<p class="muted">No hay ofertas todavía.</p>';}
 async function accept(id){await supabaseClient.from('servicios').update({estado:'confirmado',chofer_id:pr.id,aceptado_en:new Date().toISOString()}).eq('id',id).eq('estado','buscando_chofer');await supabaseClient.from('ofertas_servicio').update({estado:'aceptado'}).eq('servicio_id',id).eq('chofer_id',pr.id);await supabaseClient.from('disponibilidad_choferes').update({servicio_actual_id:id}).eq('chofer_id',pr.id);beep();toast('Servicio aceptado');load();}
 async function state(id,estado){await supabaseClient.from('servicios').update({estado}).eq('id',id);if(estado==='finalizado')await supabaseClient.from('disponibilidad_choferes').update({servicio_actual_id:null,disponible:true}).eq('chofer_id',pr.id);load();}
-</script></body></html>
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+</script>
+
+</body></html>
