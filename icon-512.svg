@@ -1,47 +1,6 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo Admin Premium</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><style>
-:root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,rgba(22,196,127,.14),transparent 32%),radial-gradient(circle at bottom right,rgba(37,99,235,.18),transparent 36%),var(--bg);color:var(--text)}
-a{text-decoration:none;color:inherit}.shell{max-width:1180px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.logo{display:flex;align-items:center;gap:10px}.mark{width:46px;height:46px;border-radius:17px;background:linear-gradient(135deg,var(--green),#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:24px;box-shadow:0 16px 42px rgba(22,196,127,.26)}
-.glass{background:rgba(8,13,20,.78);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 20px 70px rgba(0,0,0,.34)}.card{border-radius:28px;padding:18px}.muted{color:var(--muted)}.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--green);color:#06100C;box-shadow:0 16px 36px rgba(22,196,127,.25)}.dark{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line)}.danger{background:rgba(239,68,68,.15);color:#FCA5A5;border:1px solid rgba(239,68,68,.28)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.stat{padding:16px;border-radius:24px;background:rgba(255,255,255,.06);border:1px solid var(--line)}.stat b{font-size:26px}.badge{display:inline-flex;gap:7px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(22,196,127,.13);color:#8DF0C7;border:1px solid rgba(22,196,127,.25);font-size:12px;font-weight:900}.pulse{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 8px rgba(22,196,127,.12);animation:pulse 1.4s infinite}@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(22,196,127,0)}}
-.service{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-top:12px}.avatar{width:54px;height:54px;border-radius:19px;background:linear-gradient(135deg,#1F2937,#0F172A);display:grid;place-items:center;border:1px solid var(--line)}.mapbox{min-height:420px;border-radius:32px;position:relative;overflow:hidden;border:1px solid var(--line);background:#081016}.mapfake{position:absolute;inset:0;background:linear-gradient(35deg,transparent 43%,rgba(22,196,127,.18) 44%,transparent 46%),linear-gradient(140deg,transparent 38%,rgba(255,255,255,.08) 39%,transparent 41%),radial-gradient(circle at 35% 35%,rgba(22,196,127,.22),transparent 18%),radial-gradient(circle at 70% 70%,rgba(37,99,235,.20),transparent 22%),#081016}.floating{position:absolute;left:16px;right:16px;bottom:16px;border-radius:26px;padding:16px;background:rgba(5,7,10,.74);border:1px solid var(--line);backdrop-filter:blur(16px)}
-.toast{position:fixed;top:18px;left:18px;right:18px;z-index:99;display:none;padding:14px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}.hidden{display:none!important}
-@media(max-width:850px){.shell{padding:14px}.grid,.grid3{grid-template-columns:1fr}.service{grid-template-columns:1fr}.top{align-items:flex-start}.mapbox{min-height:320px}.btn{width:100%}}
-</style>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#05070A">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ttraigo">
-<link rel="icon" href="/ttraigo-icon.svg">
-<link rel="apple-touch-icon" href="/icon-512.svg">
-
-</head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><div class="logo"><div class="mark">T</div><div><b style="font-size:22px">Ttraigo Command</b><div class="muted">Panel corporativo privado</div></div></div><button class="btn dark" onclick="logout()">Salir</button></div><section class="grid3" style="margin-bottom:16px"><div class="glass card"><span class="muted">Servicios</span><h2 id="sTotal">0</h2></div><div class="glass card"><span class="muted">Buscando</span><h2 id="sSearch">0</h2></div><div class="glass card"><span class="muted">Ingresos</span><h2 id="sMoney">RD$0</h2></div></section><section class="grid" style="margin-bottom:16px"><div class="mapbox"><div class="mapfake"></div><div class="floating"><b>Centro de operación</b><p class="muted" style="margin-bottom:0">Vista general de flota, servicios y verificaciones.</p></div></div><div class="glass card"><h2>Acciones rápidas</h2><div style="display:grid;gap:10px"><button class="btn primary" onclick="serv()">Ver servicios</button><button class="btn dark" onclick="drivers()">Verificar choferes</button><button class="btn dark" onclick="serv()">Actualizar métricas</button></div></div></section><section class="glass card"><div id="out"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
-const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
-const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
-function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function need(roles){let p=await profile();if(!p){location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
-async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
-function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
-function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}
-
-document.addEventListener('DOMContentLoaded',async()=>{await need(['admin']);serv();});
-async function serv(){let x=await supabaseClient.from('servicios').select('*').order('creado_en',{ascending:false});let data=x.data||[];sTotal.textContent=data.length;sSearch.textContent=data.filter(s=>s.estado==='buscando_chofer').length;sMoney.textContent=money(data.reduce((a,b)=>a+Number(b.costo_total||0),0));out.innerHTML='<h2>Servicios</h2>'+data.map(s=>`<article class="stat service"><div><b>${esc(s.origen)} → ${esc(s.destino)}</b><div class="muted">${s.estado} · ${money(s.costo_total)} · ${s.tipo_servicio||''}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn dark" onclick="state('${s.id}','confirmado')">Confirmar</button><button class="btn danger" onclick="state('${s.id}','cancelado')">Cancelar</button></div></article>`).join('')||'<div class="muted">No hay servicios.</div>';}
-async function state(id,e){await supabaseClient.from('servicios').update({estado:e}).eq('id',id);toast('Servicio actualizado');serv();}
-async function drivers(){let x=await supabaseClient.from('choferes').select('*');let data=x.data||[];out.innerHTML='<h2>Verificación de choferes</h2>'+data.map(d=>`<article class="stat service"><div><b>${esc(d.nombre||'Chofer')}</b><div class="muted">Licencia: ${esc(d.licencia)} · Estado: ${d.estado_verificacion||'pendiente'} · Score: ${d.score_ia||0}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn dark" onclick="ai('${d.id}')">Analizar IA</button><button class="btn primary" onclick="ver('${d.id}','aprobado')">Aprobar</button><button class="btn danger" onclick="ver('${d.id}','rechazado')">Rechazar</button></div></article>`).join('')||'<div class="muted">No hay choferes.</div>';}
-async function ai(id){let x=await supabaseClient.from('choferes').select('*').eq('id',id).single();let d=x.data,score=(d.foto_vehiculo?20:0)+(d.foto_licencia?25:0)+(d.foto_seguro?25:0)+(d.foto_documento?20:0)+(d.licencia?5:0)+(d.placa?5:0);let estado=score>=90?'pre_aprobado':score>=65?'revision_manual':'rechazado';await supabaseClient.from('choferes').update({score_ia:score,estado_verificacion:estado,resultado_ia:'IA simulada score '+score}).eq('id',id);drivers();}
-async function ver(id,e){await supabaseClient.from('choferes').update({estado_verificacion:e}).eq('id',id);drivers();}
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  });
-}
-</script>
-
-</body></html>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#16C47F"/><stop offset="100%" stop-color="#0A8F63"/></linearGradient></defs>
+<rect width="512" height="512" rx="118" fill="#05070A"/>
+<circle cx="256" cy="256" r="170" fill="url(#g)"/>
+<path d="M162 155h188v54h-62v154h-64V209h-62z" fill="#06100C"/>
+</svg>

@@ -28,3 +28,6 @@ V11 FASE 8 ULTRA VISUAL: home millonaria con mockup de app, ruta animada, vehíc
 
 
 V12 FASE 9 PAGOS/WALLET: pantalla de pagos, comprobantes, tablas de pagos, facturas, wallet y preparación para pasarela real. Incluye SQL nuevo.
+
+
+V13 FIX MOCKUPS: rellena el panel visual vacío del login con mapa, ruta, vehículo animado y experiencia premium. No requiere Supabase.
