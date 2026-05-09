@@ -25,3 +25,6 @@ V10 FASE 7 PUSH FIREBASE: preparación completa para notificaciones push reales 
 
 
 V11 FASE 8 ULTRA VISUAL: home millonaria con mockup de app, ruta animada, vehículo, ETA, cards flotantes y experiencia visual premium. No requiere Supabase.
+
+
+V12 FASE 9 PAGOS/WALLET: pantalla de pagos, comprobantes, tablas de pagos, facturas, wallet y preparación para pasarela real. Incluye SQL nuevo.
