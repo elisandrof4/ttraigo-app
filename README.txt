@@ -31,3 +31,6 @@ V12 FASE 9 PAGOS/WALLET: pantalla de pagos, comprobantes, tablas de pagos, factu
 
 
 V13 FIX MOCKUPS: rellena el panel visual vacío del login con mapa, ruta, vehículo animado y experiencia premium. No requiere Supabase.
+
+
+V14 LOGIN CORREGIDO SIN PÉRDIDAS: login completo reescrito para evitar panel vacío, conservando registro por rol, documentos, Supabase, PWA y Firebase.
