@@ -22,3 +22,6 @@ V9 FASE 6 APK ANDROID: estructura Capacitor para generar APK Android. No requier
 
 
 V10 FASE 7 PUSH FIREBASE: preparación completa para notificaciones push reales con Firebase Cloud Messaging, token en Supabase y endpoint de envío en Vercel. Requiere configurar Firebase.
+
+
+V11 FASE 8 ULTRA VISUAL: home millonaria con mockup de app, ruta animada, vehículo, ETA, cards flotantes y experiencia visual premium. No requiere Supabase.
