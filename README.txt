@@ -16,3 +16,6 @@ V7 FASE 4 REALTIME: GPS en vivo, Supabase Realtime, matching automático por cer
 
 
 V8 FASE 5 PWA: app instalable, manifest completo, iconos premium, service worker, pantalla offline y preparación para APK Android. No requiere cambios en Supabase.
+
+
+V9 FASE 6 APK ANDROID: estructura Capacitor para generar APK Android. No requiere Supabase. Requiere Node.js y Android Studio para compilar el APK.
