@@ -1,0 +1,43 @@
+{
+  "name": "Ttraigo - Movilidad Asistida",
+  "short_name": "Ttraigo",
+  "description": "Movilidad asistida premium con choferes, acompañantes y seguimiento en vivo.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05070A",
+  "theme_color": "#05070A",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pedir servicio",
+      "short_name": "Pedir",
+      "url": "/cliente.html"
+    },
+    {
+      "name": "Chofer",
+      "short_name": "Chofer",
+      "url": "/chofer.html"
+    }
+  ]
+}

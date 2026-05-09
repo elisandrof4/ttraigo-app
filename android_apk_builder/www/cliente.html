@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Tracking Realtime</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Cliente Realtime</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
 :root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--line:rgba(255,255,255,.12)}
 *{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#05070A;color:var(--text);overflow:hidden}a{text-decoration:none;color:inherit}
 #map{position:fixed;inset:0;z-index:1;background:#081016}.overlay{position:relative;z-index:5;min-height:100vh;pointer-events:none}
@@ -22,13 +22,7 @@
 <link rel="icon" href="/ttraigo-icon.svg">
 <link rel="apple-touch-icon" href="/icon-512.svg">
 
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
-<script src="/firebase-config.js"></script>
-<script src="/push-notifications.js"></script>
-
-</head><body><div id="map"></div><div id="toast" class="toast"></div><div class="overlay"><div class="topbar"><a class="brand" href="cliente.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted" style="font-size:12px">Tracking vivo</div></div></a><button class="icon" onclick="beep()">🔔</button></div><section class="sheet"><div class="handle"></div><div class="driver"><div class="avatar">🚗</div><div style="flex:1"><b id="tituloEstado">Buscando chofer</b><div id="subEstado" class="muted" style="font-size:13px">Escuchando actualizaciones en vivo.</div></div><div class="pulse"></div></div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="eta">--</b><span>ETA</span></div><div class="mini"><b id="dist">--</b><span>Distancia</span></div><div class="mini"><b id="price">--</b><span>Total</span></div></div><div style="display:flex;gap:10px"><button class="btn dark" style="flex:1" onclick="recargar()">Actualizar</button><button class="btn danger" style="flex:1" onclick="cancelar()">Cancelar</button></div></section></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+</head><body><div id="map"></div><div id="toast" class="toast"></div><div class="overlay"><div class="topbar"><div class="brand"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted" style="font-size:12px">Realtime cliente</div></div></div><button class="icon" onclick="centerMe()">⌖</button></div><section class="sheet"><div class="handle"></div><div class="badge"><span class="pulse"></span> GPS + búsqueda automática</div><h1 style="margin:14px 0 6px;font-size:27px">¿A dónde vamos?</h1><p class="muted" style="margin-top:0">Usa tu ubicación, crea el servicio y envía alerta a choferes en vivo.</p><div class="grid2"><input id="origen" class="input" placeholder="Origen"><input id="destino" class="input" placeholder="Destino"></div><div class="grid2" style="margin-top:10px"><select id="tipoDestino" class="input"><option value="salud">Salud / clínica</option><option value="compras">Compras</option><option value="recreacion">Recreación</option><option value="visita_privada">Visita privada ⚠️</option></select><select id="metodoPago" class="input"><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option></select></div><div class="grid3" style="margin:14px 0"><label class="mini"><input id="acompanante" type="checkbox"> <b>Acompañante</b><span>Asistencia</span></label><label class="mini"><input id="silla" type="checkbox"> <b>Silla ruedas</b><span>Soporte</span></label><label class="mini"><input id="reserva" type="checkbox"> <b>Rápido</b><span>Ahora</span></label></div><button id="btnPedir" class="btn primary" style="width:100%;font-size:16px" onclick="pedir()"><span id="btnText">Pedir servicio realtime</span></button><p id="estado" class="muted" style="font-weight:800;text-align:center"></p></section></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -41,16 +35,13 @@ function toast(msg){let t=document.getElementById('toast');if(!t)return;t.textCo
 function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}
 function haversineKm(a,b,c,d){const R=6371,toRad=x=>x*Math.PI/180;let x=toRad(c-a),y=toRad(d-b);let q=Math.sin(x/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q));}
 
-let sid=new URLSearchParams(location.search).get('servicio'),choferId=null,map=null,car=null,fromMarker=null,toMarker=null,service=null,lastPos=null;
-document.addEventListener('DOMContentLoaded',()=>{initMap();init();});
-function initMap(){map=L.map('map',{zoomControl:false}).setView([18.4861,-69.9312],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:''}).addTo(map);}
-async function init(){if(!sid){tituloEstado.textContent='No hay servicio';return;}await recargar();supabaseClient.channel('track-service-'+sid).on('postgres_changes',{event:'UPDATE',schema:'public',table:'servicios'},p=>{if(p.new.id===sid){service=p.new;choferId=p.new.chofer_id;render();beep();toast('Estado: '+p.new.estado);}}).subscribe();supabaseClient.channel('driver-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'disponibilidad_choferes'},p=>{if(choferId&&p.new.chofer_id===choferId)moveCar(Number(p.new.latitud),Number(p.new.longitud));}).subscribe();setInterval(pos,3500);}
-async function recargar(){let x=await supabaseClient.from('servicios').select('*').eq('id',sid).single();if(!x.data){tituloEstado.textContent='Servicio no encontrado';return;}service=x.data;choferId=service.chofer_id;render();paintPoints();pos();}
-function paintPoints(){if(service?.origen_lat&&service?.origen_lng&&!fromMarker)fromMarker=L.marker([service.origen_lat,service.origen_lng]).addTo(map).bindPopup('Origen');if(service?.destino_lat&&service?.destino_lng&&!toMarker)toMarker=L.marker([service.destino_lat,service.destino_lng]).addTo(map).bindPopup('Destino');}
-function render(){price.textContent=money(service.costo_total);dist.textContent=Number(service.distancia_km||0).toFixed(1)+' km';eta.textContent=service.eta_min?service.eta_min+' min':'--';let e=service.estado;if(e==='buscando_chofer'){tituloEstado.textContent='Buscando chofer cercano';subEstado.textContent='Estamos notificando a conductores disponibles.';}else if(e==='confirmado'){tituloEstado.textContent='Chofer confirmado';subEstado.textContent='Tu chofer va en camino.';}else if(e==='en_camino'){tituloEstado.textContent='Chofer en camino';subEstado.textContent='Mira el auto moverse en el mapa.';}else if(e==='en_progreso'){tituloEstado.textContent='Servicio en curso';subEstado.textContent='Viaje activo con seguimiento GPS.';}else if(e==='finalizado'){tituloEstado.textContent='Servicio finalizado';subEstado.textContent='Gracias por usar Ttraigo.';}else{tituloEstado.textContent='Estado: '+e;subEstado.textContent='Seguimiento activo';}}
-function moveCar(lat,lng){if(!lat||!lng)return;if(!car){car=L.marker([lat,lng]).addTo(map).bindPopup('Chofer Ttraigo');map.setView([lat,lng],15);lastPos={lat,lng};return;}car.setLatLng([lat,lng]);lastPos={lat,lng};map.panTo([lat,lng],{animate:true,duration:.8});}
-async function pos(){if(!choferId)return;let x=await supabaseClient.from('disponibilidad_choferes').select('*').eq('chofer_id',choferId).single();if(x.data)moveCar(Number(x.data.latitud),Number(x.data.longitud));}
-async function cancelar(){if(!sid)return;if(!confirm('¿Cancelar este servicio?'))return;await supabaseClient.from('servicios').update({estado:'cancelado'}).eq('id',sid);toast('Servicio cancelado');setTimeout(()=>location.href='cliente.html',1000);}
+let pr=null,map=null,myMarker=null,myPos=null;
+document.addEventListener('DOMContentLoaded',async()=>{pr=await need(['cliente','admin']);initMap();});
+function initMap(){map=L.map('map',{zoomControl:false}).setView([18.4861,-69.9312],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:''}).addTo(map);if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{myPos={lat:pos.coords.latitude,lng:pos.coords.longitude};map.setView([myPos.lat,myPos.lng],15);myMarker=L.marker([myPos.lat,myPos.lng]).addTo(map).bindPopup('Tu ubicación');},()=>toast('No se pudo obtener GPS'))}}
+function centerMe(){if(myPos)map.setView([myPos.lat,myPos.lng],16);else toast('GPS no disponible todavía')}
+async function geocode(q){try{let r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q+', República Dominicana'));let j=await r.json();if(j&&j[0])return {lat:Number(j[0].lat),lng:Number(j[0].lon)};}catch(e){}return null;}
+async function buscarChoferesCercanos(lat,lng,servicioId){let x=await supabaseClient.from('disponibilidad_choferes').select('*').eq('disponible',true).order('actualizado_en',{ascending:false}).limit(20);let choferes=(x.data||[]).filter(c=>c.latitud&&c.longitud).map(c=>({...c,km:haversineKm(lat,lng,Number(c.latitud),Number(c.longitud))})).sort((a,b)=>a.km-b.km).slice(0,5);if(choferes.length){await supabaseClient.from('ofertas_servicio').insert(choferes.map(c=>({servicio_id:servicioId,chofer_id:c.chofer_id,estado:'pendiente'})));toast('Servicio enviado a '+choferes.length+' choferes cercanos');}else toast('Buscando choferes disponibles...');}
+async function pedir(){if(!origen.value||!destino.value)return toast('Completa origen y destino');btnPedir.disabled=true;btnText.innerHTML='<span class="loader"></span> Creando y notificando...';try{let origenCoord=myPos||await geocode(origen.value);let destinoCoord=await geocode(destino.value);let km=destinoCoord&&origenCoord?haversineKm(origenCoord.lat,origenCoord.lng,destinoCoord.lat,destinoCoord.lng):(5+Math.random()*8);let total=300+km*55+(acompanante.checked?1000:0)+(silla.checked?250:0);let payload={cliente_id:pr.id,origen:origen.value,destino:destino.value,origen_lat:origenCoord?.lat||null,origen_lng:origenCoord?.lng||null,destino_lat:destinoCoord?.lat||null,destino_lng:destinoCoord?.lng||null,distancia_km:km,eta_min:Math.max(5,Math.round(km*3)),tipo_servicio:acompanante.checked?'con_acompanante':'transporte',estado:'buscando_chofer',usa_silla_ruedas:silla.checked,costo_total:total,anticipo:total*.5,metodo_pago:metodoPago.value,tipo_destino:tipoDestino.value,matching_modo:'automatico',pagado:false};let x=await supabaseClient.from('servicios').insert([payload]).select().single();if(x.error)throw x.error;if(origenCoord)await buscarChoferesCercanos(origenCoord.lat,origenCoord.lng,x.data.id);location.href='tracking.html?servicio='+x.data.id;}catch(e){toast(e.message||'Error');btnPedir.disabled=false;btnText.textContent='Pedir servicio realtime';}}
 </script>
 <script>
 if ("serviceWorker" in navigator) {
@@ -58,20 +49,6 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
 }
-</script>
-
-
-<button id="pushEnableBtn" onclick="ttraigoInitPush()" style="position:fixed;right:14px;bottom:82px;z-index:9998;border:0;border-radius:18px;background:#16C47F;color:#06100C;font-weight:900;padding:12px 14px;box-shadow:0 18px 42px rgba(22,196,127,.25)">
-🔔 Activar alertas
-</button>
-<script>
-setTimeout(() => {
-  if (Notification && Notification.permission === "granted") {
-    const b = document.getElementById("pushEnableBtn");
-    if (b) b.style.display = "none";
-    ttraigoInitPush();
-  }
-}, 1200);
 </script>
 
 </body></html>

@@ -17,6 +17,12 @@ a{text-decoration:none;color:inherit}.shell{max-width:1180px;margin:auto;padding
 <link rel="icon" href="/ttraigo-icon.svg">
 <link rel="apple-touch-icon" href="/icon-512.svg">
 
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="/push-notifications.js"></script>
+
 </head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><div class="logo"><div class="mark">T</div><div><b style="font-size:22px">Ttraigo Care</b><div class="muted">Acompañante profesional</div></div></div><button class="btn dark" onclick="logout()">Salir</button></div><section class="grid" style="margin-bottom:16px"><div class="glass card"><div class="badge"><span class="pulse"></span> Disponible</div><h1 style="font-size:34px;margin:14px 0 6px">Acompañamientos seguros</h1><p class="muted">Servicios para clínicas, compras, bancos, recreación y asistencia humana en destinos públicos o verificados.</p><div class="grid3" style="margin-top:18px"><div class="stat"><span class="muted">Activos</span><br><b id="activeCount">0</b></div><div class="stat"><span class="muted">Tarifa base</span><br><b>RD$1,000</b></div><div class="stat"><span class="muted">Estado</span><br><b style="color:var(--green)">ON</b></div></div></div><div class="mapbox"><div class="mapfake"></div><div class="floating"><b>Modo seguridad</b><p class="muted" style="margin-bottom:0">Destinos privados requieren contacto de emergencia y registro.</p></div></div></section><section class="glass card"><h2 style="margin-top:0">Servicios con acompañante</h2><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
@@ -40,6 +46,20 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
 }
+</script>
+
+
+<button id="pushEnableBtn" onclick="ttraigoInitPush()" style="position:fixed;right:14px;bottom:82px;z-index:9998;border:0;border-radius:18px;background:#16C47F;color:#06100C;font-weight:900;padding:12px 14px;box-shadow:0 18px 42px rgba(22,196,127,.25)">
+🔔 Activar alertas
+</button>
+<script>
+setTimeout(() => {
+  if (Notification && Notification.permission === "granted") {
+    const b = document.getElementById("pushEnableBtn");
+    if (b) b.style.display = "none";
+    ttraigoInitPush();
+  }
+}, 1200);
 </script>
 
 </body></html>

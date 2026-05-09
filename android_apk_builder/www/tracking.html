@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo Driver Realtime</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Tracking Realtime</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
 :root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--line:rgba(255,255,255,.12)}
 *{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#05070A;color:var(--text);overflow:hidden}a{text-decoration:none;color:inherit}
 #map{position:fixed;inset:0;z-index:1;background:#081016}.overlay{position:relative;z-index:5;min-height:100vh;pointer-events:none}
@@ -12,7 +12,7 @@
 .toast{position:fixed;top:76px;left:14px;right:14px;z-index:60;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}.hidden{display:none!important}.loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.16);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .leaflet-control-attribution{display:none!important}
 @media(min-width:900px){.sheet{left:50%;right:auto;width:430px;transform:translateX(-50%)}.topbar{left:28px;right:28px}}@media(max-width:430px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.sheet{border-radius:28px}}
-body{overflow:auto}#map{position:relative;height:42vh;border-radius:30px;overflow:hidden;margin-top:10px}</style>
+</style>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#05070A">
 <meta name="mobile-web-app-capable" content="yes">
@@ -22,13 +22,7 @@ body{overflow:auto}#map{position:relative;height:42vh;border-radius:30px;overflo
 <link rel="icon" href="/ttraigo-icon.svg">
 <link rel="apple-touch-icon" href="/icon-512.svg">
 
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
-<script src="/firebase-config.js"></script>
-<script src="/push-notifications.js"></script>
-
-</head><body><div id="toast" class="toast"></div><main style="padding:14px"><div class="topbar" style="position:relative;top:auto;left:auto;right:auto;margin-bottom:12px"><div class="brand"><div class="mark">T</div><div><b>Ttraigo Driver</b><div class="muted" style="font-size:12px">GPS + ofertas realtime</div></div></div><button class="icon" onclick="logout()">↗</button></div><div id="verifyBox" class="sheet hidden" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-bottom:12px"></div><div id="map"></div><section class="sheet" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-top:12px"><div class="handle"></div><div class="badge"><span class="pulse"></span> Online y recibiendo ofertas</div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="offerCount">0</b><span>Ofertas</span></div><div class="mini"><b id="todayMoney">RD$0</b><span>Estimado</span></div><div class="mini"><b>GPS</b><span>Activo</span></div></div><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+</head><body><div id="map"></div><div id="toast" class="toast"></div><div class="overlay"><div class="topbar"><a class="brand" href="cliente.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted" style="font-size:12px">Tracking vivo</div></div></a><button class="icon" onclick="beep()">🔔</button></div><section class="sheet"><div class="handle"></div><div class="driver"><div class="avatar">🚗</div><div style="flex:1"><b id="tituloEstado">Buscando chofer</b><div id="subEstado" class="muted" style="font-size:13px">Escuchando actualizaciones en vivo.</div></div><div class="pulse"></div></div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="eta">--</b><span>ETA</span></div><div class="mini"><b id="dist">--</b><span>Distancia</span></div><div class="mini"><b id="price">--</b><span>Total</span></div></div><div style="display:flex;gap:10px"><button class="btn dark" style="flex:1" onclick="recargar()">Actualizar</button><button class="btn danger" style="flex:1" onclick="cancelar()">Cancelar</button></div></section></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -41,15 +35,16 @@ function toast(msg){let t=document.getElementById('toast');if(!t)return;t.textCo
 function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}
 function haversineKm(a,b,c,d){const R=6371,toRad=x=>x*Math.PI/180;let x=toRad(c-a),y=toRad(d-b);let q=Math.sin(x/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q));}
 
-let pr=null,map=null,me=null,driverAllowed=false;
-document.addEventListener('DOMContentLoaded',async()=>{pr=await need(['chofer','admin']);initMap();await checkDriver();});
+let sid=new URLSearchParams(location.search).get('servicio'),choferId=null,map=null,car=null,fromMarker=null,toMarker=null,service=null,lastPos=null;
+document.addEventListener('DOMContentLoaded',()=>{initMap();init();});
 function initMap(){map=L.map('map',{zoomControl:false}).setView([18.4861,-69.9312],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:''}).addTo(map);}
-async function checkDriver(){let r=await supabaseClient.from('choferes').select('*').eq('usuario_id',pr.id).single();let estado=r.data?.estado_verificacion||'pendiente';if(!['aprobado','pre_aprobado'].includes(estado)){verifyBox.classList.remove('hidden');verifyBox.innerHTML='<b style="color:#FCA5A5">Bloqueado:</b> documentos '+estado;return;}driverAllowed=true;gps();load();listen();setInterval(load,5000);}
-function gps(){if(!navigator.geolocation)return;navigator.geolocation.watchPosition(async p=>{let lat=p.coords.latitude,lng=p.coords.longitude;if(!me){me=L.marker([lat,lng]).addTo(map).bindPopup('Yo');map.setView([lat,lng],15)}else me.setLatLng([lat,lng]);await supabaseClient.from('disponibilidad_choferes').upsert([{chofer_id:pr.id,latitud:lat,longitud:lng,disponible:true,estado:'online',actualizado_en:new Date().toISOString()}]);},()=>toast('GPS no permitido'),{enableHighAccuracy:true})}
-function listen(){supabaseClient.channel('ofertas-'+pr.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'ofertas_servicio'},p=>{if(p.new.chofer_id===pr.id){beep();toast('Nueva oferta de servicio');load();}}).subscribe();supabaseClient.channel('servicios-driver-update').on('postgres_changes',{event:'UPDATE',schema:'public',table:'servicios'},p=>{if(p.new.chofer_id===pr.id)load();}).subscribe();}
-async function load(){if(!driverAllowed)return;let o=await supabaseClient.from('ofertas_servicio').select('*').eq('chofer_id',pr.id).eq('estado','pendiente').order('creado_en',{ascending:false});let ids=(o.data||[]).map(x=>x.servicio_id);let servicios=[];if(ids.length){let s=await supabaseClient.from('servicios').select('*').in('id',ids);servicios=s.data||[];}let mine=await supabaseClient.from('servicios').select('*').eq('chofer_id',pr.id).in('estado',['confirmado','en_camino','en_progreso']).order('creado_en',{ascending:false});servicios=[...servicios,...(mine.data||[])];offerCount.textContent=servicios.length;todayMoney.textContent=money(servicios.reduce((a,b)=>a+Number(b.costo_total||0),0));list.innerHTML=servicios.map(s=>`<div class="driver"><div class="avatar">🚘</div><div style="flex:1"><b>${esc(s.origen)} → ${esc(s.destino)}</b><div class="muted">${s.estado} · ${Number(s.distancia_km||0).toFixed(1)} km · ${money(s.costo_total)}</div></div></div><div style="display:grid;gap:8px;margin:10px 0 18px"><button class="btn primary" onclick="accept('${s.id}')">Aceptar</button><button class="btn dark" onclick="state('${s.id}','en_camino')">En camino</button><button class="btn dark" onclick="state('${s.id}','en_progreso')">Iniciar</button><button class="btn dark" onclick="state('${s.id}','finalizado')">Finalizar</button></div>`).join('')||'<p class="muted">No hay ofertas todavía.</p>';}
-async function accept(id){await supabaseClient.from('servicios').update({estado:'confirmado',chofer_id:pr.id,aceptado_en:new Date().toISOString()}).eq('id',id).eq('estado','buscando_chofer');await supabaseClient.from('ofertas_servicio').update({estado:'aceptado'}).eq('servicio_id',id).eq('chofer_id',pr.id);await supabaseClient.from('disponibilidad_choferes').update({servicio_actual_id:id}).eq('chofer_id',pr.id);beep();toast('Servicio aceptado');load();}
-async function state(id,estado){await supabaseClient.from('servicios').update({estado}).eq('id',id);if(estado==='finalizado')await supabaseClient.from('disponibilidad_choferes').update({servicio_actual_id:null,disponible:true}).eq('chofer_id',pr.id);load();}
+async function init(){if(!sid){tituloEstado.textContent='No hay servicio';return;}await recargar();supabaseClient.channel('track-service-'+sid).on('postgres_changes',{event:'UPDATE',schema:'public',table:'servicios'},p=>{if(p.new.id===sid){service=p.new;choferId=p.new.chofer_id;render();beep();toast('Estado: '+p.new.estado);}}).subscribe();supabaseClient.channel('driver-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'disponibilidad_choferes'},p=>{if(choferId&&p.new.chofer_id===choferId)moveCar(Number(p.new.latitud),Number(p.new.longitud));}).subscribe();setInterval(pos,3500);}
+async function recargar(){let x=await supabaseClient.from('servicios').select('*').eq('id',sid).single();if(!x.data){tituloEstado.textContent='Servicio no encontrado';return;}service=x.data;choferId=service.chofer_id;render();paintPoints();pos();}
+function paintPoints(){if(service?.origen_lat&&service?.origen_lng&&!fromMarker)fromMarker=L.marker([service.origen_lat,service.origen_lng]).addTo(map).bindPopup('Origen');if(service?.destino_lat&&service?.destino_lng&&!toMarker)toMarker=L.marker([service.destino_lat,service.destino_lng]).addTo(map).bindPopup('Destino');}
+function render(){price.textContent=money(service.costo_total);dist.textContent=Number(service.distancia_km||0).toFixed(1)+' km';eta.textContent=service.eta_min?service.eta_min+' min':'--';let e=service.estado;if(e==='buscando_chofer'){tituloEstado.textContent='Buscando chofer cercano';subEstado.textContent='Estamos notificando a conductores disponibles.';}else if(e==='confirmado'){tituloEstado.textContent='Chofer confirmado';subEstado.textContent='Tu chofer va en camino.';}else if(e==='en_camino'){tituloEstado.textContent='Chofer en camino';subEstado.textContent='Mira el auto moverse en el mapa.';}else if(e==='en_progreso'){tituloEstado.textContent='Servicio en curso';subEstado.textContent='Viaje activo con seguimiento GPS.';}else if(e==='finalizado'){tituloEstado.textContent='Servicio finalizado';subEstado.textContent='Gracias por usar Ttraigo.';}else{tituloEstado.textContent='Estado: '+e;subEstado.textContent='Seguimiento activo';}}
+function moveCar(lat,lng){if(!lat||!lng)return;if(!car){car=L.marker([lat,lng]).addTo(map).bindPopup('Chofer Ttraigo');map.setView([lat,lng],15);lastPos={lat,lng};return;}car.setLatLng([lat,lng]);lastPos={lat,lng};map.panTo([lat,lng],{animate:true,duration:.8});}
+async function pos(){if(!choferId)return;let x=await supabaseClient.from('disponibilidad_choferes').select('*').eq('chofer_id',choferId).single();if(x.data)moveCar(Number(x.data.latitud),Number(x.data.longitud));}
+async function cancelar(){if(!sid)return;if(!confirm('¿Cancelar este servicio?'))return;await supabaseClient.from('servicios').update({estado:'cancelado'}).eq('id',sid);toast('Servicio cancelado');setTimeout(()=>location.href='cliente.html',1000);}
 </script>
 <script>
 if ("serviceWorker" in navigator) {
@@ -57,20 +52,6 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
 }
-</script>
-
-
-<button id="pushEnableBtn" onclick="ttraigoInitPush()" style="position:fixed;right:14px;bottom:82px;z-index:9998;border:0;border-radius:18px;background:#16C47F;color:#06100C;font-weight:900;padding:12px 14px;box-shadow:0 18px 42px rgba(22,196,127,.25)">
-🔔 Activar alertas
-</button>
-<script>
-setTimeout(() => {
-  if (Notification && Notification.permission === "granted") {
-    const b = document.getElementById("pushEnableBtn");
-    if (b) b.style.display = "none";
-    ttraigoInitPush();
-  }
-}, 1200);
 </script>
 
 </body></html>
