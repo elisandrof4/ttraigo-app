@@ -11,13 +11,19 @@
 .row{display:flex;justify-content:space-between;gap:10px;margin:10px 0}.line{height:1px;background:var(--line);margin:16px 0}.toast{position:fixed;top:16px;left:16px;right:16px;z-index:50;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}
 .mapbox{position:relative;min-height:420px;border-radius:30px;overflow:hidden;border:1px solid var(--line);background:#081016}.map{position:absolute;inset:0;background:linear-gradient(38deg,transparent 42%,rgba(239,68,68,.24) 43%,rgba(239,68,68,.24) 45%,transparent 46%),linear-gradient(142deg,transparent 37%,rgba(255,255,255,.10) 38%,rgba(255,255,255,.10) 40%,transparent 41%),radial-gradient(circle at 30% 30%,rgba(239,68,68,.22),transparent 20%),radial-gradient(circle at 72% 72%,rgba(22,196,127,.24),transparent 26%),#0B1218}.float{position:absolute;left:16px;right:16px;bottom:16px;border-radius:26px;padding:16px;background:rgba(8,13,20,.82);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(18px)}
 @media(max-width:900px){.grid,.grid3{grid-template-columns:1fr}.shell{padding:14px}.top{align-items:flex-start}.sos{width:150px;height:150px}}
-</style></head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><a class="logo" href="admin.html"><div class="mark">T</div><div><b style="font-size:23px">Centro SOS</b><div class="muted">Monitoreo de alertas</div></div></a><a class="btn dark" href="admin.html">Admin</a></div><section class="glass"><h1>Alertas SOS</h1><p class="muted">Alertas activas y eventos de seguridad.</p><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+</style>
+<script>
+window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
+</script>
+
+</head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><a class="logo" href="admin.html"><div class="mark">T</div><div><b style="font-size:23px">Centro SOS</b><div class="muted">Monitoreo de alertas</div></div></a><a class="btn dark" href="admin.html">Admin</a></div><section class="glass"><h1>Alertas SOS</h1><p class="muted">Alertas activas y eventos de seguridad.</p><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function need(){let p=await profile();if(!p){location.href='login.html';return null}return p}
+async function need(){let p=await profile();if(!p){ if(window.TTRAIGO_DEMO) return window.TTRAIGO_DEMO_PROFILE; location.href='login.html';return null}return p}
 function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
 function code(){return 'TTG-'+Math.random().toString(36).slice(2,6).toUpperCase()+'-'+Date.now().toString().slice(-4)}
 

@@ -28,6 +28,12 @@ body{overflow:auto}#map{position:relative;height:42vh;border-radius:30px;overflo
 <script src="/firebase-config.js"></script>
 <script src="/push-notifications.js"></script>
 
+
+<script>
+window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
+</script>
+
 </head><body><div id="toast" class="toast"></div><main style="padding:14px"><div class="topbar" style="position:relative;top:auto;left:auto;right:auto;margin-bottom:12px"><div class="brand"><div class="mark">T</div><div><b>Ttraigo Driver</b><div class="muted" style="font-size:12px">GPS + ofertas realtime</div></div></div><button class="icon" onclick="logout()">↗</button></div><div id="verifyBox" class="sheet hidden" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-bottom:12px"></div><div id="map"></div><section class="sheet" style="position:relative;left:auto;right:auto;bottom:auto;transform:none;margin-top:12px"><div class="handle"></div><div class="badge"><span class="pulse"></span> Online y recibiendo ofertas</div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="offerCount">0</b><span>Ofertas</span></div><div class="mini"><b id="todayMoney">RD$0</b><span>Estimado</span></div><div class="mini"><b>GPS</b><span>Activo</span></div></div><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
@@ -35,7 +41,7 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
 function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function need(roles){let p=await profile();if(!p){location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
+async function need(roles){let p=await profile();if(!p){ if(window.TTRAIGO_DEMO) return window.TTRAIGO_DEMO_PROFILE; location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
 async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
 function toast(msg){let t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
 function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}

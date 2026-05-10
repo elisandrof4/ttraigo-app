@@ -23,6 +23,12 @@ a{text-decoration:none;color:inherit}.shell{max-width:1180px;margin:auto;padding
 <script src="/firebase-config.js"></script>
 <script src="/push-notifications.js"></script>
 
+
+<script>
+window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
+</script>
+
 </head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><div class="logo"><div class="mark">T</div><div><b style="font-size:22px">Ttraigo Care</b><div class="muted">Acompañante profesional</div></div></div><button class="btn dark" onclick="logout()">Salir</button></div><section class="grid" style="margin-bottom:16px"><div class="glass card"><div class="badge"><span class="pulse"></span> Disponible</div><h1 style="font-size:34px;margin:14px 0 6px">Acompañamientos seguros</h1><p class="muted">Servicios para clínicas, compras, bancos, recreación y asistencia humana en destinos públicos o verificados.</p><div class="grid3" style="margin-top:18px"><div class="stat"><span class="muted">Activos</span><br><b id="activeCount">0</b></div><div class="stat"><span class="muted">Tarifa base</span><br><b>RD$1,000</b></div><div class="stat"><span class="muted">Estado</span><br><b style="color:var(--green)">ON</b></div></div></div><div class="mapbox"><div class="mapfake"></div><div class="floating"><b>Modo seguridad</b><p class="muted" style="margin-bottom:0">Destinos privados requieren contacto de emergencia y registro.</p></div></div></section><section class="glass card"><h2 style="margin-top:0">Servicios con acompañante</h2><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
@@ -30,7 +36,7 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
 function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function need(roles){let p=await profile();if(!p){location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
+async function need(roles){let p=await profile();if(!p){ if(window.TTRAIGO_DEMO) return window.TTRAIGO_DEMO_PROFILE; location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
 async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
 function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
 function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}

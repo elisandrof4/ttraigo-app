@@ -23,6 +23,12 @@ a{text-decoration:none;color:inherit}.shell{max-width:1180px;margin:auto;padding
 <script src="/firebase-config.js"></script>
 <script src="/push-notifications.js"></script>
 
+
+<script>
+window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
+</script>
+
 </head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><div class="logo"><div class="mark">T</div><div><b style="font-size:22px">Ttraigo Command</b><div class="muted">Panel corporativo privado</div></div></div><button class="btn dark" onclick="logout()">Salir</button></div><section class="grid3" style="margin-bottom:16px"><div class="glass card"><span class="muted">Servicios</span><h2 id="sTotal">0</h2></div><div class="glass card"><span class="muted">Buscando</span><h2 id="sSearch">0</h2></div><div class="glass card"><span class="muted">Ingresos</span><h2 id="sMoney">RD$0</h2></div></section><section class="grid" style="margin-bottom:16px"><div class="mapbox"><div class="mapfake"></div><div class="floating"><b>Centro de operación</b><p class="muted" style="margin-bottom:0">Vista general de flota, servicios y verificaciones.</p></div></div><div class="glass card"><h2>Acciones rápidas</h2><div style="display:grid;gap:10px"><button class="btn primary" onclick="serv()">Ver servicios</button><button class="btn dark" onclick="drivers()">Verificar choferes</button><button class="btn dark" onclick="serv()">Actualizar métricas</button></div></div></section><section class="glass card"><div id="out"></div></section><div style="position:fixed;right:14px;bottom:14px;z-index:99"><a href="admin-finanzas.html" style="display:inline-flex;padding:14px 16px;border-radius:18px;background:#16C47F;color:#06100C;font-weight:900;text-decoration:none">💼 Finanzas</a></div><div style="position:fixed;left:14px;bottom:14px;z-index:99"><a href="admin-sos.html" style="display:inline-flex;padding:14px 16px;border-radius:18px;background:#EF4444;color:#fff;font-weight:900;text-decoration:none">🚨 SOS</a></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
@@ -30,7 +36,7 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
 function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function need(roles){let p=await profile();if(!p){location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
+async function need(roles){let p=await profile();if(!p){ if(window.TTRAIGO_DEMO) return window.TTRAIGO_DEMO_PROFILE; location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
 async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
 function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
 function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}

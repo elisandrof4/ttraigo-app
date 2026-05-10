@@ -37,6 +37,12 @@ a{color:inherit;text-decoration:none}
 .toast{position:fixed;top:16px;left:16px;right:16px;z-index:50;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}
 @media(max-width:950px){.grid4,.grid{grid-template-columns:1fr}.shell{padding:14px}.top{align-items:flex-start}.row{grid-template-columns:1fr}}
 </style>
+
+<script>
+window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
+</script>
+
 </head>
 <body>
 <div id="toast" class="toast"></div>
@@ -108,7 +114,7 @@ function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
 async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
 async function logout(){await supabaseClient.auth.signOut();location.href='login.html'}
-document.addEventListener('DOMContentLoaded',async()=>{pr=await profile();if(!pr){location.href='login.html';return}if(pr.rol!=='admin'){alert('Solo admin');location.href='index.html';return}loadAll();listen();});
+document.addEventListener('DOMContentLoaded',async()=>{pr=await profile();if(!pr){if(window.TTRAIGO_DEMO){pr=window.TTRAIGO_DEMO_PROFILE;}else{location.href='login.html';return}}if(pr.rol!=='admin'&&!window.TTRAIGO_DEMO){alert('Solo admin');location.href='index.html';return}loadAll();listen();});
 
 async function loadAll(){
   let p=await supabaseClient.from('pagos').select('*').order('creado_en',{ascending:false});
