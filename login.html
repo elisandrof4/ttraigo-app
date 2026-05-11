@@ -36,20 +36,148 @@ a{text-decoration:none;color:inherit}.shell{max-width:1240px;margin:auto;padding
 </div>
 <div class="mockup"><div class="map"></div><div class="route"></div><div class="car">🚘</div><div class="topline"><div class="mini-brand"><div class="mini-mark">T</div><b>Ttraigo</b></div><div class="status">LIVE</div></div><div class="live-card"><div class="driver"><div class="avatar">👨‍✈️</div><div style="flex:1"><b>Identidad protegida</b><div class="muted" style="font-size:13px">Foto + cédula/ID + acceso por rol</div></div><span class="pulse"></span></div><div class="stats"><div class="stat"><b>Foto</b><span>Perfil</span></div><div class="stat"><b>ID</b><span>Obligatoria</span></div><div class="stat"><b>GPS</b><span>Seguro</span></div></div><a class="btn primary" style="width:100%" href="cliente.html">Entrar a Ttraigo</a></div></div>
 </section></main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function showTab(tab){registerBox.classList.toggle('hidden',tab!=='reg');loginBox.classList.toggle('hidden',tab!=='log');tabReg.classList.toggle('active',tab==='reg');tabLog.classList.toggle('active',tab==='log')}
-function roleFields(){driverFields.classList.toggle('hidden',r.value!=='chofer');compFields.classList.toggle('hidden',r.value!=='acompanante')}
-function setMsg(el,msg,color='#FCA5A5'){el.textContent=msg;el.style.color=color}
-function previewFile(inputId,imgId){const file=document.getElementById(inputId)?.files?.[0];if(!file)return;const rd=new FileReader();rd.onload=()=>{const img=document.getElementById(imgId);img.src=rd.result;img.classList.remove('hidden')};rd.readAsDataURL(file)}
-function fileToBase64(input,maxW=280,quality=.28){return new Promise((resolve,reject)=>{const file=input?.files?.[0];if(!file)return resolve(null);const reader=new FileReader();const img=new Image();reader.onload=e=>img.src=e.target.result;img.onload=()=>{const scale=Math.min(1,maxW/img.width);const canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',quality))};reader.onerror=()=>reject(new Error('No se pudo leer la imagen'));img.onerror=()=>reject(new Error('Imagen no válida'));reader.readAsDataURL(file)})}
-async function testConnection(){const r=await fetch(SUPABASE_URL+'/auth/v1/settings',{headers:{apikey:SUPABASE_KEY}});if(!r.ok)throw new Error('No conecta con Supabase. Verifica URL/API Key.');}
-async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from('usuarios').select('*').eq('id',id).single();return r.data}
-async function logout(){await supabaseClient.auth.signOut();location.href='login.html'}
-async function reg(){const btn=document.querySelector('#registerBox .btn.primary');try{btn.disabled=true;btn.textContent='Creando cuenta...';setMsg(m1,'Probando conexión y procesando registro...','#AAB4C0');await testConnection();const perfil=await fileToBase64(f);const fotoId=await fileToBase64(idfoto);const veh=await fileToBase64(fveh);const licfoto=await fileToBase64(flic);const seg=await fileToBase64(fseg);const doc=await fileToBase64(fdoc);if(!n.value||!t.value||!c.value||!e.value||!p.value)throw new Error('Completa nombre, teléfono, cédula, correo y contraseña.');if(!perfil)throw new Error('Debes subir o tomar tu foto de perfil.');if(!fotoId)throw new Error('Debes subir o tomar una foto de tu cédula o ID.');if(p.value.length<6)throw new Error('La contraseña debe tener mínimo 6 caracteres.');if(r.value==='chofer'&&(!lic.value||!marca.value||!modelo.value||!placa.value||!veh||!licfoto||!seg||!doc))throw new Error('Chofer debe subir vehículo, licencia, seguro y matrícula/carta de ruta.');const authRes=await supabaseClient.auth.signUp({email:e.value.trim(),password:p.value,options:{emailRedirectTo:'https://ttraigo-app.vercel.app/login.html',data:{nombre:n.value,telefono:t.value,cedula:c.value,rol:r.value}}});if(authRes.error)throw authRes.error;const id=authRes.data.user?.id;if(!id)throw new Error('Supabase no devolvió ID. Revisa si Confirm email está activo.');const u=await supabaseClient.from('usuarios').upsert([{id,nombre:n.value,telefono:t.value,email:e.value.trim(),rol:r.value,cedula_id:c.value,tipo_documento:'cedula',foto_id_base64:fotoId,foto_base64:perfil,verificado:r.value==='cliente',documento_verificado:false}],{onConflict:'id'});if(u.error)throw new Error('Perfil usuario: '+u.error.message);if(r.value==='chofer'){const ch=await supabaseClient.from('choferes').insert([{usuario_id:id,nombre:n.value,licencia:lic.value,vehiculo_marca:marca.value,vehiculo_modelo:modelo.value,placa:placa.value,foto_cedula:fotoId,foto_vehiculo:veh,foto_licencia:licfoto,foto_seguro:seg,foto_documento:doc,estado_verificacion:'pendiente'}]);if(ch.error)throw new Error('Perfil chofer: '+ch.error.message)}if(r.value==='acompanante'){const ac=await supabaseClient.from('acompanantes').insert([{usuario_id:id,cedula:c.value,experiencia:exp.value,foto_cedula:fotoId,foto_base64:perfil,estado_verificacion:'pendiente'}]);if(ac.error)throw new Error('Perfil acompañante: '+ac.error.message)}setMsg(m1,'Cuenta creada correctamente. Ahora entra con tu correo y contraseña.','#16C47F');showTab('log');le.value=e.value.trim()}catch(err){console.error(err);let msg=err.message||'Error creando cuenta.';if(msg.includes('Failed to fetch'))msg='No se pudo conectar con Supabase. Causa probable: API Key incorrecta, dominio no autorizado, internet bloqueado o archivo muy pesado. Ya redujimos fotos; verifica API Key en Supabase Settings → API Keys.';setMsg(m1,msg)}finally{btn.disabled=false;btn.textContent='Crear cuenta'}}
-async function log(){const btn=document.querySelector('#loginBox .btn.primary');try{btn.disabled=true;btn.textContent='Entrando...';setMsg(m2,'Validando acceso...','#AAB4C0');await testConnection();const a=await supabaseClient.auth.signInWithPassword({email:le.value.trim(),password:lp.value});if(a.error)throw a.error;let pr=await profile();if(!pr)throw new Error('Cuenta existe, pero falta perfil en tabla usuarios.');location.href=pr.rol==='chofer'?'chofer.html':pr.rol==='acompanante'?'acompanante.html':pr.rol==='admin'?'admin.html':'cliente.html'}catch(err){console.error(err);let msg=err.message||'No se pudo iniciar sesión.';if(msg.includes('Failed to fetch'))msg='No se pudo conectar con Supabase. Verifica API Key y configuración del dominio.';setMsg(m2,msg)}finally{btn.disabled=false;btn.textContent='Entrar'}}
+
+function showTab(tab){
+  registerBox.classList.toggle('hidden',tab!=='reg');
+  loginBox.classList.toggle('hidden',tab!=='log');
+  tabReg.classList.toggle('active',tab==='reg');
+  tabLog.classList.toggle('active',tab==='log');
+}
+function roleFields(){
+  driverFields.classList.toggle('hidden',r.value!=='chofer');
+  compFields.classList.toggle('hidden',r.value!=='acompanante');
+}
+function setMsg(el,msg,color='#FCA5A5'){el.textContent=msg;el.style.color=color;}
+
+function previewFile(inputId,imgId){
+  const file=document.getElementById(inputId)?.files?.[0];
+  if(!file)return;
+  const img=document.getElementById(imgId);
+  img.src=URL.createObjectURL(file);
+  img.classList.remove('hidden');
+}
+
+async function testConnection(){
+  const r=await fetch(SUPABASE_URL+'/auth/v1/settings?nocache='+Date.now(),{cache:'no-store',headers:{apikey:SUPABASE_KEY}});
+  if(!r.ok)throw new Error('No conecta con Supabase. Verifica URL/API Key.');
+}
+
+async function uploadFile(input, folder, userId){
+  const file=input?.files?.[0];
+  if(!file)return null;
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+  const path=`${userId}/${folder}-${Date.now()}.${ext}`;
+  const up=await supabaseClient.storage.from('ttraigo-docs').upload(path,file,{upsert:true,contentType:file.type||'image/jpeg'});
+  if(up.error)throw new Error('Subiendo '+folder+': '+up.error.message);
+  const pub=supabaseClient.storage.from('ttraigo-docs').getPublicUrl(path);
+  return pub.data.publicUrl;
+}
+
+async function profile(){
+  let s=await supabaseClient.auth.getSession();
+  if(!s.data.session)return null;
+  let id=s.data.session.user.id;
+  let r=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+  return r.data;
+}
+async function logout(){await supabaseClient.auth.signOut();location.href='login.html';}
+
+async function reg(){
+  const btn=document.querySelector('#registerBox .btn.primary');
+  try{
+    btn.disabled=true;btn.textContent='Creando cuenta...';
+    setMsg(m1,'Conectando y creando cuenta...','#AAB4C0');
+
+    await testConnection();
+
+    if(!n.value||!t.value||!c.value||!e.value||!p.value)throw new Error('Completa nombre, teléfono, cédula, correo y contraseña.');
+    if(!f.files[0])throw new Error('Debes subir o tomar tu foto de perfil.');
+    if(!idfoto.files[0])throw new Error('Debes subir o tomar una foto de tu cédula o ID.');
+    if(p.value.length<6)throw new Error('La contraseña debe tener mínimo 6 caracteres.');
+    if(r.value==='chofer'&&(!lic.value||!marca.value||!modelo.value||!placa.value||!fveh.files[0]||!flic.files[0]||!fseg.files[0]||!fdoc.files[0])){
+      throw new Error('Chofer debe subir vehículo, licencia, seguro y matrícula/carta de ruta.');
+    }
+
+    const authRes=await supabaseClient.auth.signUp({
+      email:e.value.trim(),
+      password:p.value,
+      options:{emailRedirectTo:'https://ttraigo-app.vercel.app/login.html',data:{nombre:n.value,telefono:t.value,cedula:c.value,rol:r.value}}
+    });
+    if(authRes.error)throw authRes.error;
+    const id=authRes.data.user?.id;
+    if(!id)throw new Error('Supabase no devolvió ID. Revisa Confirm email en Authentication.');
+
+    setMsg(m1,'Cuenta creada. Subiendo fotos seguras...','#AAB4C0');
+
+    const perfilUrl=await uploadFile(f,'perfil',id);
+    const idUrl=await uploadFile(idfoto,'cedula-id',id);
+
+    const u=await supabaseClient.from('usuarios').upsert([{
+      id,nombre:n.value,telefono:t.value,email:e.value.trim(),rol:r.value,cedula_id:c.value,
+      tipo_documento:'cedula',foto_perfil_url:perfilUrl,foto_id_url:idUrl,
+      verificado:r.value==='cliente',documento_verificado:false
+    }],{onConflict:'id'});
+    if(u.error)throw new Error('Perfil usuario: '+u.error.message);
+
+    if(r.value==='chofer'){
+      const vehUrl=await uploadFile(fveh,'vehiculo',id);
+      const licUrl=await uploadFile(flic,'licencia',id);
+      const segUrl=await uploadFile(fseg,'seguro',id);
+      const docUrl=await uploadFile(fdoc,'matricula',id);
+      const ch=await supabaseClient.from('choferes').insert([{
+        usuario_id:id,nombre:n.value,licencia:lic.value,vehiculo_marca:marca.value,vehiculo_modelo:modelo.value,placa:placa.value,
+        foto_cedula_url:idUrl,foto_vehiculo_url:vehUrl,foto_licencia_url:licUrl,foto_seguro_url:segUrl,foto_documento_url:docUrl,
+        estado_verificacion:'pendiente'
+      }]);
+      if(ch.error)throw new Error('Perfil chofer: '+ch.error.message);
+    }
+
+    if(r.value==='acompanante'){
+      const ac=await supabaseClient.from('acompanantes').insert([{
+        usuario_id:id,cedula:c.value,experiencia:exp.value,foto_cedula_url:idUrl,foto_perfil_url:perfilUrl,estado_verificacion:'pendiente'
+      }]);
+      if(ac.error)throw new Error('Perfil acompañante: '+ac.error.message);
+    }
+
+    setMsg(m1,'Cuenta creada correctamente. Ahora entra con tu correo y contraseña.','#16C47F');
+    showTab('log');le.value=e.value.trim();
+  }catch(err){
+    console.error(err);
+    let msg=err.message||'Error creando cuenta.';
+    if(msg.includes('Failed to fetch'))msg='No se pudo conectar con Supabase. Revisa API Key o conexión.';
+    setMsg(m1,msg);
+  }finally{
+    btn.disabled=false;btn.textContent='Crear cuenta';
+  }
+}
+
+async function log(){
+  const btn=document.querySelector('#loginBox .btn.primary');
+  try{
+    btn.disabled=true;btn.textContent='Entrando...';
+    setMsg(m2,'Validando acceso...','#AAB4C0');
+    await testConnection();
+    const a=await supabaseClient.auth.signInWithPassword({email:le.value.trim(),password:lp.value});
+    if(a.error)throw a.error;
+    let pr=await profile();
+    if(!pr)throw new Error('Cuenta existe, pero falta perfil en tabla usuarios.');
+    location.href=pr.rol==='chofer'?'chofer.html':pr.rol==='acompanante'?'acompanante.html':pr.rol==='admin'?'admin.html':'cliente.html';
+  }catch(err){
+    console.error(err);
+    let msg=err.message||'No se pudo iniciar sesión.';
+    if(msg.includes('Failed to fetch'))msg='No se pudo conectar con Supabase. Revisa API Key o conexión.';
+    setMsg(m2,msg);
+  }finally{
+    btn.disabled=false;btn.textContent='Entrar';
+  }
+}
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-</script></body></html>
+</script>
+</body>
+</html>
