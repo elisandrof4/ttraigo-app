@@ -39,8 +39,7 @@ a{text-decoration:none;color:inherit}.shell{max-width:1240px;margin:auto;padding
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL=const SUPABASE_URL =
-  "https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
@@ -94,8 +93,6 @@ async function reg(){
   try{
     btn.disabled=true;btn.textContent='Creando cuenta...';
     setMsg(m1,'Conectando y creando cuenta...','#AAB4C0');
-
-    await testConnection();
 
     if(!n.value||!t.value||!c.value||!e.value||!p.value)throw new Error('Completa nombre, teléfono, cédula, correo y contraseña.');
     if(!f.files[0])throw new Error('Debes subir o tomar tu foto de perfil.');
@@ -151,7 +148,7 @@ async function reg(){
   }catch(err){
     console.error(err);
     let msg=err.message||'Error creando cuenta.';
-    if(msg.includes('Failed to fetch'))msg='No se pudo conectar con Supabase. Revisa API Key o conexión.';
+    if(msg.includes('Failed to fetch'))msg='No se pudo completar la operación. Ahora debe mostrar el error real de Supabase.';
     setMsg(m1,msg);
   }finally{
     btn.disabled=false;btn.textContent='Crear cuenta';
@@ -163,7 +160,6 @@ async function log(){
   try{
     btn.disabled=true;btn.textContent='Entrando...';
     setMsg(m2,'Validando acceso...','#AAB4C0');
-    await testConnection();
     const a=await supabaseClient.auth.signInWithPassword({email:le.value.trim(),password:lp.value});
     if(a.error)throw a.error;
     let pr=await profile();
@@ -172,7 +168,7 @@ async function log(){
   }catch(err){
     console.error(err);
     let msg=err.message||'No se pudo iniciar sesión.';
-    if(msg.includes('Failed to fetch'))msg='No se pudo conectar con Supabase. Revisa API Key o conexión.';
+    if(msg.includes('Failed to fetch'))msg='No se pudo completar la operación. Ahora debe mostrar el error real de Supabase.';
     setMsg(m2,msg);
   }finally{
     btn.disabled=false;btn.textContent='Entrar';
