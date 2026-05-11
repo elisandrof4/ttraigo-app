@@ -145,12 +145,7 @@ async function reg(){
 
     setMsg(m1,'Cuenta creada correctamente. Ahora entra con tu correo y contraseña.','#16C47F');
     showTab('log');le.value=e.value.trim();
-  }catch(err){
-    console.error(err);
-    let msg=err.message||'Error creando cuenta.';
-    if(msg.includes('Failed to fetch'))msg='No se pudo completar la operación. Ahora debe mostrar el error real de Supabase.';
-    setMsg(m1,msg);
-  }finally{
+  }catch(err){console.error(err);setMsg(m1,'Error real: '+(err.message||JSON.stringify(err)||err),'#FCA5A5');}finally{
     btn.disabled=false;btn.textContent='Crear cuenta';
   }
 }
@@ -165,12 +160,7 @@ async function log(){
     let pr=await profile();
     if(!pr)throw new Error('Cuenta existe, pero falta perfil en tabla usuarios.');
     location.href=pr.rol==='chofer'?'chofer.html':pr.rol==='acompanante'?'acompanante.html':pr.rol==='admin'?'admin.html':'cliente.html';
-  }catch(err){
-    console.error(err);
-    let msg=err.message||'No se pudo iniciar sesión.';
-    if(msg.includes('Failed to fetch'))msg='No se pudo completar la operación. Ahora debe mostrar el error real de Supabase.';
-    setMsg(m2,msg);
-  }finally{
+  }catch(err){console.error(err);setMsg(m2,'Error real: '+(err.message||JSON.stringify(err)||err),'#FCA5A5');}finally{
     btn.disabled=false;btn.textContent='Entrar';
   }
 }
