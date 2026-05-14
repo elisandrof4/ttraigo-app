@@ -1,23 +1,39 @@
-# TTRAIGO PREMIUM V9 — FASE 6 APK ANDROID
+Ttraigo Pack Completo V2: incluye registro con foto de perfil para todos y documentos completos de chofer.
 
-## Archivos nuevos principales
-- android_apk_builder/package.json
-- android_apk_builder/capacitor.config.ts
-- android_apk_builder/www/
-- android_apk_builder/README_APK_ANDROID.txt
-- android_apk_builder/ANDROID_PERMISSIONS_NOTES.txt
+V3: el chofer queda bloqueado automáticamente si estado_verificacion no es aprobado o pre_aprobado. El admin puede aprobar/rechazar desde admin.html.
 
-## ¿Esto se sube a GitHub?
-Sí, puedes subir todo el contenido del ZIP a GitHub.
 
-## ¿Esto requiere Supabase?
-No. Esta fase no requiere SQL nuevo.
+V4 FASE 1 PREMIUM: rediseño elite de index.html y login.html, logo integrado, splash screen, estilo Uber Black, sin tocar Supabase ni romper módulos existentes.
 
-## ¿Qué hace esta fase?
-Prepara Ttraigo para crear APK Android usando Capacitor.
 
-## ¿Puedo instalarlo ya?
-Para instalar APK real necesitas generar el APK con Android Studio siguiendo las instrucciones del README_APK_ANDROID.txt.
+V5 FASE 2 PREMIUM: cliente.html y tracking.html rediseñados con mapa fullscreen, bottom sheet tipo Uber, botones flotantes, tracking premium, estados visuales y experiencia móvil más nativa. No requiere cambios en Supabase.
 
-## Siguiente fase
-FASE 7: Push notifications reales con Firebase.
+
+V6 FASE 3 PREMIUM: rediseño completo de chofer.html, acompanante.html y admin.html. Panel chofer tipo Uber Driver, acompañante premium y admin corporativo. No requiere cambios en Supabase.
+
+
+V7 FASE 4 REALTIME: GPS en vivo, Supabase Realtime, matching automático por cercanía, ofertas a choferes, tracking vivo y movimiento del chofer. Incluye sql_fase4_realtime.sql para ejecutar en Supabase.
+
+
+V8 FASE 5 PWA: app instalable, manifest completo, iconos premium, service worker, pantalla offline y preparación para APK Android. No requiere cambios en Supabase.
+
+
+V9 FASE 6 APK ANDROID: estructura Capacitor para generar APK Android. No requiere Supabase. Requiere Node.js y Android Studio para compilar el APK.
+
+
+V10 FASE 7 PUSH FIREBASE: preparación completa para notificaciones push reales con Firebase Cloud Messaging, token en Supabase y endpoint de envío en Vercel. Requiere configurar Firebase.
+
+
+V11 FASE 8 ULTRA VISUAL: home millonaria con mockup de app, ruta animada, vehículo, ETA, cards flotantes y experiencia visual premium. No requiere Supabase.
+
+
+V12 FASE 9 PAGOS/WALLET: pantalla de pagos, comprobantes, tablas de pagos, facturas, wallet y preparación para pasarela real. Incluye SQL nuevo.
+
+
+V13 FIX MOCKUPS: rellena el panel visual vacío del login con mapa, ruta, vehículo animado y experiencia premium. No requiere Supabase.
+
+
+V14 LOGIN CORREGIDO SIN PÉRDIDAS: login completo reescrito para evitar panel vacío, conservando registro por rol, documentos, Supabase, PWA y Firebase.
+
+
+V15 FASE 10 ADMIN FINANCIERO: dashboard financiero ejecutivo con pagos, facturas, wallet, servicios, KPIs, CSV y realtime. No requiere SQL nuevo si Fase 9 está aplicada.

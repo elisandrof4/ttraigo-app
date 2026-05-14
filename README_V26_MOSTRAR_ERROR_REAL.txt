@@ -1,22 +1,26 @@
-# TTRAIGO V26 — MOSTRAR ERROR REAL
+# TTRAIGO V22 — FOTO + CÉDULA OBLIGATORIA Y FIX FAILED FETCH
 
-## Qué hace
-No cambia diseño.
-No cambia base de datos.
-No cambia Storage.
-No cambia registro.
+## Cambios
+- Foto de perfil obligatoria para todos.
+- Foto de cédula/ID obligatoria para todos.
+- En móvil permite cámara o galería:
+  - perfil usa cámara frontal
+  - cédula/ID usa cámara trasera
+- Reduce el tamaño de imágenes internamente para evitar fallo por peso.
+- Agrega diagnóstico Supabase.
 
-Solo cambia el mensaje genérico por el error real que devuelve Supabase.
+## Supabase
+Ejecuta:
+sql_v22_registro_camara_obligatoria.sql
 
-## GITHUB
-Sube/reemplaza:
+## GitHub
+Sube:
 - login.html
+- diagnostico-supabase.html
+- sql_v22_registro_camara_obligatoria.sql
 
-## SUPABASE
-No hagas nada.
+## Si sigue Failed to fetch
+Abre:
+https://ttraigo-app.vercel.app/diagnostico-supabase.html
 
-## VERCEL
-Solo espera el deploy automático.
-
-## Después
-Intenta crear cuenta otra vez y envía captura del mensaje nuevo.
+Si falla ahí, NO es el registro: es conexión/API key/configuración de Supabase.

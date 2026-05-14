@@ -1,26 +1,14 @@
-# TTRAIGO V22 — FOTO + CÉDULA OBLIGATORIA Y FIX FAILED FETCH
+# TTRAIGO V19 — SIN MODO DEMO
 
 ## Cambios
-- Foto de perfil obligatoria para todos.
-- Foto de cédula/ID obligatoria para todos.
-- En móvil permite cámara o galería:
-  - perfil usa cámara frontal
-  - cédula/ID usa cámara trasera
-- Reduce el tamaño de imágenes internamente para evitar fallo por peso.
-- Agrega diagnóstico Supabase.
+- Eliminada la pestaña Demo.
+- La aplicación vuelve a verse completamente profesional.
+- Se mantiene el registro suave para clientes.
+- Se conservan todas las fases anteriores.
+- No se borran datos.
 
-## Supabase
-Ejecuta:
-sql_v22_registro_camara_obligatoria.sql
-
-## GitHub
-Sube:
+## Subir a GitHub
 - login.html
-- diagnostico-supabase.html
-- sql_v22_registro_camara_obligatoria.sql
 
-## Si sigue Failed to fetch
-Abre:
-https://ttraigo-app.vercel.app/diagnostico-supabase.html
-
-Si falla ahí, NO es el registro: es conexión/API key/configuración de Supabase.
+## Resultado
+La app ya no mostrará modo demo ni botones de demostración.

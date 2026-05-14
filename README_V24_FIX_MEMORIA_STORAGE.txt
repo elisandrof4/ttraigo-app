@@ -1,29 +1,26 @@
-# TTRAIGO V24 — FIX MEMORIA INSUFICIENTE CON STORAGE
+# TTRAIGO V20 — REGISTRO Y LOGIN REAL
 
-## Qué corrige
-El error de memoria insuficiente en celular.
+## Qué hace
+- Quita demo.
+- Permite registro real de clientes sin foto obligatoria.
+- Mantiene foto obligatoria para chofer y acompañante.
+- Login real con cuentas existentes.
+- Muestra errores exactos en pantalla.
+- Conserva todo lo anterior.
 
-## Qué se hizo
-- NO cambia diseño.
-- NO cambia botones.
-- NO cambia el flujo visual.
-- Las fotos ya no se convierten a base64 pesado.
-- Las fotos se suben directo a Supabase Storage.
-- En la tabla se guarda la URL de la foto.
-
-## Supabase
+## PASO 1 — Supabase
 Ejecuta:
-sql_v24_fix_memoria_storage.sql
+sql_v20_registro_login_real.sql
 
-Esto crea:
-- bucket ttraigo-docs
-- columnas URL para fotos
-- políticas de Storage
+## PASO 2 — Supabase Auth
+Para que puedan entrar inmediatamente:
+Authentication → Providers → Email
+Desactiva “Confirm email” si está activo.
 
-## GitHub
+## PASO 3 — GitHub
 Sube:
 - login.html
-- sql_v24_fix_memoria_storage.sql
+- sql_v20_registro_login_real.sql
 
-## Resultado
-El registro ya no debe dar memoria insuficiente.
+## Probar
+https://ttraigo-app.vercel.app/login.html

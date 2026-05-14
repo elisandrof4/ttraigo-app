@@ -1,39 +1,57 @@
-Ttraigo Pack Completo V2: incluye registro con foto de perfil para todos y documentos completos de chofer.
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Tracking Realtime</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
+:root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#05070A;color:var(--text);overflow:hidden}a{text-decoration:none;color:inherit}
+#map{position:fixed;inset:0;z-index:1;background:#081016}.overlay{position:relative;z-index:5;min-height:100vh;pointer-events:none}
+.topbar{position:fixed;top:14px;left:14px;right:14px;z-index:20;display:flex;align-items:center;justify-content:space-between;pointer-events:auto}.brand{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:24px;background:rgba(5,7,10,.72);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 20px 70px rgba(0,0,0,.38)}.mark{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--green),#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:24px}
+.icon{width:44px;height:44px;border-radius:16px;border:1px solid var(--line);background:rgba(5,7,10,.72);color:#fff;display:grid;place-items:center;font-weight:900;backdrop-filter:blur(18px)}
+.sheet{position:fixed;left:10px;right:10px;bottom:10px;z-index:30;pointer-events:auto;border-radius:32px;padding:16px;background:rgba(8,13,20,.88);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(22px);box-shadow:0 -18px 70px rgba(0,0,0,.45)}
+.handle{width:48px;height:5px;border-radius:999px;background:rgba(255,255,255,.18);margin:0 auto 14px}.muted{color:var(--muted)}.input{width:100%;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.08);color:#fff;padding:15px;outline:none}.input::placeholder{color:#7C8795}select.input option{color:#111}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btn{border:0;border-radius:20px;padding:15px 16px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 40px rgba(22,196,127,.26)}.dark{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line)}.danger{background:rgba(239,68,68,.15);color:#FCA5A5;border:1px solid rgba(239,68,68,.28)}
+.badge{display:inline-flex;gap:7px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(22,196,127,.13);color:#8DF0C7;border:1px solid rgba(22,196,127,.25);font-size:12px;font-weight:900}.pulse{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 8px rgba(22,196,127,.12);animation:pulse 1.4s infinite}@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(22,196,127,0)}}
+.mini{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:20px;padding:12px}.mini b{display:block;font-size:14px}.mini span{font-size:12px;color:var(--muted)}.driver{display:flex;gap:12px;align-items:center;padding:13px;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid var(--line)}.avatar{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#1F2937,#0F172A);display:grid;place-items:center;border:1px solid var(--line)}
+.toast{position:fixed;top:76px;left:14px;right:14px;z-index:60;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}.hidden{display:none!important}.loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.16);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.leaflet-control-attribution{display:none!important}
+@media(min-width:900px){.sheet{left:50%;right:auto;width:430px;transform:translateX(-50%)}.topbar{left:28px;right:28px}}@media(max-width:430px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.sheet{border-radius:28px}}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#05070A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ttraigo">
+<link rel="icon" href="/ttraigo-icon.svg">
+<link rel="apple-touch-icon" href="/icon-512.svg">
 
-V3: el chofer queda bloqueado automáticamente si estado_verificacion no es aprobado o pre_aprobado. El admin puede aprobar/rechazar desde admin.html.
+</head><body><div id="map"></div><div id="toast" class="toast"></div><div class="overlay"><div class="topbar"><a class="brand" href="cliente.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted" style="font-size:12px">Tracking vivo</div></div></a><button class="icon" onclick="beep()">🔔</button></div><section class="sheet"><div class="handle"></div><div class="driver"><div class="avatar">🚗</div><div style="flex:1"><b id="tituloEstado">Buscando chofer</b><div id="subEstado" class="muted" style="font-size:13px">Escuchando actualizaciones en vivo.</div></div><div class="pulse"></div></div><div class="grid3" style="margin:14px 0"><div class="mini"><b id="eta">--</b><span>ETA</span></div><div class="mini"><b id="dist">--</b><span>Distancia</span></div><div class="mini"><b id="price">--</b><span>Total</span></div></div><div style="display:flex;gap:10px"><button class="btn dark" style="flex:1" onclick="recargar()">Actualizar</button><button class="btn danger" style="flex:1" onclick="cancelar()">Cancelar</button></div></section></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
+async function need(roles){let p=await profile();if(!p){location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
+async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
+function toast(msg){let t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
+function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}
+function haversineKm(a,b,c,d){const R=6371,toRad=x=>x*Math.PI/180;let x=toRad(c-a),y=toRad(d-b);let q=Math.sin(x/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q));}
 
+let sid=new URLSearchParams(location.search).get('servicio'),choferId=null,map=null,car=null,fromMarker=null,toMarker=null,service=null,lastPos=null;
+document.addEventListener('DOMContentLoaded',()=>{initMap();init();});
+function initMap(){map=L.map('map',{zoomControl:false}).setView([18.4861,-69.9312],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:''}).addTo(map);}
+async function init(){if(!sid){tituloEstado.textContent='No hay servicio';return;}await recargar();supabaseClient.channel('track-service-'+sid).on('postgres_changes',{event:'UPDATE',schema:'public',table:'servicios'},p=>{if(p.new.id===sid){service=p.new;choferId=p.new.chofer_id;render();beep();toast('Estado: '+p.new.estado);}}).subscribe();supabaseClient.channel('driver-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'disponibilidad_choferes'},p=>{if(choferId&&p.new.chofer_id===choferId)moveCar(Number(p.new.latitud),Number(p.new.longitud));}).subscribe();setInterval(pos,3500);}
+async function recargar(){let x=await supabaseClient.from('servicios').select('*').eq('id',sid).single();if(!x.data){tituloEstado.textContent='Servicio no encontrado';return;}service=x.data;choferId=service.chofer_id;render();paintPoints();pos();}
+function paintPoints(){if(service?.origen_lat&&service?.origen_lng&&!fromMarker)fromMarker=L.marker([service.origen_lat,service.origen_lng]).addTo(map).bindPopup('Origen');if(service?.destino_lat&&service?.destino_lng&&!toMarker)toMarker=L.marker([service.destino_lat,service.destino_lng]).addTo(map).bindPopup('Destino');}
+function render(){price.textContent=money(service.costo_total);dist.textContent=Number(service.distancia_km||0).toFixed(1)+' km';eta.textContent=service.eta_min?service.eta_min+' min':'--';let e=service.estado;if(e==='buscando_chofer'){tituloEstado.textContent='Buscando chofer cercano';subEstado.textContent='Estamos notificando a conductores disponibles.';}else if(e==='confirmado'){tituloEstado.textContent='Chofer confirmado';subEstado.textContent='Tu chofer va en camino.';}else if(e==='en_camino'){tituloEstado.textContent='Chofer en camino';subEstado.textContent='Mira el auto moverse en el mapa.';}else if(e==='en_progreso'){tituloEstado.textContent='Servicio en curso';subEstado.textContent='Viaje activo con seguimiento GPS.';}else if(e==='finalizado'){tituloEstado.textContent='Servicio finalizado';subEstado.textContent='Gracias por usar Ttraigo.';}else{tituloEstado.textContent='Estado: '+e;subEstado.textContent='Seguimiento activo';}}
+function moveCar(lat,lng){if(!lat||!lng)return;if(!car){car=L.marker([lat,lng]).addTo(map).bindPopup('Chofer Ttraigo');map.setView([lat,lng],15);lastPos={lat,lng};return;}car.setLatLng([lat,lng]);lastPos={lat,lng};map.panTo([lat,lng],{animate:true,duration:.8});}
+async function pos(){if(!choferId)return;let x=await supabaseClient.from('disponibilidad_choferes').select('*').eq('chofer_id',choferId).single();if(x.data)moveCar(Number(x.data.latitud),Number(x.data.longitud));}
+async function cancelar(){if(!sid)return;if(!confirm('¿Cancelar este servicio?'))return;await supabaseClient.from('servicios').update({estado:'cancelado'}).eq('id',sid);toast('Servicio cancelado');setTimeout(()=>location.href='cliente.html',1000);}
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+</script>
 
-V4 FASE 1 PREMIUM: rediseño elite de index.html y login.html, logo integrado, splash screen, estilo Uber Black, sin tocar Supabase ni romper módulos existentes.
-
-
-V5 FASE 2 PREMIUM: cliente.html y tracking.html rediseñados con mapa fullscreen, bottom sheet tipo Uber, botones flotantes, tracking premium, estados visuales y experiencia móvil más nativa. No requiere cambios en Supabase.
-
-
-V6 FASE 3 PREMIUM: rediseño completo de chofer.html, acompanante.html y admin.html. Panel chofer tipo Uber Driver, acompañante premium y admin corporativo. No requiere cambios en Supabase.
-
-
-V7 FASE 4 REALTIME: GPS en vivo, Supabase Realtime, matching automático por cercanía, ofertas a choferes, tracking vivo y movimiento del chofer. Incluye sql_fase4_realtime.sql para ejecutar en Supabase.
-
-
-V8 FASE 5 PWA: app instalable, manifest completo, iconos premium, service worker, pantalla offline y preparación para APK Android. No requiere cambios en Supabase.
-
-
-V9 FASE 6 APK ANDROID: estructura Capacitor para generar APK Android. No requiere Supabase. Requiere Node.js y Android Studio para compilar el APK.
-
-
-V10 FASE 7 PUSH FIREBASE: preparación completa para notificaciones push reales con Firebase Cloud Messaging, token en Supabase y endpoint de envío en Vercel. Requiere configurar Firebase.
-
-
-V11 FASE 8 ULTRA VISUAL: home millonaria con mockup de app, ruta animada, vehículo, ETA, cards flotantes y experiencia visual premium. No requiere Supabase.
-
-
-V12 FASE 9 PAGOS/WALLET: pantalla de pagos, comprobantes, tablas de pagos, facturas, wallet y preparación para pasarela real. Incluye SQL nuevo.
-
-
-V13 FIX MOCKUPS: rellena el panel visual vacío del login con mapa, ruta, vehículo animado y experiencia premium. No requiere Supabase.
-
-
-V14 LOGIN CORREGIDO SIN PÉRDIDAS: login completo reescrito para evitar panel vacío, conservando registro por rol, documentos, Supabase, PWA y Firebase.
-
-
-V15 FASE 10 ADMIN FINANCIERO: dashboard financiero ejecutivo con pagos, facturas, wallet, servicios, KPIs, CSV y realtime. No requiere SQL nuevo si Fase 9 está aplicada.
+</body></html>

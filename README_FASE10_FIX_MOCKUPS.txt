@@ -1,21 +1,21 @@
-# TTRAIGO PREMIUM V13 — FIX MOCKUPS VISUALES
+# TTRAIGO PREMIUM V11 — FASE 8 ULTRA VISUAL
 
-## Qué corrige
-- El cuadro vacío del login / crear cuenta.
-- Ahora ese panel muestra:
-  - mapa premium visual
-  - ruta animada
-  - auto en movimiento
-  - identidad verificada
-  - GPS / Foto / IA
-  - botón a experiencia premium
+## Qué cambia
+- El cuadro gris del home ahora se convierte en un mockup premium tipo app real.
+- Incluye mapa visual premium.
+- Ruta animada.
+- Auto moviéndose.
+- Chofer confirmado.
+- ETA visual.
+- Cards flotantes de seguridad y acompañamiento.
+- Look más “startup multimillonaria”.
 
-## Archivos principales para subir a GitHub
-- login.html
-- login-preview.html
+## Archivos principales a subir a GitHub
+- index.html
+- preview-ultra.html
 
 ## Supabase
 No requiere cambios en Supabase.
 
 ## Resultado
-Cuando el usuario entre a Crear cuenta / Login, el cuadro derecho ya no estará vacío.
+La pantalla principal deja de tener el cuadro vacío y ahora muestra una experiencia visual tipo Uber Black/Tesla/Cabify Premium.

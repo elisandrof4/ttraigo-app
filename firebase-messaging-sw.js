@@ -1,28 +1,80 @@
-// Firebase Messaging Service Worker - Ttraigo
-importScripts("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js");
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Cliente Realtime</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>
+:root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#05070A;color:var(--text);overflow:hidden}a{text-decoration:none;color:inherit}
+#map{position:fixed;inset:0;z-index:1;background:#081016}.overlay{position:relative;z-index:5;min-height:100vh;pointer-events:none}
+.topbar{position:fixed;top:14px;left:14px;right:14px;z-index:20;display:flex;align-items:center;justify-content:space-between;pointer-events:auto}.brand{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:24px;background:rgba(5,7,10,.72);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 20px 70px rgba(0,0,0,.38)}.mark{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--green),#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:24px}
+.icon{width:44px;height:44px;border-radius:16px;border:1px solid var(--line);background:rgba(5,7,10,.72);color:#fff;display:grid;place-items:center;font-weight:900;backdrop-filter:blur(18px)}
+.sheet{position:fixed;left:10px;right:10px;bottom:10px;z-index:30;pointer-events:auto;border-radius:32px;padding:16px;background:rgba(8,13,20,.88);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(22px);box-shadow:0 -18px 70px rgba(0,0,0,.45)}
+.handle{width:48px;height:5px;border-radius:999px;background:rgba(255,255,255,.18);margin:0 auto 14px}.muted{color:var(--muted)}.input{width:100%;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.08);color:#fff;padding:15px;outline:none}.input::placeholder{color:#7C8795}select.input option{color:#111}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btn{border:0;border-radius:20px;padding:15px 16px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 40px rgba(22,196,127,.26)}.dark{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line)}.danger{background:rgba(239,68,68,.15);color:#FCA5A5;border:1px solid rgba(239,68,68,.28)}
+.badge{display:inline-flex;gap:7px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(22,196,127,.13);color:#8DF0C7;border:1px solid rgba(22,196,127,.25);font-size:12px;font-weight:900}.pulse{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 8px rgba(22,196,127,.12);animation:pulse 1.4s infinite}@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(22,196,127,0)}}
+.mini{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:20px;padding:12px}.mini b{display:block;font-size:14px}.mini span{font-size:12px;color:var(--muted)}.driver{display:flex;gap:12px;align-items:center;padding:13px;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid var(--line)}.avatar{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#1F2937,#0F172A);display:grid;place-items:center;border:1px solid var(--line)}
+.toast{position:fixed;top:76px;left:14px;right:14px;z-index:60;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}.hidden{display:none!important}.loader{width:20px;height:20px;border:3px solid rgba(255,255,255,.16);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.leaflet-control-attribution{display:none!important}
+@media(min-width:900px){.sheet{left:50%;right:auto;width:430px;transform:translateX(-50%)}.topbar{left:28px;right:28px}}@media(max-width:430px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.sheet{border-radius:28px}}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#05070A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ttraigo">
+<link rel="icon" href="/ttraigo-icon.svg">
+<link rel="apple-touch-icon" href="/icon-512.svg">
 
-// IMPORTANTE: reemplaza con tu configuración real también aquí.
-firebase.initializeApp({
-  apiKey: "REEMPLAZAR_API_KEY",
-  authDomain: "REEMPLAZAR.firebaseapp.com",
-  projectId: "REEMPLAZAR_PROJECT_ID",
-  storageBucket: "REEMPLAZAR.appspot.com",
-  messagingSenderId: "REEMPLAZAR_SENDER_ID",
-  appId: "REEMPLAZAR_APP_ID"
-});
 
-const messaging = firebase.messaging();
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="/push-notifications.js"></script>
 
-messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title || "Ttraigo";
-  const options = {
-    body: payload.notification?.body || "Nueva notificación",
-    icon: "/icon-192.svg",
-    badge: "/icon-192.svg",
-    vibrate: [200, 100, 200],
-    data: payload.data || {}
-  };
 
-  self.registration.showNotification(title, options);
-});
+<script>
+window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
+</script>
+
+</head><body><div id="map"></div><div id="toast" class="toast"></div><div class="overlay"><div class="topbar"><div class="brand"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted" style="font-size:12px">Realtime cliente</div></div></div><button class="icon" onclick="centerMe()">⌖</button></div><section class="sheet"><div class="handle"></div><div class="badge"><span class="pulse"></span> GPS + búsqueda automática</div><h1 style="margin:14px 0 6px;font-size:27px">¿A dónde vamos?</h1><p class="muted" style="margin-top:0">Usa tu ubicación, crea el servicio y envía alerta a choferes en vivo.</p><div class="grid2"><input id="origen" class="input" placeholder="Origen"><input id="destino" class="input" placeholder="Destino"></div><div class="grid2" style="margin-top:10px"><select id="tipoDestino" class="input"><option value="salud">Salud / clínica</option><option value="compras">Compras</option><option value="recreacion">Recreación</option><option value="visita_privada">Visita privada ⚠️</option></select><select id="metodoPago" class="input"><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option></select></div><div class="grid3" style="margin:14px 0"><label class="mini"><input id="acompanante" type="checkbox"> <b>Acompañante</b><span>Asistencia</span></label><label class="mini"><input id="silla" type="checkbox"> <b>Silla ruedas</b><span>Soporte</span></label><label class="mini"><input id="reserva" type="checkbox"> <b>Rápido</b><span>Ahora</span></label></div><button id="btnPedir" class="btn primary" style="width:100%;font-size:16px" onclick="pedir()"><span id="btnText">Pedir servicio realtime</span></button><p id="estado" class="muted" style="font-weight:800;text-align:center"></p></section></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
+async function need(roles){let p=await profile();if(!p){ if(window.TTRAIGO_DEMO) return window.TTRAIGO_DEMO_PROFILE; location.href="login.html";return null}if(roles&&!roles.includes(p.rol)){alert("Sin permiso");location.href="index.html";return null}return p}
+async function logout(){await supabaseClient.auth.signOut();location.href="login.html"}
+function toast(msg){let t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
+function beep(){try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{})}catch(e){}}
+function haversineKm(a,b,c,d){const R=6371,toRad=x=>x*Math.PI/180;let x=toRad(c-a),y=toRad(d-b);let q=Math.sin(x/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q));}
+
+let pr=null,map=null,myMarker=null,myPos=null;
+document.addEventListener('DOMContentLoaded',async()=>{pr=await need(['cliente','admin']);initMap();});
+function initMap(){map=L.map('map',{zoomControl:false}).setView([18.4861,-69.9312],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:''}).addTo(map);if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{myPos={lat:pos.coords.latitude,lng:pos.coords.longitude};map.setView([myPos.lat,myPos.lng],15);myMarker=L.marker([myPos.lat,myPos.lng]).addTo(map).bindPopup('Tu ubicación');},()=>toast('No se pudo obtener GPS'))}}
+function centerMe(){if(myPos)map.setView([myPos.lat,myPos.lng],16);else toast('GPS no disponible todavía')}
+async function geocode(q){try{let r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q+', República Dominicana'));let j=await r.json();if(j&&j[0])return {lat:Number(j[0].lat),lng:Number(j[0].lon)};}catch(e){}return null;}
+async function buscarChoferesCercanos(lat,lng,servicioId){let x=await supabaseClient.from('disponibilidad_choferes').select('*').eq('disponible',true).order('actualizado_en',{ascending:false}).limit(20);let choferes=(x.data||[]).filter(c=>c.latitud&&c.longitud).map(c=>({...c,km:haversineKm(lat,lng,Number(c.latitud),Number(c.longitud))})).sort((a,b)=>a.km-b.km).slice(0,5);if(choferes.length){await supabaseClient.from('ofertas_servicio').insert(choferes.map(c=>({servicio_id:servicioId,chofer_id:c.chofer_id,estado:'pendiente'})));toast('Servicio enviado a '+choferes.length+' choferes cercanos');}else toast('Buscando choferes disponibles...');}
+async function pedir(){if(!origen.value||!destino.value)return toast('Completa origen y destino');btnPedir.disabled=true;btnText.innerHTML='<span class="loader"></span> Creando y notificando...';try{let origenCoord=myPos||await geocode(origen.value);let destinoCoord=await geocode(destino.value);let km=destinoCoord&&origenCoord?haversineKm(origenCoord.lat,origenCoord.lng,destinoCoord.lat,destinoCoord.lng):(5+Math.random()*8);let total=300+km*55+(acompanante.checked?1000:0)+(silla.checked?250:0);let payload={cliente_id:pr.id,origen:origen.value,destino:destino.value,origen_lat:origenCoord?.lat||null,origen_lng:origenCoord?.lng||null,destino_lat:destinoCoord?.lat||null,destino_lng:destinoCoord?.lng||null,distancia_km:km,eta_min:Math.max(5,Math.round(km*3)),tipo_servicio:acompanante.checked?'con_acompanante':'transporte',estado:'buscando_chofer',usa_silla_ruedas:silla.checked,costo_total:total,anticipo:total*.5,metodo_pago:metodoPago.value,tipo_destino:tipoDestino.value,matching_modo:'automatico',pagado:false};let x=await supabaseClient.from('servicios').insert([payload]).select().single();if(x.error)throw x.error;if(origenCoord)await buscarChoferesCercanos(origenCoord.lat,origenCoord.lng,x.data.id);location.href='tracking.html?servicio='+x.data.id;}catch(e){toast(e.message||'Error');btnPedir.disabled=false;btnText.textContent='Pedir servicio realtime';}}
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+</script>
+
+
+<button id="pushEnableBtn" onclick="ttraigoInitPush()" style="position:fixed;right:14px;bottom:82px;z-index:9998;border:0;border-radius:18px;background:#16C47F;color:#06100C;font-weight:900;padding:12px 14px;box-shadow:0 18px 42px rgba(22,196,127,.25)">
+🔔 Activar alertas
+</button>
+<script>
+setTimeout(() => {
+  if (Notification && Notification.permission === "granted") {
+    const b = document.getElementById("pushEnableBtn");
+    if (b) b.style.display = "none";
+    ttraigoInitPush();
+  }
+}, 1200);
+</script>
+
+<a href="seguridad.html" style="position:fixed;left:14px;bottom:92px;z-index:9999;background:#EF4444;color:#fff;border-radius:999px;padding:13px 16px;font-weight:900;text-decoration:none;box-shadow:0 18px 42px rgba(239,68,68,.28)">SOS</a><a href="viajes-programados.html" style="position:fixed;right:14px;bottom:150px;z-index:9999;background:#D8B76A;color:#111;border-radius:999px;padding:13px 16px;font-weight:900;text-decoration:none">Reservar</a></body></html>

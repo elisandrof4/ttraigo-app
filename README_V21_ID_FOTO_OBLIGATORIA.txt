@@ -1,24 +1,30 @@
-# TTRAIGO V21 — FOTO DE CÉDULA / ID OBLIGATORIA
+# TTRAIGO V18 — MODO DEMO + REGISTRO SUAVE
 
-## Qué cambia
-- Todos los registros deben subir foto de cédula o ID.
-- El usuario puede tomar la foto con la cámara del celular o subirla desde galería.
-- Cliente: foto de perfil opcional.
-- Chofer: foto de perfil y documentos siguen obligatorios.
-- Acompañante: foto de perfil obligatoria.
-- No se pierde nada anterior.
+## Qué resuelve
+- Puedes ver la app completa sin registrarte usando el botón Demo.
+- Cliente ya no está obligado a subir foto.
+- Chofer y acompañante mantienen validación más fuerte.
+- Conserva todas las fases anteriores.
+- No elimina datos.
 
 ## Supabase
 Ejecuta:
-sql_v21_id_foto_obligatoria.sql
+sql_v18_registro_suave_demo.sql
 
 ## GitHub
-Sube:
+Sube todo el ZIP o al menos:
 - login.html
-- sql_v21_id_foto_obligatoria.sql
+- login-demo.html
+- cliente.html
+- chofer.html
+- tracking.html
+- admin.html
+- seguridad.html
+- pagos.html
+- sql_v18_registro_suave_demo.sql
 
-## Nota móvil
-El campo usa:
-accept="image/*" capture="environment"
-
-En celular permite cámara o galería según navegador/dispositivo.
+## URLs útiles
+- https://ttraigo-app.vercel.app/login.html
+- https://ttraigo-app.vercel.app/login-demo.html
+- https://ttraigo-app.vercel.app/cliente.html?demo=1
+- https://ttraigo-app.vercel.app/admin.html?demo=1

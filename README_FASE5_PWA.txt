@@ -1,37 +1,20 @@
-# TTRAIGO FASE 5 — PWA / APP INSTALABLE
+const CACHE_NAME = "ttraigo-premium-v8-pwa";
+const ASSETS = ["/","/index.html","/login.html","/cliente.html","/chofer.html","/tracking.html","/acompanante.html","/offline.html","/manifest.json","/ttraigo-icon.svg","/icon-192.svg","/icon-512.svg","/maskable-icon.svg"];
 
-## Qué incluye
-- manifest.json completo.
-- iconos premium.
-- service worker.
-- pantalla offline.
-- instalación desde celular.
-- modo pantalla completa.
-- nombre corto Ttraigo.
-- preparación para APK Android.
+self.addEventListener("install", event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
 
-## Archivos que debes subir a GitHub
-- manifest.json
-- sw.js
-- offline.html
-- ttraigo-icon.svg
-- icon-192.svg
-- icon-512.svg
-- maskable-icon.svg
-- index.html
-- login.html
-- cliente.html
-- chofer.html
-- tracking.html
-- acompanante.html
-- admin.html
-- administrador.html
+self.addEventListener("activate", event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null))).then(() => self.clients.claim()));
+});
 
-## Supabase
-No requiere cambios en Supabase.
-
-## Cómo probar en celular
-1. Abre https://ttraigo-app.vercel.app
-2. En Chrome toca los 3 puntos.
-3. Toca “Agregar a pantalla principal” o “Instalar aplicación”.
-4. Se instalará como app con icono.
+self.addEventListener("fetch", event => {
+  const req = event.request;
+  if (req.method !== "GET") return;
+  event.respondWith(fetch(req).then(res => {
+    const clone = res.clone();
+    caches.open(CACHE_NAME).then(cache => { if (req.url.startsWith(self.location.origin)) cache.put(req, clone); });
+    return res;
+  }).catch(() => caches.match(req).then(cached => cached || caches.match("/offline.html"))));
+});

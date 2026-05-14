@@ -1,68 +1,27 @@
-# TTRAIGO PREMIUM V10 — FASE 7 PUSH FIREBASE
+# TTRAIGO PREMIUM V14 — LOGIN CORREGIDO SIN PÉRDIDAS
 
-## Qué incluye
-- Preparación para notificaciones push reales.
-- Firebase Cloud Messaging para PWA/app.
-- `firebase-config.js`
-- `firebase-messaging-sw.js`
-- `push-notifications.js`
-- Tabla `push_tokens`
-- Tabla `notificaciones`
-- Botón “Activar alertas”
-- Registro de token del usuario en Supabase.
-- Ejemplo de endpoint Vercel `/api/send-push`.
+## Qué se corrigió
+El panel derecho del login / crear cuenta ya no queda vacío.
 
-## Archivos nuevos
-- sql_fase7_push_firebase.sql
-- firebase-config.js
-- firebase-messaging-sw.js
-- push-notifications.js
-- api/send-push.js
-- README_FASE7_PUSH_FIREBASE.txt
+## Qué conserva
+- Registro cliente.
+- Registro chofer con licencia, vehículo, seguro y matrícula/carta de ruta.
+- Registro acompañante.
+- Login por rol.
+- Supabase conectado.
+- PWA / manifest / service worker.
+- Firebase scripts.
+- Todo lo anterior del pack.
 
-## PASO 1 — Supabase
-Ejecuta en Supabase SQL Editor:
+## Archivos principales para subir
+- login.html
+- login-preview.html
 
-sql_fase7_push_firebase.sql
+## Recomendación
+Puedes subir el ZIP completo para no perder nada.
+Si solo quieres corregir el panel vacío, sube:
+- login.html
+- login-preview.html
 
-## PASO 2 — Firebase
-1. Entra a Firebase Console.
-2. Crea proyecto `Ttraigo`.
-3. Agrega una app Web.
-4. Copia firebaseConfig.
-5. Pega esos datos en:
-   - firebase-config.js
-   - firebase-messaging-sw.js
-
-## PASO 3 — VAPID KEY
-En Firebase:
-Project Settings → Cloud Messaging → Web Push certificates
-
-Genera o copia tu VAPID KEY.
-
-Pégala en:
-
-firebase-config.js
-
-## PASO 4 — GitHub
-Sube todos los archivos del ZIP a GitHub.
-
-## PASO 5 — Vercel
-Agrega variable de entorno si usarás endpoint de envío:
-
-FIREBASE_SERVER_KEY
-
-## Nota importante
-Firebase Legacy Server Key está siendo reemplazada por HTTP v1.
-Para producción seria conviene usar Firebase Admin SDK con service account.
-Este pack deja la fase lista para arrancar.
-
-## Resultado
-El usuario puede tocar “Activar alertas”, aceptar permiso del navegador y su token queda guardado en Supabase.
-
-## Siguiente fase
-FASE 8:
-- pagos reales
-- comprobantes
-- Stripe/Azul/CardNet
-- wallet interna
+## Supabase
+No requiere SQL nuevo.

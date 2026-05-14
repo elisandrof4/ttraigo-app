@@ -1,36 +1,23 @@
-# TTRAIGO PREMIUM V12 — FASE 9 PAGOS Y WALLET
+# TTRAIGO PREMIUM V9 — FASE 6 APK ANDROID
 
-## Qué incluye
-- Pantalla `pagos.html`.
-- Resumen del servicio.
-- Métodos: efectivo, transferencia, tarjeta y wallet.
-- Registro de pagos.
-- Generación de comprobante.
-- Tablas de wallet, pagos, movimientos y facturas.
-- Preparación para pasarela real: Stripe, Azul, CardNet o PayPal.
-- Botón de pago agregado al tracking.
+## Archivos nuevos principales
+- android_apk_builder/package.json
+- android_apk_builder/capacitor.config.ts
+- android_apk_builder/www/
+- android_apk_builder/README_APK_ANDROID.txt
+- android_apk_builder/ANDROID_PERMISSIONS_NOTES.txt
 
-## PASO 1 — Supabase
-Ejecuta una sola vez:
+## ¿Esto se sube a GitHub?
+Sí, puedes subir todo el contenido del ZIP a GitHub.
 
-sql_fase9_pagos_wallet.sql
+## ¿Esto requiere Supabase?
+No. Esta fase no requiere SQL nuevo.
 
-## PASO 2 — GitHub
-Sube todo el ZIP a GitHub.
+## ¿Qué hace esta fase?
+Prepara Ttraigo para crear APK Android usando Capacitor.
 
-Archivos importantes:
-- pagos.html
-- tracking.html
-- sql_fase9_pagos_wallet.sql
-- README_FASE9_PAGOS_WALLET.txt
+## ¿Puedo instalarlo ya?
+Para instalar APK real necesitas generar el APK con Android Studio siguiendo las instrucciones del README_APK_ANDROID.txt.
 
-## PASO 3 — Probar
-Abre un servicio activo y entra a:
-
-https://ttraigo-app.vercel.app/pagos.html?servicio=ID_DEL_SERVICIO
-
-o desde tracking presiona “Pagar”.
-
-## Nota
-Esta fase crea la estructura de pagos y comprobantes.
-La pasarela real se conecta en la próxima fase.
+## Siguiente fase
+FASE 7: Push notifications reales con Firebase.

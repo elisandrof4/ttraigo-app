@@ -1,29 +1,43 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Pagos Premium</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#05070A"><style>
-:root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 10%,rgba(22,196,127,.14),transparent 30%),radial-gradient(circle at 90% 85%,rgba(37,99,235,.16),transparent 32%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}a{text-decoration:none;color:inherit}
-.shell{max-width:1120px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.logo{display:flex;gap:12px;align-items:center}.mark{width:50px;height:50px;border-radius:18px;background:linear-gradient(135deg,var(--green),#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:26px;box-shadow:0 22px 60px rgba(22,196,127,.25)}
-.glass{background:rgba(8,13,20,.78);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 24px 80px rgba(0,0,0,.34);border-radius:30px;padding:20px}.muted{color:var(--muted)}
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mini{border:1px solid var(--line);background:rgba(255,255,255,.065);border-radius:22px;padding:15px}.mini b{font-size:22px}.btn{border:0;border-radius:20px;padding:15px 18px;font-weight:900;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:8px}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}.input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:18px;padding:14px;color:#fff;outline:none}.input::placeholder{color:#7C8795}select.input option{color:#111}.pay-method{display:grid;gap:10px;margin:14px 0}.method{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:22px;padding:15px;display:flex;align-items:center;gap:12px;cursor:pointer}.method.active{border-color:rgba(22,196,127,.75);box-shadow:0 0 0 4px rgba(22,196,127,.1)}.icon{width:44px;height:44px;border-radius:16px;background:rgba(255,255,255,.08);display:grid;place-items:center}.row{display:flex;justify-content:space-between;gap:10px;margin:10px 0}.line{height:1px;background:var(--line);margin:16px 0}.toast{position:fixed;top:16px;left:16px;right:16px;z-index:50;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}.hidden{display:none!important}
-@media(max-width:850px){.shell{padding:14px}.grid,.grid3{grid-template-columns:1fr}.top{align-items:flex-start}.btn{width:100%}}
-</style>
-<script>
-window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
-window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
-</script>
-
-</head><body><div id="toast" class="toast"></div><main class="shell"><div class="top"><a class="logo" href="index.html"><div class="mark">T</div><div><b style="font-size:23px">Ttraigo Pay</b><div class="muted">Pagos, wallet y comprobantes</div></div></a><a class="btn dark" href="cliente.html">Volver</a></div><section class="grid"><div class="glass"><h1 style="font-size:38px;margin:0 0 8px">Finalizar pago</h1><p class="muted">Confirma el método de pago del servicio. Esta fase deja lista la estructura para integrar pasarela real.</p><div class="grid3" style="margin:18px 0"><div class="mini"><span class="muted">Subtotal</span><br><b id="subtotal">RD$0</b></div><div class="mini"><span class="muted">Comisión</span><br><b id="comision">RD$0</b></div><div class="mini"><span class="muted">Total</span><br><b id="total">RD$0</b></div></div><h3>Método de pago</h3><div class="pay-method"><div class="method active" data-method="efectivo" onclick="selectMethod(this)"><div class="icon">💵</div><div><b>Efectivo</b><div class="muted">Pago al finalizar el servicio</div></div></div><div class="method" data-method="transferencia" onclick="selectMethod(this)"><div class="icon">🏦</div><div><b>Transferencia</b><div class="muted">Referencia bancaria manual</div></div></div><div class="method" data-method="tarjeta" onclick="selectMethod(this)"><div class="icon">💳</div><div><b>Tarjeta</b><div class="muted">Preparado para Stripe/Azul/CardNet</div></div></div><div class="method" data-method="wallet" onclick="selectMethod(this)"><div class="icon">👛</div><div><b>Wallet Ttraigo</b><div class="muted">Saldo interno futuro</div></div></div></div><input id="referencia" class="input" placeholder="Referencia o nota del pago (opcional)"><button class="btn primary" style="width:100%;margin-top:14px" onclick="confirmarPago()">Confirmar pago</button><p id="msg" class="muted"></p></div><div class="glass"><h2 style="margin-top:0">Resumen del servicio</h2><div class="row"><span class="muted">Servicio</span><b id="sidText">--</b></div><div class="row"><span class="muted">Estado</span><b id="estado">--</b></div><div class="row"><span class="muted">Origen</span><b id="origen">--</b></div><div class="row"><span class="muted">Destino</span><b id="destino">--</b></div><div class="line"></div><div class="row"><span class="muted">Distancia</span><b id="km">--</b></div><div class="row"><span class="muted">Método actual</span><b id="metodo">--</b></div><div class="line"></div><h3>Comprobante</h3><div id="comprobante" class="mini"><div class="muted">Se generará al confirmar el pago.</div></div></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
-const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
-const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
-async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function need(){let p=await profile();if(!p){ if(window.TTRAIGO_DEMO) return window.TTRAIGO_DEMO_PROFILE; location.href="login.html";return null}return p}
-function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
-function ref(){return 'TTG-'+Date.now().toString().slice(-8)+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
-
-let pr=null,service=null,selected='efectivo',sid=new URLSearchParams(location.search).get('servicio');
-document.addEventListener('DOMContentLoaded',async()=>{pr=await need();await cargar();});
-function selectMethod(el){document.querySelectorAll('.method').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.method;}
-async function cargar(){if(!sid){toast('No hay servicio seleccionado');return;}let x=await supabaseClient.from('servicios').select('*').eq('id',sid).single();if(x.error||!x.data){toast('Servicio no encontrado');return;}service=x.data;let sub=Number(service.costo_total||service.total_final||0);let com=sub*.10;let imp=0;let tot=sub+com+imp;subtotal.textContent=money(sub);comision.textContent=money(com);total.textContent=money(tot);sidText.textContent=sid.slice(0,8);estado.textContent=service.estado||'--';origen.textContent=service.origen||'--';destino.textContent=service.destino||'--';km.textContent=Number(service.distancia_km||0).toFixed(1)+' km';metodo.textContent=service.metodo_pago||'--';}
-async function confirmarPago(){if(!service)return;let sub=Number(service.costo_total||0);let com=sub*.10;let tot=sub+com;let referencia=referencia.value||ref();let p=await supabaseClient.from('pagos').insert([{servicio_id:sid,usuario_id:pr.id,metodo:selected,monto:tot,moneda:'DOP',estado:'confirmado',referencia,proveedor:selected==='tarjeta'?'pasarela_pendiente':'manual',confirmado_en:new Date().toISOString()}]).select().single();if(p.error){toast(p.error.message);return;}await supabaseClient.from('servicios').update({estado_pago:'pagado',referencia_pago:referencia,metodo_pago_final:selected,pagado_en:new Date().toISOString(),subtotal:sub,comision_plataforma:com,total_final:tot}).eq('id',sid);let f=await supabaseClient.from('facturas').insert([{servicio_id:sid,usuario_id:pr.id,numero:referencia,subtotal:sub,impuesto:0,total:tot,moneda:'DOP',estado:'emitida'}]).select().single();comprobante.innerHTML=`<b>Comprobante emitido</b><div class="muted">No. ${referencia}</div><div style="margin-top:8px">Total: <b>${money(tot)}</b></div>`;toast('Pago confirmado y comprobante generado');msg.textContent='Pago registrado correctamente.';}
-</script></body></html>
+{
+  "name": "Ttraigo - Movilidad Asistida",
+  "short_name": "Ttraigo",
+  "description": "Movilidad asistida premium con choferes, acompañantes y seguimiento en vivo.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05070A",
+  "theme_color": "#05070A",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pedir servicio",
+      "short_name": "Pedir",
+      "url": "/cliente.html"
+    },
+    {
+      "name": "Chofer",
+      "short_name": "Chofer",
+      "url": "/chofer.html"
+    }
+  ]
+}

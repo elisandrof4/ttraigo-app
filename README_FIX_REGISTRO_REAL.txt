@@ -1,21 +1,34 @@
-# TTRAIGO V16 — FIX REGISTRO REAL
+# TTRAIGO PREMIUM V15 — FASE 10 ADMIN FINANCIERO
 
-## Qué corrige
-- El registro ahora muestra mensajes reales.
-- Comprime fotos antes de guardarlas.
-- Guarda usuario con upsert.
-- Mantiene documentos de chofer.
-- Mantiene login por rol.
-- No borra ninguna fase anterior.
+## Qué incluye
+- Nuevo panel `admin-finanzas.html`.
+- KPIs financieros:
+  - ingresos confirmados
+  - pagos pendientes
+  - comisión de plataforma
+  - facturas emitidas
+- Vista de pagos.
+- Vista de facturas.
+- Vista de wallet.
+- Vista de servicios.
+- Filtro de búsqueda.
+- Exportación CSV.
+- Realtime para pagos, facturas y servicios.
+- Botón financiero agregado a admin.html y administrador.html.
 
 ## Supabase
-Ejecuta:
-sql_fix_registro_real.sql
+No requiere SQL nuevo si ya corriste Fase 9.
+Usa tablas:
+- pagos
+- facturas
+- wallet_usuarios
+- servicios
 
 ## GitHub
-Sube:
-- login.html
-- login-fix-registro.html
-- sql_fix_registro_real.sql
+Sube todo el ZIP o al menos:
+- admin-finanzas.html
+- admin.html
+- administrador.html
 
-No requiere tocar Vercel manualmente.
+## URL para ver
+https://ttraigo-app.vercel.app/admin-finanzas.html

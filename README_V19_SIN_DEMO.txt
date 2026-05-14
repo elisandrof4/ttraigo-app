@@ -1,14 +1,26 @@
-# TTRAIGO V19 — SIN MODO DEMO
+# TTRAIGO PREMIUM V17 — FASE 11 SEGURIDAD SOS
 
-## Cambios
-- Eliminada la pestaña Demo.
-- La aplicación vuelve a verse completamente profesional.
-- Se mantiene el registro suave para clientes.
-- Se conservan todas las fases anteriores.
-- No se borran datos.
+## Incluye
+- seguridad.html
+- tracking-familiar.html
+- admin-sos.html
+- Botón SOS en cliente/tracking
+- Contacto de emergencia
+- Enlace de tracking familiar
+- Alertas SOS en Supabase
+- Centro admin SOS realtime
 
-## Subir a GitHub
-- login.html
+## Supabase
+Ejecuta:
+sql_fase11_seguridad_sos.sql
 
-## Resultado
-La app ya no mostrará modo demo ni botones de demostración.
+## GitHub
+Sube todo el ZIP o al menos:
+- seguridad.html
+- tracking-familiar.html
+- admin-sos.html
+- cliente.html
+- tracking.html
+- admin.html
+- administrador.html
+- sql_fase11_seguridad_sos.sql
