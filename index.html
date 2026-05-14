@@ -1,82 +1,149 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ttraigo - Movilidad Asistida Premium</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#05070A">
-  <link rel="icon" href="/ttraigo-icon.svg">
-  <style>
-    :root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--gold:#D8B76A;--line:rgba(255,255,255,.13)}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 12% 9%,rgba(22,196,127,.22),transparent 32%),radial-gradient(circle at 90% 88%,rgba(37,99,235,.18),transparent 38%),#05070A;overflow-x:hidden}
-    a{text-decoration:none;color:inherit}.page{max-width:1280px;margin:auto;padding:34px 28px 60px}
-    .nav{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:42px}.brand{display:flex;align-items:center;gap:14px}
-    .mark{width:58px;height:58px;border-radius:22px;background:linear-gradient(135deg,#16C47F,#0B8F65);display:grid;place-items:center;color:#06100C;font-size:31px;font-weight:900;box-shadow:0 28px 70px rgba(22,196,127,.26)}
-    .brand b{font-size:25px;display:block}.brand span{color:#B8C4D4;font-size:14px}
-    .role-pill{border:1px solid var(--line);background:rgba(255,255,255,.08);backdrop-filter:blur(18px);border-radius:999px;padding:13px 18px;color:#D1D5DB;font-weight:800}
-    .hero{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
-    .tag{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(22,196,127,.28);background:rgba(22,196,127,.12);color:#8DF0C7;border-radius:999px;padding:9px 14px;font-weight:900}
-    .dot{width:10px;height:10px;border-radius:50%;background:#16C47F;box-shadow:0 0 0 8px rgba(22,196,127,.12)}
-    h1{font-size:76px;line-height:.98;letter-spacing:-3px;margin:28px 0 22px}h1 span{color:var(--green)}
-    .lead{font-size:20px;line-height:1.65;color:#C8D2E2;max-width:650px}.actions{display:flex;gap:14px;flex-wrap:wrap;margin:30px 0}
-    .btn{border:0;border-radius:20px;padding:17px 24px;font-weight:900;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:10px}
-    .primary{background:#16C47F;color:#06100C;box-shadow:0 24px 60px rgba(22,196,127,.25)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}.card{border:1px solid var(--line);background:rgba(255,255,255,.065);border-radius:24px;padding:18px;backdrop-filter:blur(18px)}
-    .card b{display:block;margin-bottom:10px;font-size:17px}.card p{margin:0;color:#AAB4C0;line-height:1.45}.phone-wrap{position:relative;min-height:660px}
-    .phone{position:absolute;inset:0;margin:auto;width:min(430px,100%);height:640px;border-radius:48px;border:14px solid rgba(255,255,255,.12);background:#071016;overflow:hidden;box-shadow:0 45px 130px rgba(0,0,0,.55)}
-    .map{position:absolute;inset:0;background:linear-gradient(38deg,transparent 42%,rgba(22,196,127,.32) 43%,rgba(22,196,127,.32) 45%,transparent 46%),linear-gradient(142deg,transparent 37%,rgba(255,255,255,.12) 38%,rgba(255,255,255,.12) 40%,transparent 41%),linear-gradient(90deg,transparent 50%,rgba(37,99,235,.25) 51%,transparent 52%),radial-gradient(circle at 30% 30%,rgba(22,196,127,.28),transparent 24%),radial-gradient(circle at 72% 72%,rgba(37,99,235,.26),transparent 30%),#0B1218}
-    .route{position:absolute;left:78px;top:116px;width:240px;height:350px;border:5px solid rgba(22,196,127,.86);border-left:0;border-bottom:0;border-radius:0 130px 0 0;filter:drop-shadow(0 0 18px rgba(22,196,127,.72))}
-    .pin{position:absolute;left:62px;top:92px;width:58px;height:58px;border-radius:24px;background:#16C47F;display:grid;place-items:center;color:#06100C;font-size:30px;box-shadow:0 0 0 12px rgba(22,196,127,.14)}
-    .car{position:absolute;left:255px;top:330px;width:56px;height:56px;border-radius:20px;background:#fff;display:grid;place-items:center;font-size:28px;color:#06100C;animation:drive 4.8s ease-in-out infinite;box-shadow:0 18px 50px rgba(255,255,255,.24)}
-    @keyframes drive{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-72px)}}.topline{position:absolute;left:22px;right:22px;top:22px;display:flex;justify-content:space-between;align-items:center}
-    .mini-brand{display:flex;gap:10px;align-items:center;background:rgba(5,7,10,.72);border:1px solid var(--line);border-radius:22px;padding:10px 12px;backdrop-filter:blur(18px);font-weight:900}
-    .mini-mark{width:38px;height:38px;border-radius:15px;background:#16C47F;color:#06100C;display:grid;place-items:center}.live{font-size:12px;font-weight:900;color:#8DF0C7;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.28);padding:11px 14px;border-radius:999px}
-    .driver-card{position:absolute;left:16px;right:16px;bottom:16px;border-radius:30px;background:rgba(8,13,20,.88);border:1px solid rgba(255,255,255,.16);padding:18px;backdrop-filter:blur(22px)}
-    .driver-row{display:flex;align-items:center;gap:13px}.avatar{width:58px;height:58px;border-radius:21px;background:#1F2937;display:grid;place-items:center;font-size:29px;border:1px solid var(--line)}
-    .pulse{margin-left:auto;width:10px;height:10px;border-radius:50%;background:#16C47F;box-shadow:0 0 0 9px rgba(22,196,127,.12);animation:pulse 1.4s infinite}@keyframes pulse{50%{box-shadow:0 0 0 18px rgba(22,196,127,0)}}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.stat{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:18px;padding:12px}.stat b{display:block;font-size:17px}.stat span{font-size:12px;color:#AAB4C0}
-    .float-card{position:absolute;right:-44px;top:220px;width:240px;border-radius:26px;background:rgba(8,13,20,.88);border:1px solid rgba(255,255,255,.16);padding:18px;backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(0,0,0,.35)}
-    .float-card.bottom{left:-78px;right:auto;top:auto;bottom:118px}
-    @media(max-width:1000px){.hero{grid-template-columns:1fr}.phone-wrap{min-height:650px}h1{font-size:58px}.float-card{right:10px}.float-card.bottom{left:10px}}
-    @media(max-width:560px){.page{padding:22px 16px}.role-pill{display:none}h1{font-size:46px}.cards{grid-template-columns:1fr}.phone{height:580px}.phone-wrap{min-height:590px}.float-card{display:none}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo - Movilidad Asistida Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#05070A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ttraigo">
+<link rel="icon" href="/ttraigo-icon.svg">
+<link rel="apple-touch-icon" href="/icon-512.svg">
+<style>
+:root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--gold:#D8B76A;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 15% 12%,rgba(22,196,127,.22),transparent 30%),radial-gradient(circle at 85% 90%,rgba(37,99,235,.18),transparent 34%),#05070A;color:var(--text);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+.shell{max-width:1280px;margin:auto;padding:28px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+.logo{display:flex;align-items:center;gap:12px}
+.mark{width:58px;height:58px;border-radius:21px;background:linear-gradient(135deg,#16C47F,#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:30px;box-shadow:0 24px 60px rgba(22,196,127,.28)}
+.logo b{font-size:23px}.logo span{display:block;color:#B8C4D4;font-size:13px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.07);backdrop-filter:blur(18px);border-radius:999px;padding:12px 17px;color:#C4CBD8;font-weight:700}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;min-height:78vh}
+.kicker{display:inline-flex;gap:8px;align-items:center;padding:11px 15px;border-radius:999px;background:rgba(22,196,127,.13);color:#8DF0C7;border:1px solid rgba(22,196,127,.26);font-weight:900}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 8px rgba(22,196,127,.12);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(22,196,127,0)}}
+h1{font-size:clamp(48px,7vw,92px);line-height:.92;letter-spacing:-4px;margin:24px 0 20px}
+h1 span{color:var(--green)}
+.lead{font-size:20px;line-height:1.65;color:#C2CCE0;max-width:650px}
+.actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:20px;padding:17px 22px;font-weight:900;transition:.25s ease}
+.btn:hover{transform:translateY(-2px)}
+.primary{background:var(--green);color:#06100C;box-shadow:0 22px 50px rgba(22,196,127,.28)}
+.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}
+.feature{border:1px solid var(--line);background:rgba(255,255,255,.065);backdrop-filter:blur(18px);border-radius:26px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.feature b{display:block;margin-bottom:8px;font-size:17px}.feature p{margin:0;color:#B8C4D4;line-height:1.55}
+.stage{position:relative;min-height:700px}
+.phone{position:absolute;right:20px;top:0;width:min(470px,92vw);height:690px;border-radius:48px;padding:14px;background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);box-shadow:0 44px 130px rgba(0,0,0,.55)}
+.screen{height:100%;border-radius:36px;overflow:hidden;background:#071015;position:relative;border:1px solid rgba(255,255,255,.10)}
+.map{position:absolute;inset:0;background:
+linear-gradient(38deg,transparent 42%,rgba(22,196,127,.28) 43%,rgba(22,196,127,.28) 45%,transparent 46%),
+linear-gradient(142deg,transparent 37%,rgba(255,255,255,.12) 38%,rgba(255,255,255,.12) 40%,transparent 41%),
+linear-gradient(88deg,transparent 50%,rgba(37,99,235,.18) 51%,transparent 52%),
+radial-gradient(circle at 30% 30%,rgba(22,196,127,.26),transparent 20%),
+radial-gradient(circle at 72% 72%,rgba(37,99,235,.25),transparent 26%),#0B1218}
+.route{position:absolute;left:88px;top:105px;width:250px;height:390px;border:5px solid rgba(22,196,127,.8);border-left:0;border-bottom:0;border-radius:0 130px 0 0;filter:drop-shadow(0 0 18px rgba(22,196,127,.7))}
+.pin{position:absolute;width:28px;height:28px;border-radius:50% 50% 50% 0;background:#16C47F;transform:rotate(-45deg);box-shadow:0 0 0 10px rgba(22,196,127,.16)}
+.pin:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#06100C}
+.pin.one{left:72px;top:94px}.pin.two{right:96px;bottom:168px;background:#D8B76A}
+.car{position:absolute;left:250px;top:310px;width:54px;height:54px;border-radius:20px;background:#fff;color:#06100C;display:grid;place-items:center;font-size:28px;box-shadow:0 18px 50px rgba(255,255,255,.24);animation:drive 5s ease-in-out infinite}
+@keyframes drive{0%,100%{transform:translate(0,0)}50%{transform:translate(38px,-72px)}}
+.topline{position:absolute;top:22px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center}
+.glass{background:rgba(5,7,10,.72);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 20px 70px rgba(0,0,0,.38)}
+.mini-brand{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:22px}.mini-mark{width:36px;height:36px;border-radius:14px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-weight:900}
+.status{padding:10px 12px;border-radius:999px;color:#8DF0C7;font-size:12px;font-weight:900;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25)}
+.sheet{position:absolute;left:16px;right:16px;bottom:16px;border-radius:30px;padding:18px;background:rgba(8,13,20,.88);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(22px);box-shadow:0 -18px 70px rgba(0,0,0,.45)}
+.driver{display:flex;align-items:center;gap:13px}.avatar{width:58px;height:58px;border-radius:21px;background:linear-gradient(135deg,#1F2937,#0F172A);display:grid;place-items:center;font-size:30px;border:1px solid var(--line)}
+.muted{color:#AAB4C0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}.stat{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:18px;padding:10px}.stat b{display:block;font-size:15px}.stat span{font-size:11px;color:#AAB4C0}
+.floating-card{position:absolute;left:-34px;bottom:82px;width:230px;border-radius:28px;padding:18px;background:rgba(8,13,20,.78);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(20px);box-shadow:0 30px 90px rgba(0,0,0,.48)}
+.security{position:absolute;right:-18px;top:118px;width:210px;border-radius:28px;padding:18px;background:rgba(8,13,20,.78);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(20px);box-shadow:0 30px 90px rgba(0,0,0,.48)}
+@media(max-width:980px){.hero{grid-template-columns:1fr}.stage{min-height:720px}.phone{left:50%;right:auto;transform:translateX(-50%)}h1{letter-spacing:-2px}.features{grid-template-columns:1fr}.security,.floating-card{display:none}}
+@media(max-width:520px){.shell{padding:18px}.nav .pill{display:none}.phone{width:100%;height:670px}.actions .btn{width:100%}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script src="/push-notifications.js"></script>
 </head>
 <body>
-  <main class="page">
-    <nav class="nav">
-      <a class="brand" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><span>Premium Assisted Mobility</span></div></a>
-      <div class="role-pill">Cliente · Chofer · Acompañante</div>
-    </nav>
-    <section class="hero">
-      <div>
-        <div class="tag"><span class="dot"></span> Servicio especial para pacientes y adultos mayores</div>
-        <h1>Movilidad asistida <span>segura</span> y humana.</h1>
-        <p class="lead">Transporte premium con soporte para silla de ruedas, acompañamiento, destinos seguros, seguimiento en vivo y operación inteligente para familias, pacientes y envejecientes.</p>
-        <div class="actions"><a class="btn primary" href="login.html">Entrar / Crear cuenta</a><a class="btn dark" href="cliente.html">Pedir servicio</a></div>
-        <div class="cards">
-          <div class="card"><b>Destino seguro</b><p>Reglas especiales para clínicas, bancos, compras, recreación y visitas verificables.</p></div>
-          <div class="card"><b>Chofer validado</b><p>Vehículo, licencia, seguro y aprobación administrativa.</p></div>
-          <div class="card"><b>Tracking en vivo</b><p>Seguimiento GPS del chofer y estado del servicio.</p></div>
+<main class="shell">
+<nav class="nav">
+  <div class="logo"><div class="mark">T</div><div><b>Ttraigo</b><span>Premium Assisted Mobility</span></div></div>
+  <div class="pill">Cliente · Chofer · Acompañante</div>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="kicker"><span class="dot"></span> Servicio especial para pacientes y adultos mayores</div>
+    <h1>Movilidad asistida <span>segura</span> y humana.</h1>
+    <p class="lead">Transporte premium con soporte para silla de ruedas, acompañamiento, destinos seguros, seguimiento en vivo y operación inteligente para familias, pacientes y envejecientes.</p>
+    <div class="actions">
+      <a class="btn primary" href="/login.html">Entrar / Crear cuenta</a>
+      <a class="btn dark" href="/cliente.html">Pedir servicio</a>
+    </div>
+    <div class="features">
+      <div class="feature"><b>Destino seguro</b><p>Reglas especiales para clínicas, compras, recreación y visitas verificables.</p></div>
+      <div class="feature"><b>Chofer validado</b><p>Vehículo, licencia, seguro, GPS y aprobación administrativa.</p></div>
+      <div class="feature"><b>Tracking en vivo</b><p>Seguimiento GPS del chofer y estados del servicio en tiempo real.</p></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="map"></div>
+        <div class="route"></div>
+        <div class="pin one"></div>
+        <div class="pin two"></div>
+        <div class="car">🚘</div>
+
+        <div class="topline">
+          <div class="mini-brand glass"><div class="mini-mark">T</div><b>Ttraigo</b></div>
+          <div class="status">EN VIVO</div>
         </div>
-      </div>
-      <div class="phone-wrap">
-        <div class="phone">
-          <div class="map"></div><div class="route"></div><div class="pin">●</div><div class="car">🚘</div>
-          <div class="topline"><div class="mini-brand"><div class="mini-mark">T</div> Ttraigo</div><div class="live">EN VIVO</div></div>
-          <div class="driver-card">
-            <div class="driver-row"><div class="avatar">👨‍✈️</div><div><b>Chofer confirmado</b><div style="color:#AAB4C0">Llegada estimada · 6 min</div></div><span class="pulse"></span></div>
-            <div class="stats"><div class="stat"><b>4.8 km</b><span>Distancia</span></div><div class="stat"><b>RD$850</b><span>Total</span></div><div class="stat"><b>SOS</b><span>Activo</span></div></div>
-            <a class="btn primary" style="width:100%" href="cliente.html">Pedir servicio ahora</a>
+
+        <div class="sheet">
+          <div class="driver">
+            <div class="avatar">👨‍✈️</div>
+            <div style="flex:1"><b>Chofer confirmado</b><div class="muted" style="font-size:13px">Llegada estimada · 6 min</div></div>
+            <span class="dot"></span>
           </div>
+          <div class="stats">
+            <div class="stat"><b>6 min</b><span>ETA</span></div>
+            <div class="stat"><b>4.8 km</b><span>Distancia</span></div>
+            <div class="stat"><b>RD$850</b><span>Total</span></div>
+          </div>
+          <a class="btn primary" style="width:100%" href="/cliente.html">Pedir servicio ahora</a>
         </div>
-        <div class="float-card"><b>Protección Ttraigo</b><p style="color:#AAB4C0">Contacto de emergencia, validación de destino y seguimiento familiar.</p></div>
-        <div class="float-card bottom"><b>Asistencia premium</b><p style="color:#AAB4C0">Acompañante verificado para clínicas, bancos, compras y destinos seguros.</p></div>
       </div>
-    </section>
-  </main>
+    </div>
+
+    <div class="floating-card">
+      <b>Asistencia premium</b>
+      <p class="muted">Acompañante verificado para clínicas, bancos, compras y destinos seguros.</p>
+    </div>
+
+    <div class="security">
+      <b>Protección Ttraigo</b>
+      <p class="muted">Contacto de emergencia, validación de destino y seguimiento familiar.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+</script>
 </body>
 </html>
