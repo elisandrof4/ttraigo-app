@@ -1,43 +1,144 @@
-{
-  "name": "Ttraigo - Movilidad Asistida",
-  "short_name": "Ttraigo",
-  "description": "Movilidad asistida premium con choferes, acompañantes y seguimiento en vivo.",
-  "start_url": "/index.html",
-  "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#05070A",
-  "theme_color": "#05070A",
-  "icons": [
-    {
-      "src": "/icon-192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/maskable-icon.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Pedir servicio",
-      "short_name": "Pedir",
-      "url": "/cliente.html"
-    },
-    {
-      "name": "Chofer",
-      "short_name": "Chofer",
-      "url": "/chofer.html"
-    }
-  ]
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Pagos y Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.13)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 9%,rgba(22,196,127,.22),transparent 32%),radial-gradient(circle at 90% 88%,rgba(37,99,235,.18),transparent 38%),#05070A;color:var(--text)}a{color:inherit;text-decoration:none}.shell{max-width:1240px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px}.mark{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#16C47F,#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:28px}.navBtns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.25);color:#FCA5A5}.hero,.panel{border:1px solid var(--line);background:rgba(255,255,255,.075);border-radius:30px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.25)}.hero{border-radius:34px;padding:30px;margin-bottom:18px}h1{font-size:clamp(38px,5vw,66px);letter-spacing:-2px;margin:8px 0 12px}.muted{color:var(--muted);line-height:1.6}.grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.stat{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:20px;padding:14px}.stat b{display:block;font-size:28px}.stat span{font-size:12px;color:#AAB4C0}.input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:18px;padding:15px;color:#fff;outline:none;margin-top:10px}select.input option{color:#111}.list{display:grid;gap:10px;margin-top:12px;max-height:640px;overflow:auto}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:20px;padding:14px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25);color:#8DF0C7;font-size:12px;font-weight:900}.badge.gold{background:rgba(216,183,106,.15);border-color:rgba(216,183,106,.28);color:#F8DA91}.message{font-weight:900;white-space:pre-wrap}@media(max-width:960px){.grid,.grid3{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding:15px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+<nav class="nav">
+<a class="brand" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted">Pagos y Wallet</div></div></a>
+<div class="navBtns"><a class="btn dark" href="cliente.html">Cliente</a><a class="btn gold" href="planes.html">Planes</a><a class="btn dark" href="index.html">Web</a></div>
+</nav>
+
+<section class="hero">
+<span class="badge gold">Fase 9</span>
+<h1>Pagos, comprobantes y wallet.</h1>
+<p class="muted">Esta fase prepara pagos en efectivo, transferencia, wallet y comprobantes. La tarjeta real se integra después con pasarela de pago.</p>
+</section>
+
+<section class="grid">
+<div class="panel">
+<h2>Mi wallet</h2>
+<div class="grid3">
+<div class="stat"><b id="balance">RD$0</b><span>Balance</span></div>
+<div class="stat"><b id="pendiente">RD$0</b><span>Pendiente</span></div>
+<div class="stat"><b id="pagado">RD$0</b><span>Pagado</span></div>
+</div>
+
+<h3>Registrar pago / recarga</h3>
+<select id="metodo" class="input">
+<option value="efectivo">Efectivo</option>
+<option value="transferencia">Transferencia</option>
+<option value="wallet">Wallet</option>
+<option value="tarjeta_pendiente">Tarjeta pendiente de pasarela</option>
+</select>
+<input id="monto" class="input" type="number" placeholder="Monto RD$">
+<input id="referencia" class="input" placeholder="Referencia / nota / comprobante">
+<select id="concepto" class="input">
+<option value="recarga_wallet">Recarga wallet</option>
+<option value="pago_servicio">Pago servicio</option>
+<option value="pago_plan">Pago plan</option>
+</select>
+<button class="btn primary" style="width:100%;margin-top:14px" onclick="registrarPago()">Registrar pago</button>
+<p id="msg" class="message"></p>
+</div>
+
+<div class="panel">
+<h2>Movimientos y pagos</h2>
+<div id="lista" class="list"></div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let perfil=null;
+
+function money(n){return 'RD$ '+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function setMsg(t,c='#FCA5A5'){msg.textContent=t;msg.style.color=c}
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const pr=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=pr.data;
+ cargar();
 }
+
+async function cargar(){
+ const pagos=await supabaseClient.from('pagos').select('*').eq('usuario_id',perfil.id).order('creado_en',{ascending:false}).limit(40);
+ const mov=await supabaseClient.from('wallet_movimientos').select('*').eq('usuario_id',perfil.id).order('creado_en',{ascending:false}).limit(40);
+ const user=await supabaseClient.from('usuarios').select('wallet_balance').eq('id',perfil.id).single();
+
+ const data=pagos.data||[];
+ balance.textContent=money(user.data?.wallet_balance||0);
+ pendiente.textContent=money(data.filter(x=>x.estado==='pendiente').reduce((a,b)=>a+Number(b.monto||0),0));
+ pagado.textContent=money(data.filter(x=>x.estado==='pagado').reduce((a,b)=>a+Number(b.monto||0),0));
+
+ lista.innerHTML=[
+  ...data.map(p=>({tipo:'pago',...p})),
+  ...(mov.data||[]).map(m=>({tipo:'mov',...m}))
+ ].sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en)).map(x=>`
+ <div class="row">
+ <div>
+ <b>${x.concepto||x.tipo}</b>
+ <div class="muted">${x.metodo||x.tipo} · ${new Date(x.creado_en).toLocaleString()} · ${x.referencia||''}</div>
+ </div>
+ <div style="text-align:right">
+ <span class="badge ${x.estado==='pendiente'?'gold':''}">${x.estado||x.tipo}</span><br>
+ <b>${money(x.monto)}</b>
+ </div>
+ </div>`).join('')||'<p class="muted">No hay movimientos todavía.</p>';
+}
+
+async function registrarPago(){
+ try{
+  if(!monto.value||Number(monto.value)<=0)throw new Error('Escribe un monto válido.');
+  setMsg('Registrando pago...','#AAB4C0');
+
+  const p=await supabaseClient.from('pagos').insert([{
+   usuario_id:perfil.id,
+   concepto:concepto.value,
+   metodo:metodo.value,
+   monto:Number(monto.value),
+   estado:metodo.value==='efectivo'?'pendiente':'pagado',
+   referencia:referencia.value
+  }]).select().single();
+  if(p.error)throw p.error;
+
+  if(concepto.value==='recarga_wallet' && p.data.estado==='pagado'){
+    const actual=Number(perfil.wallet_balance||0);
+    const nuevo=actual+Number(monto.value);
+    await supabaseClient.from('usuarios').update({wallet_balance:nuevo}).eq('id',perfil.id);
+    await supabaseClient.from('wallet_movimientos').insert([{
+      usuario_id:perfil.id,
+      tipo:'entrada',
+      concepto:'Recarga wallet',
+      monto:Number(monto.value),
+      balance_resultante:nuevo,
+      referencia_id:p.data.id
+    }]);
+    perfil.wallet_balance=nuevo;
+  }
+
+  setMsg('Pago registrado correctamente.','#16C47F');
+  monto.value='';referencia.value='';
+  cargar();
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+init();
+</script>
+</body>
+</html>
