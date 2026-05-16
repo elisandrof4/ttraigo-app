@@ -12,7 +12,7 @@ const MAP_PROVIDER = "mapbox";
 const MAPBOX_TOKEN = "PON_AQUI_TU_TOKEN_MAPBOX";
 
 // OPCIONAL: PON AQUÍ TU API KEY DE GOOGLE MAPS
-const GOOGLE_MAPS_KEY = "PON_AQUI_TU_API_KEY_GOOGLE_MAPS";
+const GOOGLE_MAPS_KEY = "pk.eyJ1IjoidHRyYWlnbyIsImEiOiJjbXA4a3Z2MGkwMzVqMnNxMmswbGVvMnNjIn0.Jw0YcAK0Ms86JDM5zT-Udw";
 
 // Configuración visual
 const TTRAIGO_MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
