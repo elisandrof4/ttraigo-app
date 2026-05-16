@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Empresas y Clínicas</title>
+<style>
+body{
+margin:0;
+background:#05070A;
+color:white;
+font-family:Arial,sans-serif
+}
+.shell{
+max-width:1250px;
+margin:auto;
+padding:24px
+}
+.hero{
+background:linear-gradient(135deg,#16C47F,#0A8F63);
+color:#06100C;
+border-radius:30px;
+padding:28px;
+margin-bottom:20px
+}
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px
+}
+.card{
+background:#111827;
+border-radius:24px;
+padding:24px;
+border:1px solid rgba(255,255,255,.08)
+}
+input,textarea,select{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,.1);
+background:#1F2937;
+color:white;
+margin-top:10px
+}
+button{
+padding:14px 18px;
+border:0;
+border-radius:16px;
+background:#16C47F;
+color:#06100C;
+font-weight:900;
+cursor:pointer;
+margin-top:12px
+}
+.dark{
+background:#202B3B;
+color:white
+}
+.list{
+display:grid;
+gap:12px
+}
+.item{
+padding:16px;
+border-radius:18px;
+background:#1A2330;
+border:1px solid rgba(255,255,255,.08)
+}
+.kpi{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+margin-top:16px
+}
+.stat{
+background:rgba(255,255,255,.18);
+padding:18px;
+border-radius:18px
+}
+.stat b{
+display:block;
+font-size:28px
+}
+@media(max-width:900px){
+.grid,.kpi{
+grid-template-columns:1fr
+}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<div class="hero">
+<h1>Fase 19 — Empresas, Clínicas y Cuentas Corporativas</h1>
+<p>Permite registrar empresas, clínicas, fundaciones y clientes corporativos para solicitar servicios recurrentes de movilidad asistida.</p>
+
+<div class="kpi">
+<div class="stat">
+<b id="kEmpresas">0</b>
+<span>Empresas</span>
+</div>
+
+<div class="stat">
+<b id="kSolicitudes">0</b>
+<span>Solicitudes</span>
+</div>
+
+<div class="stat">
+<b id="kEmpleados">0</b>
+<span>Empleados / usuarios</span>
+</div>
+</div>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h2>Registrar empresa o clínica</h2>
+
+<input id="nombre" placeholder="Nombre empresa / clínica / fundación">
+<input id="rnc" placeholder="RNC">
+<select id="tipo">
+<option value="clinica">Clínica</option>
+<option value="empresa">Empresa</option>
+<option value="fundacion">Fundación</option>
+<option value="hogar_ancianos">Hogar de ancianos</option>
+<option value="otro">Otro</option>
+</select>
+<input id="contacto" placeholder="Nombre contacto">
+<input id="telefono" placeholder="Teléfono contacto">
+<input id="email" placeholder="Email contacto">
+<textarea id="direccion" rows="3" placeholder="Dirección"></textarea>
+
+<button onclick="guardarEmpresa()">Guardar empresa</button>
+
+<p id="msg"></p>
+</div>
+
+<div class="card">
+<h2>Crear solicitud corporativa</h2>
+
+<select id="empresa"></select>
+<input id="origen" placeholder="Origen">
+<input id="destino" placeholder="Destino">
+<input id="fecha" type="datetime-local">
+<select id="tipoServicio">
+<option value="traslado_medico">Traslado médico</option>
+<option value="transporte_empleados">Transporte empleados</option>
+<option value="adultos_mayores">Adultos mayores</option>
+<option value="ruta_programada">Ruta programada</option>
+<option value="evento">Evento</option>
+</select>
+<input id="cantidad" type="number" value="1" placeholder="Cantidad personas">
+<label style="display:flex;gap:10px;margin-top:14px">
+<input id="acom" type="checkbox" style="width:auto">
+<span>Requiere acompañante</span>
+</label>
+<textarea id="notas" rows="4" placeholder="Notas"></textarea>
+
+<button onclick="crearSolicitud()">Crear solicitud</button>
+</div>
+
+</div>
+
+<div class="grid" style="margin-top:20px">
+
+<div class="card">
+<h2>Empresas registradas</h2>
+<div id="listaEmpresas" class="list"></div>
+</div>
+
+<div class="card">
+<h2>Solicitudes corporativas</h2>
+<div id="listaSolicitudes" class="list"></div>
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient=window.supabase.createClient(
+"https://lvqzkvahfklwzxbxbljv.supabase.co",
+"sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q"
+);
+
+let perfil=null;
+let empresas=[];
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){
+  location.href='login.html';
+  return;
+ }
+
+ const id=s.data.session.user.id;
+ const p=await supabaseClient.from('usuarios')
+ .select('*')
+ .eq('id',id)
+ .single();
+
+ perfil=p.data;
+ cargar();
+}
+
+async function guardarEmpresa(){
+ try{
+  if(!nombre.value)throw new Error('Escribe el nombre de la empresa.');
+
+  const r=await supabaseClient.from('empresas_clientes').insert([{
+    nombre:nombre.value,
+    rnc:rnc.value,
+    tipo:tipo.value,
+    contacto_nombre:contacto.value,
+    contacto_telefono:telefono.value,
+    contacto_email:email.value,
+    direccion:direccion.value,
+    estado:'activa'
+  }]);
+
+  if(r.error)throw r.error;
+
+  msg.textContent='Empresa registrada correctamente.';
+  msg.style.color='#16C47F';
+
+  nombre.value='';
+  rnc.value='';
+  contacto.value='';
+  telefono.value='';
+  email.value='';
+  direccion.value='';
+
+  cargar();
+
+ }catch(e){
+  msg.textContent=e.message;
+ }
+}
+
+async function crearSolicitud(){
+ try{
+  if(!empresa.value || !origen.value || !destino.value)throw new Error('Completa empresa, origen y destino.');
+
+  const r=await supabaseClient.from('solicitudes_corporativas').insert([{
+    empresa_id:empresa.value,
+    usuario_id:perfil.id,
+    tipo_servicio:tipoServicio.value,
+    origen:origen.value,
+    destino:destino.value,
+    fecha_programada:fecha.value || null,
+    cantidad_personas:Number(cantidad.value||1),
+    requiere_acompanante:acom.checked,
+    notas:notas.value,
+    estado:'pendiente'
+  }]);
+
+  if(r.error)throw r.error;
+
+  msg.textContent='Solicitud corporativa creada.';
+  msg.style.color='#16C47F';
+
+  origen.value='';
+  destino.value='';
+  fecha.value='';
+  notas.value='';
+
+  cargar();
+
+ }catch(e){
+  msg.textContent=e.message;
+ }
+}
+
+async function cargar(){
+ const e=await supabaseClient.from('empresas_clientes')
+ .select('*')
+ .order('creado_en',{ascending:false});
+
+ const s=await supabaseClient.from('solicitudes_corporativas')
+ .select('*')
+ .order('creado_en',{ascending:false});
+
+ const emp=await supabaseClient.from('empleados_empresa')
+ .select('*');
+
+ empresas=e.data||[];
+ const solicitudes=s.data||[];
+
+ kEmpresas.textContent=empresas.length;
+ kSolicitudes.textContent=solicitudes.length;
+ kEmpleados.textContent=(emp.data||[]).length;
+
+ empresa.innerHTML=empresas.map(x=>`
+ <option value="${x.id}">${x.nombre}</option>
+ `).join('');
+
+ listaEmpresas.innerHTML=empresas.map(x=>`
+ <div class="item">
+ <b>${x.nombre}</b><br>
+ ${x.tipo} · RNC: ${x.rnc||'N/A'}<br>
+ Contacto: ${x.contacto_nombre||''} ${x.contacto_telefono||''}<br>
+ Estado: ${x.estado}
+ </div>
+ `).join('') || '<p>No hay empresas.</p>';
+
+ listaSolicitudes.innerHTML=solicitudes.map(x=>`
+ <div class="item">
+ <b>${x.origen} → ${x.destino}</b><br>
+ ${x.tipo_servicio}<br>
+ Personas: ${x.cantidad_personas}<br>
+ ${x.requiere_acompanante?'Con acompañante':'Sin acompañante'}<br>
+ Estado: ${x.estado}
+ </div>
+ `).join('') || '<p>No hay solicitudes.</p>';
+}
+
+init();
+</script>
+
+</body>
+</html>
