@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo Admin PC Mapa</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1350px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+.map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px;box-sizing:border-box}
+button,.btn{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;text-decoration:none;display:inline-block}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}
+.item{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.muted{color:#AAB4C0;line-height:1.55}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.map{height:540px}}</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Ttraigo Admin PC Mapa</b><div class="muted">Mapbox real + GPS realtime</div></div></div>
+<div><a class="btn dark" href="index.html">Inicio</a> <a class="btn dark" href="login.html">Login</a></div>
+</nav>
+
+<section class="grid">
+<div class="card">
+<h2>Admin PC — mapa operativo</h2>
+<p class="muted">Panel web para PC. Monitorea ubicaciones realtime de clientes, choferes y acompañantes.</p>
+<button onclick="cargarUbicaciones()">Cargar ubicaciones</button>
+<button class="dark" onclick="cargarServicios()">Cargar servicios activos</button>
+<p id="msg"></p>
+<div class="item">Ubicaciones: <b id="kubi">0</b></div>
+<div class="item">Servicios: <b id="ksrv">0</b></div>
+<div id="servicios"></div>
+</div>
+<div class="card"><div id="map" class="map"></div></div>
+</section>
+
+</div>
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ttraigo-mapbox-core.js"></script>
+<script>
+const supabaseClient = window.supabase.createClient(TTRAIGO_SUPABASE_URL, TTRAIGO_SUPABASE_KEY);
+let perfil=null, map=null, myMarker=null, watchId=null, servicioActual=null;
+const ROL="admin";
+function msg(t,c='white'){document.getElementById('msg').textContent=t;document.getElementById('msg').style.color=c}
+
+let markers=[];
+async function init(){
+ perfil = await ttraigoGetSessionOrLogin(supabaseClient);
+ if(!perfil) return;
+ map = ttraigoCreateMap('map');
+ cargarUbicaciones();
+ cargarServicios();
+ supabaseClient.channel('admin-mapbox-total')
+ .on('postgres_changes',{event:'INSERT',schema:'public',table:'ubicaciones_realtime'}, payload => {
+   const u=payload.new;
+   pintarUbicacion(u);
+ })
+ .subscribe();
+}
+function pintarUbicacion(u){
+ if(!u.latitud || !u.longitud) return;
+ const color = u.rol==='chofer'?'#16C47F':u.rol==='acompanante'?'#D8B76A':'#3B82F6';
+ const html = `<b>${ttraigoEscape(u.rol)}</b><br>${ttraigoEscape(u.usuario_id)}<br>${new Date(u.creado_en).toLocaleString()}`;
+ markers.push(ttraigoMarker(map,u.longitud,u.latitud,color,html));
+}
+async function cargarUbicaciones(){
+ markers.forEach(m=>m && m.remove()); markers=[];
+ const r=await supabaseClient.from('ubicaciones_realtime').select('*').order('creado_en',{ascending:false}).limit(100);
+ const data=r.data||[]; kubi.textContent=data.length;
+ data.forEach(pintarUbicacion);
+ if(data[0] && data[0].latitud) map.flyTo({center:[data[0].longitud,data[0].latitud], zoom:13});
+ msg('Mapa operativo actualizado.','#16C47F');
+}
+async function cargarServicios(){
+ const r=await supabaseClient.from('servicios').select('*').order('creado_en',{ascending:false}).limit(30);
+ const data=r.data||[]; ksrv.textContent=data.length;
+ servicios.innerHTML=data.map(s=>`<div class="item"><b>${ttraigoEscape(s.origen)} → ${ttraigoEscape(s.destino)}</b><br>${s.estado} · ${s.tracking_estado||''}<br>${ttraigoMoney(s.total_estimado)}<br><small>${s.id}</small></div>`).join('');
+}
+init();
+
+</script>
+</body>
+</html>

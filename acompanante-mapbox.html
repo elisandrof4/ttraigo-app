@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo Acompañante Mapbox</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1350px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+.map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px;box-sizing:border-box}
+button,.btn{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;text-decoration:none;display:inline-block}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}
+.item{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.muted{color:#AAB4C0;line-height:1.55}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.map{height:540px}}</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Ttraigo Acompañante Mapbox</b><div class="muted">Mapbox real + GPS realtime</div></div></div>
+<div><a class="btn dark" href="index.html">Inicio</a> <a class="btn dark" href="login.html">Login</a></div>
+</nav>
+
+<section class="grid">
+<div class="card">
+<h2>Acompañante — seguimiento de asistencia</h2>
+<p class="muted">El acompañante comparte ubicación durante servicios médicos, familiares o asistidos.</p>
+<input id="servicioId" placeholder="ID servicio">
+<button onclick="toggleOnline()">Online / Offline</button>
+<button class="dark" onclick="activarGPS()">Activar GPS acompañante</button>
+<button class="dark" onclick="marcarEnAsistencia()">Marcar en asistencia</button>
+<p id="msg"></p>
+<div class="item">Online: <b id="online">--</b></div>
+<div class="item">Lat: <b id="lat">--</b></div>
+<div class="item">Lng: <b id="lng">--</b></div>
+</div>
+<div class="card"><div id="map" class="map"></div></div>
+</section>
+
+</div>
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ttraigo-mapbox-core.js"></script>
+<script>
+const supabaseClient = window.supabase.createClient(TTRAIGO_SUPABASE_URL, TTRAIGO_SUPABASE_KEY);
+let perfil=null, map=null, myMarker=null, watchId=null, servicioActual=null;
+const ROL="acompanante";
+function msg(t,c='white'){document.getElementById('msg').textContent=t;document.getElementById('msg').style.color=c}
+
+async function init(){
+ perfil = await ttraigoGetSessionOrLogin(supabaseClient);
+ if(!perfil) return;
+ map = ttraigoCreateMap('map');
+ online.textContent=perfil.online?'Sí':'No';
+}
+async function toggleOnline(){
+ const nuevo=!perfil.online;
+ await supabaseClient.from('usuarios').update({online:nuevo, ultima_conexion:new Date().toISOString()}).eq('id',perfil.id);
+ perfil.online=nuevo; online.textContent=nuevo?'Sí':'No';
+ msg(nuevo?'Acompañante online.':'Acompañante offline.','#16C47F');
+}
+function activarGPS(){
+ watchId = ttraigoWatchGPS({
+   supabaseClient, perfil, rol:'acompanante', servicioId: servicioId.value || null,
+   onPosition: p => {
+     lat.textContent=p.lat.toFixed(6); lng.textContent=p.lng.toFixed(6);
+     if(myMarker) myMarker.setLngLat([p.lng,p.lat]); else myMarker=ttraigoMarker(map,p.lng,p.lat,'#D8B76A','<b>Acompañante</b>');
+     map.flyTo({center:[p.lng,p.lat], zoom:15});
+     msg('GPS acompañante activo.','#16C47F');
+   },
+   onError: e => msg('Error GPS: '+e,'#EF4444')
+ });
+}
+async function marcarEnAsistencia(){
+ if(!servicioId.value){msg('Escribe ID servicio.','#EF4444');return}
+ await supabaseClient.from('servicios').update({acompanante_id:perfil.id,nombre_acompanante:perfil.nombre||perfil.email,tracking_estado:'acompanante_en_asistencia'}).eq('id',servicioId.value);
+ await supabaseClient.from('eventos_tracking').insert([{servicio_id:servicioId.value,usuario_id:perfil.id,rol:'acompanante',evento:'acompanante_en_asistencia',detalle:'Acompañante inició asistencia'}]);
+ msg('Asistencia marcada.','#16C47F');
+}
+init();
+
+</script>
+</body>
+</html>
