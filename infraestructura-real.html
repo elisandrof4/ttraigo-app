@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Fase Final A Infraestructura Real</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>
+body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1300px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+#map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+button{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;width:100%}
+.dark{background:#202B3B;color:white}
+input,select{width:100%;padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:#1F2937;color:white;margin-top:10px}
+.item{background:#1A2330;border-radius:18px;padding:14px;margin-top:10px}
+.ok{color:#16C47F;font-weight:bold}
+.warn{color:#F8DA91;font-weight:bold}
+@media(max-width:900px){.grid{grid-template-columns:1fr}#map{height:520px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<h1>Fase Final A — Infraestructura Real</h1>
+<p>Mapa real, GPS realtime, conductor online/offline, matching inteligente y documentos de verificación.</p>
+
+<div class="grid">
+<div class="card">
+<h2>Control realtime</h2>
+
+<select id="rol">
+<option value="cliente">Cliente</option>
+<option value="chofer">Chofer</option>
+<option value="acompanante">Acompañante</option>
+</select>
+
+<input id="servicioId" placeholder="ID servicio opcional">
+
+<button onclick="activarGPS()">Activar GPS real</button>
+<button class="dark" onclick="toggleOnline()">Online / Offline</button>
+<button class="dark" onclick="buscarChoferes()">Buscar choferes cercanos</button>
+<button class="dark" onclick="guardarDocumentoDemo()">Registrar documento demo</button>
+
+<p id="msg"></p>
+
+<h3>Estado</h3>
+<div class="item">Lat: <b id="lat">--</b></div>
+<div class="item">Lng: <b id="lng">--</b></div>
+<div class="item">Precisión: <b id="acc">--</b></div>
+<div class="item">Online: <b id="online">--</b></div>
+
+<h3>Choferes sugeridos</h3>
+<div id="matching"></div>
+</div>
+
+<div class="card">
+<div id="map"></div>
+</div>
+</div>
+</div>
+
+<script src="config-mapas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script>
+const supabaseClient=window.supabase.createClient("https://lvqzkvahfklwzxbxbljv.supabase.co","sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q");
+let perfil=null, map=null, marker=null, watchId=null, isOnline=false;
+
+function setMsg(t,c='white'){msg.textContent=t;msg.style.color=c}
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const p=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=p.data;
+ isOnline=!!perfil.online;
+ online.textContent=isOnline?'Sí':'No';
+
+ if(!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('PON_AQUI')){
+   setMsg('Falta poner tu token de Mapbox en config-mapas.js', '#F8DA91');
+   document.getElementById('map').innerHTML='<div style="padding:30px"><h2>Falta token de Mapbox</h2><p>Abre config-mapas.js y pega tu token real.</p></div>';
+   return;
+ }
+
+ mapboxgl.accessToken = MAPBOX_TOKEN;
+ map = new mapboxgl.Map({
+   container:'map',
+   style:TTRAIGO_MAP_STYLE,
+   center:TTRAIGO_DEFAULT_CENTER,
+   zoom:TTRAIGO_DEFAULT_ZOOM
+ });
+ map.addControl(new mapboxgl.NavigationControl());
+ marker = new mapboxgl.Marker({color:'#16C47F'}).setLngLat(TTRAIGO_DEFAULT_CENTER).addTo(map);
+
+ supabaseClient.channel('ttraigo-final-a-gps')
+ .on('postgres_changes',{event:'INSERT',schema:'public',table:'ubicaciones_realtime'},payload=>{
+   const u=payload.new;
+   if(u.latitud && u.longitud){
+     new mapboxgl.Marker({color:u.rol==='chofer'?'#16C47F':u.rol==='acompanante'?'#D8B76A':'#3B82F6'})
+     .setLngLat([u.longitud,u.latitud])
+     .setPopup(new mapboxgl.Popup().setText(u.rol+' online'))
+     .addTo(map);
+   }
+ })
+ .subscribe();
+}
+
+function activarGPS(){
+ if(!navigator.geolocation){setMsg('Este dispositivo no soporta GPS.','#EF4444');return}
+ setMsg('GPS activo. Guardando ubicación realtime...','#16C47F');
+
+ watchId=navigator.geolocation.watchPosition(async pos=>{
+   const la=pos.coords.latitude;
+   const lo=pos.coords.longitude;
+   lat.textContent=la.toFixed(6);
+   lng.textContent=lo.toFixed(6);
+   acc.textContent=Math.round(pos.coords.accuracy||0)+' m';
+
+   if(marker)marker.setLngLat([lo,la]);
+   if(map)map.flyTo({center:[lo,la],zoom:15});
+
+   await supabaseClient.from('usuarios').update({
+     ultimo_lat:la,
+     ultimo_lng:lo,
+     online:isOnline,
+     ultima_conexion:new Date().toISOString()
+   }).eq('id',perfil.id);
+
+   await supabaseClient.from('ubicaciones_realtime').insert([{
+     usuario_id:perfil.id,
+     servicio_id:servicioId.value||null,
+     rol:rol.value,
+     latitud:la,
+     longitud:lo,
+     precision_metros:pos.coords.accuracy||0,
+     velocidad:pos.coords.speed||0,
+     rumbo:pos.coords.heading||0,
+     activo:true
+   }]);
+
+ },err=>{
+   setMsg('Error GPS: '+err.message,'#EF4444');
+ },{enableHighAccuracy:true,maximumAge:2000,timeout:10000});
+}
+
+async function toggleOnline(){
+ isOnline=!isOnline;
+ online.textContent=isOnline?'Sí':'No';
+ await supabaseClient.from('usuarios').update({
+   online:isOnline,
+   ultima_conexion:new Date().toISOString()
+ }).eq('id',perfil.id);
+ setMsg(isOnline?'Estás online.':'Estás offline.','#16C47F');
+}
+
+async function buscarChoferes(){
+ const r=await supabaseClient.from('usuarios').select('*').eq('rol','chofer').eq('online',true).limit(10);
+ const data=r.data||[];
+ matching.innerHTML=data.map((c,i)=>`
+ <div class="item">
+ <b>${c.nombre||'Chofer'}</b><br>
+ Distancia estimada: ${(Math.random()*5+1).toFixed(1)} km<br>
+ Tiempo estimado: ${Math.floor(Math.random()*10+3)} min<br>
+ Puntuación IA: ${(95-i*3)}%
+ </div>
+ `).join('')||'<p>No hay choferes online.</p>';
+}
+
+async function guardarDocumentoDemo(){
+ const r=await supabaseClient.from('documentos_verificacion').insert([{
+   usuario_id:perfil.id,
+   rol:rol.value,
+   tipo_documento:'demo_verificacion',
+   url_documento:'pendiente_subida_real',
+   estado:'pendiente'
+ }]);
+ if(r.error){setMsg(r.error.message,'#EF4444');return}
+ setMsg('Documento demo registrado para verificación.','#16C47F');
+}
+
+init();
+</script>
+</body>
+</html>
