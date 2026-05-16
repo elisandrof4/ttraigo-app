@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Reservas Programadas</title>
+<style>
+body{margin:0;background:#05070A;color:#fff;font-family:Arial,sans-serif}
+.shell{max-width:1100px;margin:auto;padding:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:#111827;border-radius:24px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+input,textarea,select{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:#fff;margin-top:10px}
+button{padding:14px 18px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:12px}
+.list{display:grid;gap:12px}
+.item{padding:16px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+<h1>Fase 16 — Reservas Programadas</h1>
+
+<div class="grid">
+<div class="card">
+<h2>Crear reserva</h2>
+
+<input id="origen" placeholder="Origen">
+<input id="destino" placeholder="Destino">
+<input id="fecha" type="datetime-local">
+
+<select id="tipo">
+<option value="viaje">Viaje</option>
+<option value="medico">Médico</option>
+<option value="familiar">Familiar</option>
+</select>
+
+<label style="display:flex;gap:10px;margin-top:14px">
+<input id="acom" type="checkbox" style="width:auto">
+<span>Requiere acompañante</span>
+</label>
+
+<textarea id="notas" rows="5" placeholder="Notas"></textarea>
+
+<button onclick="guardar()">Guardar reserva</button>
+
+<p id="msg"></p>
+</div>
+
+<div class="card">
+<h2>Reservas creadas</h2>
+<div id="lista" class="list"></div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient=window.supabase.createClient(
+"https://lvqzkvahfklwzxbxbljv.supabase.co",
+"sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q"
+);
+
+let perfil=null;
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const p=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=p.data;
+ cargar();
+}
+
+async function guardar(){
+ try{
+  const r=await supabaseClient.from('reservas_programadas').insert([{
+   usuario_id:perfil.id,
+   origen:origen.value,
+   destino:destino.value,
+   fecha_reserva:fecha.value,
+   tipo_servicio:tipo.value,
+   requiere_acompanante:acom.checked,
+   notas:notas.value
+  }]);
+  if(r.error)throw r.error;
+  msg.textContent='Reserva creada';
+  msg.style.color='#16C47F';
+  origen.value='';destino.value='';fecha.value='';notas.value='';
+  cargar();
+ }catch(e){
+  msg.textContent=e.message;
+ }
+}
+
+async function cargar(){
+ const r=await supabaseClient.from('reservas_programadas')
+ .select('*')
+ .order('fecha_reserva',{ascending:true});
+
+ const data=r.data||[];
+
+ lista.innerHTML=data.map(x=>`
+ <div class="item">
+ <b>${x.origen||'Origen'} → ${x.destino||'Destino'}</b>
+ <p>${new Date(x.fecha_reserva).toLocaleString()}</p>
+ <p>${x.tipo_servicio}</p>
+ <p>${x.requiere_acompanante?'Con acompañante':'Sin acompañante'}</p>
+ </div>
+ `).join('') || '<p>No hay reservas.</p>';
+}
+
+init();
+</script>
+</body>
+</html>
