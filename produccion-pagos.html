@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Producción y Pagos</title>
+<style>
+body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1250px;margin:auto;padding:24px}
+.hero{background:linear-gradient(135deg,#16C47F,#0A8F63);color:#06100C;border-radius:30px;padding:28px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#111827;border-radius:24px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+input,textarea,select{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px}
+button{padding:14px 18px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:12px}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}
+.list{display:grid;gap:12px;max-height:680px;overflow:auto}
+.item{padding:16px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08)}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+.stat{background:rgba(255,255,255,.18);padding:18px;border-radius:18px}.stat b{display:block;font-size:28px}
+@media(max-width:900px){.grid,.kpi{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="hero">
+<h1>Fase Final B — Producción, Pagos, Facturación y Seguridad</h1>
+<p>Prepara Ttraigo para cobrar dinero real, emitir facturas, controlar riesgos y administrar permisos.</p>
+<div class="kpi">
+<div class="stat"><b id="kPagos">0</b><span>Pagos</span></div>
+<div class="stat"><b id="kFacturas">0</b><span>Facturas</span></div>
+<div class="stat"><b id="kLogs">0</b><span>Logs</span></div>
+<div class="stat"><b id="kReglas">0</b><span>Antifraude</span></div>
+</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>Registrar pasarela</h2>
+<select id="proveedor"><option value="azul">Azul</option><option value="cardnet">CardNet</option><option value="stripe">Stripe</option></select>
+<input id="merchant" placeholder="Merchant ID / Comercio">
+<input id="publicKey" placeholder="Public Key">
+<select id="modo"><option value="sandbox">Sandbox / prueba</option><option value="production">Producción real</option></select>
+<button onclick="guardarPasarela()">Guardar pasarela</button>
+
+<h2>Pago demo</h2>
+<input id="monto" type="number" placeholder="Monto RD$">
+<input id="concepto" placeholder="Concepto">
+<select id="metodo"><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option><option value="wallet">Wallet</option></select>
+<button class="dark" onclick="registrarPago()">Registrar pago</button>
+<p id="msg"></p>
+</div>
+
+<div class="card">
+<h2>Emitir factura</h2>
+<input id="clienteNombre" placeholder="Cliente">
+<input id="clienteDocumento" placeholder="Cédula/RNC">
+<input id="subtotal" type="number" placeholder="Subtotal">
+<button onclick="emitirFactura()">Emitir factura</button>
+
+<h2>Log de seguridad</h2>
+<select id="nivel"><option value="info">Info</option><option value="medio">Medio</option><option value="alto">Alto</option><option value="critico">Crítico</option></select>
+<input id="evento" placeholder="Evento de seguridad">
+<textarea id="detalle" rows="4" placeholder="Detalle"></textarea>
+<button class="danger" onclick="registrarLog()">Registrar log</button>
+</div>
+</div>
+
+<div class="grid" style="margin-top:20px">
+<div class="card"><h2>Pagos y facturas</h2><div id="listaPagos" class="list"></div></div>
+<div class="card"><h2>Seguridad y antifraude</h2><div id="listaSeguridad" class="list"></div></div>
+</div>
+</div>
+
+<script src="config-produccion.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient=window.supabase.createClient("https://lvqzkvahfklwzxbxbljv.supabase.co","sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q");
+let perfil=null;
+function money(n){return 'RD$ '+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function setMsg(t,c='#EF4444'){msg.textContent=t;msg.style.color=c}
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const p=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=p.data; cargar();
+}
+async function guardarPasarela(){
+ try{
+  const r=await supabaseClient.from('pasarelas_pago').insert([{nombre:proveedor.value.toUpperCase(),proveedor:proveedor.value,estado:'configurada',modo:modo.value,public_key:publicKey.value,merchant_id:merchant.value}]);
+  if(r.error)throw r.error; setMsg('Pasarela guardada.','#16C47F'); cargar();
+ }catch(e){setMsg(e.message)}
+}
+async function registrarPago(){
+ try{
+  if(!monto.value)throw new Error('Escribe un monto.');
+  const riesgo=Number(monto.value)>TTRAIGO_FRAUD_LIMIT_AMOUNT?'revision':'normal';
+  const r=await supabaseClient.from('pagos').insert([{usuario_id:perfil.id,concepto:concepto.value||'Pago Ttraigo',metodo:metodo.value,monto:Number(monto.value),estado:metodo.value==='efectivo'?'pendiente':'pagado',pasarela:proveedor.value,transaccion_id:'TX-'+Date.now(),autorizacion:'DEMO',moneda:TTRAIGO_CURRENCY,riesgo_estado:riesgo}]);
+  if(r.error)throw r.error; setMsg('Pago registrado.','#16C47F'); monto.value=''; concepto.value=''; cargar();
+ }catch(e){setMsg(e.message)}
+}
+async function emitirFactura(){
+ try{
+  if(!clienteNombre.value||!subtotal.value)throw new Error('Completa cliente y subtotal.');
+  const sub=Number(subtotal.value), impuesto=sub*TTRAIGO_TAX_RATE, total=sub+impuesto;
+  const r=await supabaseClient.from('facturas_ttraigo').insert([{usuario_id:perfil.id,numero_factura:'TT-'+Date.now(),cliente_nombre:clienteNombre.value,cliente_documento:clienteDocumento.value,subtotal:sub,impuesto,total,estado:'emitida'}]);
+  if(r.error)throw r.error; setMsg('Factura emitida.','#16C47F'); clienteNombre.value='';clienteDocumento.value='';subtotal.value=''; cargar();
+ }catch(e){setMsg(e.message)}
+}
+async function registrarLog(){
+ try{
+  const r=await supabaseClient.from('logs_seguridad').insert([{usuario_id:perfil.id,evento:evento.value||'Evento manual',nivel:nivel.value,detalle:detalle.value}]);
+  if(r.error)throw r.error; setMsg('Log registrado.','#16C47F'); evento.value='';detalle.value=''; cargar();
+ }catch(e){setMsg(e.message)}
+}
+async function cargar(){
+ const pagos=await supabaseClient.from('pagos').select('*').order('creado_en',{ascending:false}).limit(30);
+ const facturas=await supabaseClient.from('facturas_ttraigo').select('*').order('creado_en',{ascending:false}).limit(30);
+ const logs=await supabaseClient.from('logs_seguridad').select('*').order('creado_en',{ascending:false}).limit(30);
+ const reglas=await supabaseClient.from('reglas_antifraude').select('*').limit(50);
+ const pg=pagos.data||[], fa=facturas.data||[], lo=logs.data||[], re=reglas.data||[];
+ kPagos.textContent=pg.length; kFacturas.textContent=fa.length; kLogs.textContent=lo.length; kReglas.textContent=re.length;
+ listaPagos.innerHTML=[...pg.map(x=>`<div class="item"><span class="badge">${x.estado}</span><br><b>${x.concepto}</b><br>${x.metodo} · ${x.pasarela||''}<br><b>${money(x.monto)}</b></div>`),...fa.map(x=>`<div class="item"><span class="badge">Factura</span><br><b>${x.numero_factura}</b><br>${x.cliente_nombre}<br><b>${money(x.total)}</b></div>`)].join('')||'<p>No hay pagos o facturas.</p>';
+ listaSeguridad.innerHTML=[...lo.map(x=>`<div class="item"><span class="badge">${x.nivel}</span><br><b>${x.evento}</b><br>${x.detalle||''}</div>`),...re.map(x=>`<div class="item"><span class="badge">${x.nivel_riesgo}</span><br><b>${x.nombre}</b><br>${x.descripcion}</div>`)].join('')||'<p>No hay seguridad registrada.</p>';
+}
+init();
+</script>
+</body>
+</html>
