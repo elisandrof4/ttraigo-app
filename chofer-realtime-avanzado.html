@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chofer Realtime Avanzado</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1380px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+.map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px;box-sizing:border-box}
+button,.btn{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;text-decoration:none;display:inline-block}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}.gold{background:#D8B76A;color:#06100C}
+.item{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.muted{color:#AAB4C0;line-height:1.55}.small{font-size:12px;color:#AAB4C0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}.kpi{background:#1A2330;padding:12px;border-radius:16px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.map{height:540px}.kpis{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Chofer Realtime Avanzado</b><div class="muted">Core Realtime Parte 2</div></div></div>
+<div><a class="btn dark" href="index.html">Inicio</a> <a class="btn dark" href="login.html">Login</a></div>
+</nav>
+
+<section class="grid">
+<div class="card">
+<h2>Chofer — navegación y servicio activo</h2>
+<input id="servicioId" placeholder="ID servicio">
+<button onclick="activarGPS()">GPS + ruta historial</button>
+<button class="dark" onclick="verServicio()">Ver cliente/ruta</button>
+<button class="gold" onclick="estado('en_camino')">En camino</button>
+<button class="gold" onclick="estado('iniciado')">Iniciar</button>
+<button class="danger" onclick="estado('finalizado')">Finalizar</button>
+<p id="msg"></p>
+<div class="kpis">
+<div class="kpi"><b id="km">0 km</b><br><span class="small">Cliente</span></div>
+<div class="kpi"><b id="eta">0 min</b><br><span class="small">ETA</span></div>
+<div class="kpi"><b id="estadoTxt">--</b><br><span class="small">Estado</span></div>
+</div>
+</div>
+<div class="card"><div id="map" class="map"></div></div>
+</section>
+
+</div>
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ttraigo-realtime-core.js"></script>
+<script src="ttraigo-realtime-core-2.js"></script>
+<script>
+const supabaseClient=rtCreateSupabase();
+let perfil=null,map=null,myMarker=null,currentLat=null,currentLng=null,watchId=null,clienteMarker=null;
+
+async function init(){
+ perfil=await rtRequireUser(supabaseClient);
+ if(!perfil)return;
+ map=rtCreateMap("map");
+}
+function activarGPS(){
+ watchId=rtStartGPS({
+  supabaseClient,perfil,rol:"chofer",servicioId:servicioId.value||null,
+  onPosition: async p=>{
+    currentLat=p.lat; currentLng=p.lng;
+    myMarker=rtSetMarker(myMarker,map,p.lng,p.lat,"#16C47F","<b>Chofer</b>");
+    if(map)map.flyTo({center:[p.lng,p.lat],zoom:15});
+    if(servicioId.value) await rt2GuardarPuntoRuta({supabaseClient,servicioId:servicioId.value,perfil,rol:"chofer",lat:p.lat,lng:p.lng});
+    rtMsg("msg","GPS chofer avanzado activo.","#16C47F");
+  },
+  onError:e=>rtMsg("msg","Error GPS: "+e,"#EF4444")
+ });
+}
+async function verServicio(){
+ try{
+  if(!servicioId.value)throw new Error("Escribe ID servicio.");
+  const r=await supabaseClient.from("realtime_servicios").select("*").eq("id",servicioId.value).single();
+  if(r.error)throw r.error;
+  const s=r.data; estadoTxt.textContent=s.estado;
+  if(s.origen_lat&&s.origen_lng){
+    clienteMarker=rtSetMarker(clienteMarker,map,s.origen_lng,s.origen_lat,"#3B82F6","<b>Cliente/Origen</b>");
+    if(currentLat&&currentLng){
+      const ruta=await rtRoute(map,currentLng,currentLat,s.origen_lng,s.origen_lat);
+      const d=ruta?ruta.distanceKm:rtDistanceKm(currentLat,currentLng,s.origen_lat,s.origen_lng);
+      km.textContent=d.toFixed(2)+" km";
+      eta.textContent=(ruta?ruta.durationMin:Math.round(d*3))+" min";
+    }
+  }
+  await rt2CargarHistorialRuta({supabaseClient,map,servicioId:servicioId.value,rol:"chofer"});
+  rtMsg("msg","Servicio cargado en mapa.","#16C47F");
+ }catch(e){rtMsg("msg",e.message,"#EF4444")}
+}
+async function estado(e){
+ if(!servicioId.value){rtMsg("msg","Escribe ID servicio.","#EF4444");return}
+ await supabaseClient.from("realtime_servicios").update({estado:e,actualizado_en:new Date().toISOString()}).eq("id",servicioId.value);
+ await supabaseClient.from("realtime_eventos").insert([{servicio_id:servicioId.value,usuario_id:perfil.id,rol:"chofer",evento:e,detalle:"Estado actualizado"}]);
+ estadoTxt.textContent=e;
+ rtMsg("msg","Estado actualizado: "+e,"#16C47F");
+}
+init();
+</script>
+</body>
+</html>

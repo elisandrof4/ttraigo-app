@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cliente Realtime Avanzado</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1380px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+.map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px;box-sizing:border-box}
+button,.btn{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;text-decoration:none;display:inline-block}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}.gold{background:#D8B76A;color:#06100C}
+.item{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.muted{color:#AAB4C0;line-height:1.55}.small{font-size:12px;color:#AAB4C0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}.kpi{background:#1A2330;padding:12px;border-radius:16px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.map{height:540px}.kpis{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Cliente Realtime Avanzado</b><div class="muted">Core Realtime Parte 2</div></div></div>
+<div><a class="btn dark" href="index.html">Inicio</a> <a class="btn dark" href="login.html">Login</a></div>
+</nav>
+
+<section class="grid">
+<div class="card">
+<h2>Cliente — ruta, ETA, precio y SOS</h2>
+<p class="muted">Parte 2: cálculo avanzado encima de Parte 1.</p>
+<input id="servicioId" placeholder="ID servicio">
+<input id="destinoLat" type="number" step="0.000001" placeholder="Destino lat opcional">
+<input id="destinoLng" type="number" step="0.000001" placeholder="Destino lng opcional">
+<label class="small"><input id="acom" type="checkbox"> Acompañante</label>
+<label class="small"><input id="silla" type="checkbox"> Silla de ruedas</label>
+<button onclick="activarGPS()">Activar GPS + historial</button>
+<button class="dark" onclick="calcularRutaPrecio()">Calcular ruta/precio</button>
+<button class="gold" onclick="buscarChofer()">Buscar chofer cercano</button>
+<button class="danger" onclick="sos()">SOS</button>
+<p id="msg"></p>
+<div class="kpis">
+<div class="kpi"><b id="km">0 km</b><br><span class="small">Distancia</span></div>
+<div class="kpi"><b id="eta">0 min</b><br><span class="small">ETA</span></div>
+<div class="kpi"><b id="precio">RD$0</b><br><span class="small">Precio</span></div>
+</div>
+<div id="matching"></div>
+</div>
+<div class="card"><div id="map" class="map"></div></div>
+</section>
+
+</div>
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ttraigo-realtime-core.js"></script>
+<script src="ttraigo-realtime-core-2.js"></script>
+<script>
+const supabaseClient=rtCreateSupabase();
+let perfil=null,map=null,myMarker=null,currentLat=null,currentLng=null,watchId=null;
+
+async function init(){
+ perfil=await rtRequireUser(supabaseClient);
+ if(!perfil)return;
+ map=rtCreateMap("map");
+}
+function activarGPS(){
+ watchId=rtStartGPS({
+  supabaseClient,perfil,rol:"cliente",servicioId:servicioId.value||null,
+  onPosition: async p=>{
+    currentLat=p.lat; currentLng=p.lng;
+    myMarker=rtSetMarker(myMarker,map,p.lng,p.lat,"#3B82F6","<b>Cliente</b>");
+    if(map)map.flyTo({center:[p.lng,p.lat],zoom:15});
+    if(servicioId.value) await rt2GuardarPuntoRuta({supabaseClient,servicioId:servicioId.value,perfil,rol:"cliente",lat:p.lat,lng:p.lng});
+    rtMsg("msg","GPS e historial activos.","#16C47F");
+  },
+  onError:e=>rtMsg("msg","Error GPS: "+e,"#EF4444")
+ });
+}
+async function calcularRutaPrecio(){
+ try{
+  if(!currentLat||!currentLng)throw new Error("Activa GPS primero.");
+  let dlat=Number(destinoLat.value||currentLat+0.018);
+  let dlng=Number(destinoLng.value||currentLng+0.025);
+  rtMarker(map,dlng,dlat,"#EF4444","<b>Destino</b>");
+  const ruta=await rtRoute(map,currentLng,currentLat,dlng,dlat);
+  const tarifa=await rt2GetTarifa(supabaseClient);
+  const distancia=ruta?ruta.distanceKm:rtDistanceKm(currentLat,currentLng,dlat,dlng);
+  const minutos=ruta?ruta.durationMin:Math.round(distancia*3);
+  const total=rt2CalcularPrecio({tarifa,km:distancia,min:minutos,acompanante:acom.checked,silla:silla.checked});
+  km.textContent=distancia.toFixed(2)+" km"; eta.textContent=minutos+" min"; precio.textContent=rtMoney(total);
+  if(servicioId.value){
+    await supabaseClient.from("realtime_servicios").update({
+      destino_lat:dlat,destino_lng:dlng,
+      distancia_calculada_km:distancia,
+      eta_min:minutos,
+      tarifa_dinamica:total,
+      precio_estimado:total,
+      ruta_estado:"calculada"
+    }).eq("id",servicioId.value);
+  }
+  rtMsg("msg","Ruta y precio calculados.","#16C47F");
+ }catch(e){rtMsg("msg",e.message,"#EF4444")}
+}
+async function buscarChofer(){
+ try{
+  if(!servicioId.value)throw new Error("Escribe el ID servicio.");
+  const s=await supabaseClient.from("realtime_servicios").select("*").eq("id",servicioId.value).single();
+  if(s.error)throw s.error;
+  const res=await rt2BuscarChoferesCercanos({supabaseClient,servicio:s.data});
+  matching.innerHTML=res.map(x=>`<div class="item"><b>${rtEscape(x.chofer.nombre||x.chofer.email)}</b><br>${x.dist.toFixed(2)} km · ${x.eta} min · Score ${x.score.toFixed(1)}</div>`).join("")||"<p class='muted'>No hay choferes online.</p>";
+ }catch(e){rtMsg("msg",e.message,"#EF4444")}
+}
+async function sos(){
+ const r=await rt2CrearSOS({supabaseClient,servicioId:servicioId.value||null,perfil,rol:"cliente",lat:currentLat,lng:currentLng,mensaje:"SOS cliente"});
+ if(r) rt2PintarSOS(map,r);
+ rtMsg("msg","SOS enviado al mapa/admin.","#EF4444");
+}
+init();
+</script>
+</body>
+</html>
