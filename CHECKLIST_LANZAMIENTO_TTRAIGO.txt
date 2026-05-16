@@ -1,0 +1,32 @@
+TTRAIGO — FASE FINAL C LANZAMIENTO
+
+GITHUB:
+Sube:
+- launch-center.html
+- package.json
+- capacitor.config.ts
+- POLITICA_PRIVACIDAD_TTRAIGO.md
+- TERMINOS_TTRAIGO.md
+- CHECKLIST_LANZAMIENTO_TTRAIGO.txt
+
+CUENTAS EXTERNAS QUE FALTAN:
+1. Google Play Console: para publicar Android.
+2. Apple Developer Program: para publicar iPhone.
+3. Firebase: push notifications.
+4. Azul o CardNet: pagos reales.
+5. Cuenta bancaria empresarial.
+6. DGII/e-CF si emitirás comprobantes fiscales reales.
+
+PASOS:
+1. Esperar propagación de ttraigo.com.
+2. Confirmar que www.ttraigo.com abre Ttraigo.
+3. Subir launch-center.html a GitHub.
+4. Revisar login, cliente, chofer, acompañante, admin, web, pagos, SOS y reportes.
+5. Instalar Node.js y Android Studio para generar APK/AAB.
+6. Ejecutar:
+   npm install
+   npm run cap:add:android
+   npm run cap:sync
+   npm run cap:open:android
+7. En Android Studio:
+   Build > Generate Signed Bundle / APK.
