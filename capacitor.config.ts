@@ -5,16 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Ttraigo',
   webDir: 'www',
   server: {
-    url: 'https://www.ttraigo.com',
+    url: 'https://www.ttraigo.com/app-mobile.html',
     cleartext: false
-  },
-  plugins: {
-    Geolocation: {
-      permissions: ['location']
-    },
-    PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert']
-    }
   }
 };
 
