@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Referidos y Recompensas</title>
+<style>
+body{
+margin:0;
+background:#05070A;
+color:white;
+font-family:Arial,sans-serif
+}
+.shell{
+max-width:1200px;
+margin:auto;
+padding:24px
+}
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px
+}
+.card{
+background:#111827;
+border-radius:24px;
+padding:24px;
+border:1px solid rgba(255,255,255,.08)
+}
+input,textarea{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,.1);
+background:#1F2937;
+color:white;
+margin-top:10px
+}
+button{
+padding:14px 18px;
+border:0;
+border-radius:16px;
+background:#16C47F;
+color:#06100C;
+font-weight:900;
+cursor:pointer;
+margin-top:12px
+}
+.dark{
+background:#202B3B;
+color:white
+}
+.list{
+display:grid;
+gap:12px
+}
+.item{
+padding:16px;
+border-radius:18px;
+background:#1A2330;
+border:1px solid rgba(255,255,255,.08)
+}
+.hero{
+padding:24px;
+border-radius:28px;
+background:linear-gradient(135deg,#16C47F,#0A8F63);
+color:#06100C;
+margin-bottom:20px
+}
+.kpi{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+margin-top:16px
+}
+.stat{
+background:rgba(255,255,255,.18);
+padding:18px;
+border-radius:18px
+}
+.stat b{
+display:block;
+font-size:28px
+}
+@media(max-width:900px){
+.grid,.kpi{
+grid-template-columns:1fr
+}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<div class="hero">
+<h1>Fase 18 — Referidos y Recompensas</h1>
+<p>Invita personas y gana recompensas automáticas dentro de Ttraigo.</p>
+
+<div class="kpi">
+<div class="stat">
+<b id="kReferidos">0</b>
+<span>Referidos</span>
+</div>
+
+<div class="stat">
+<b id="kBalance">RD$0</b>
+<span>Balance recompensas</span>
+</div>
+
+<div class="stat">
+<b id="kPremios">0</b>
+<span>Premios</span>
+</div>
+</div>
+</div>
+
+<div class="grid">
+
+<div class="card">
+
+<h2>Mi código</h2>
+
+<input id="codigo" readonly>
+
+<button onclick="copiar()">Copiar código</button>
+
+<h3>Usar código de referido</h3>
+
+<input id="usarCodigo" placeholder="Código de referido">
+
+<button class="dark" onclick="usar()">Aplicar código</button>
+
+<p id="msg"></p>
+
+</div>
+
+<div class="card">
+
+<h2>Historial de recompensas</h2>
+
+<div id="lista" class="list"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+const supabaseClient=window.supabase.createClient(
+"https://lvqzkvahfklwzxbxbljv.supabase.co",
+"sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q"
+);
+
+let perfil=null;
+
+function generarCodigo(){
+ return 'TT-'+Math.random().toString(36).substring(2,8).toUpperCase();
+}
+
+async function init(){
+
+ const s=await supabaseClient.auth.getSession();
+
+ if(!s.data.session){
+  location.href='login.html';
+  return;
+ }
+
+ const id=s.data.session.user.id;
+
+ const p=await supabaseClient.from('usuarios')
+ .select('*')
+ .eq('id',id)
+ .single();
+
+ perfil=p.data;
+
+ let code=perfil.codigo_referido;
+
+ if(!code){
+
+   code=generarCodigo();
+
+   await supabaseClient.from('usuarios')
+   .update({codigo_referido:code})
+   .eq('id',perfil.id);
+
+   await supabaseClient.from('referidos')
+   .insert([{
+      usuario_id:perfil.id,
+      codigo:code
+   }]);
+
+   perfil.codigo_referido=code;
+ }
+
+ codigo.value=perfil.codigo_referido;
+
+ cargar();
+}
+
+async function usar(){
+
+ try{
+
+  if(!usarCodigo.value)throw new Error('Escribe un código.');
+
+  const r=await supabaseClient.from('referidos')
+  .select('*')
+  .eq('codigo',usarCodigo.value)
+  .single();
+
+  if(r.error || !r.data)throw new Error('Código no válido.');
+
+  if(r.data.usuario_id===perfil.id)
+    throw new Error('No puedes usar tu propio código.');
+
+  const recompensa=250;
+
+  await supabaseClient.from('recompensas').insert([
+    {
+      usuario_id:r.data.usuario_id,
+      tipo:'referido',
+      descripcion:'Nuevo usuario referido',
+      monto:recompensa
+    }
+  ]);
+
+  const nuevo=(Number(perfil.balance_recompensas||0)+recompensa);
+
+  await supabaseClient.from('usuarios')
+  .update({
+    balance_recompensas:nuevo
+  })
+  .eq('id',r.data.usuario_id);
+
+  msg.textContent='Código aplicado correctamente.';
+  msg.style.color='#16C47F';
+
+  usarCodigo.value='';
+
+  cargar();
+
+ }catch(e){
+   msg.textContent=e.message;
+ }
+}
+
+async function cargar(){
+
+ const ref=await supabaseClient.from('referidos')
+ .select('*');
+
+ const premios=await supabaseClient.from('recompensas')
+ .select('*')
+ .eq('usuario_id',perfil.id)
+ .order('creado_en',{ascending:false});
+
+ const r=ref.data||[];
+ const p=premios.data||[];
+
+ kReferidos.textContent=r.filter(x=>x.usuario_id===perfil.id).length;
+ kBalance.textContent='RD$ '+Number(perfil.balance_recompensas||0).toLocaleString();
+ kPremios.textContent=p.length;
+
+ lista.innerHTML=p.map(x=>`
+ <div class="item">
+ <b>${x.tipo}</b><br>
+ ${x.descripcion}<br><br>
+ <b>RD$ ${Number(x.monto).toLocaleString()}</b>
+ </div>
+ `).join('') || '<p>No hay recompensas.</p>';
+}
+
+function copiar(){
+ navigator.clipboard.writeText(codigo.value);
+ msg.textContent='Código copiado.';
+ msg.style.color='#16C47F';
+}
+
+init();
+
+</script>
+
+</body>
+</html>
