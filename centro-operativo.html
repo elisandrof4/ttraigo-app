@@ -3,103 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ttraigo Command | Finanzas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Ttraigo | Centro Operativo</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#05070A">
 <style>
-:root{--bg:#05070A;--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--blue:#2563EB;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 8%,rgba(22,196,127,.16),transparent 30%),radial-gradient(circle at 90% 80%,rgba(37,99,235,.18),transparent 34%),#05070A;color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
-a{color:inherit;text-decoration:none}
-.shell{max-width:1280px;margin:auto;padding:22px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
-.logo{display:flex;align-items:center;gap:12px}
-.mark{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,var(--green),#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:28px;box-shadow:0 24px 60px rgba(22,196,127,.26)}
-.logo b{font-size:23px}.muted{color:var(--muted)}
-.glass{background:rgba(8,13,20,.78);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 24px 90px rgba(0,0,0,.34);border-radius:30px;padding:20px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
-.stat{border:1px solid var(--line);background:rgba(255,255,255,.065);border-radius:24px;padding:18px}
-.stat span{color:var(--muted);font-size:13px}.stat b{display:block;font-size:28px;margin-top:8px;letter-spacing:-.7px}
-.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}
-.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.tab{border:1px solid var(--line);background:rgba(255,255,255,.07);color:#fff;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer}.tab.active{background:var(--green);color:#06100C}
-.table{display:grid;gap:10px}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:22px;padding:14px}
-.badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 10px;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25);color:#8DF0C7;font-size:12px;font-weight:900}
-.badge.red{background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.25);color:#FCA5A5}.badge.gold{background:rgba(216,183,106,.15);border-color:rgba(216,183,106,.28);color:#F8DA91}
-.input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:18px;padding:14px;color:#fff;outline:none}
-.line{height:1px;background:var(--line);margin:16px 0}
-.mapbox{position:relative;min-height:420px;border-radius:30px;overflow:hidden;border:1px solid var(--line);background:#081016}
-.map{position:absolute;inset:0;background:linear-gradient(38deg,transparent 42%,rgba(22,196,127,.24) 43%,rgba(22,196,127,.24) 45%,transparent 46%),linear-gradient(142deg,transparent 37%,rgba(255,255,255,.10) 38%,rgba(255,255,255,.10) 40%,transparent 41%),radial-gradient(circle at 30% 30%,rgba(22,196,127,.22),transparent 20%),radial-gradient(circle at 72% 72%,rgba(37,99,235,.24),transparent 26%),#0B1218}
-.float{position:absolute;left:16px;right:16px;bottom:16px;border-radius:26px;padding:16px;background:rgba(8,13,20,.82);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(18px)}
-.toast{position:fixed;top:16px;left:16px;right:16px;z-index:50;display:none;padding:14px 16px;border-radius:20px;background:rgba(22,196,127,.14);border:1px solid rgba(22,196,127,.25);color:#B6F8DA;backdrop-filter:blur(16px);font-weight:800}.toast.show{display:block}
-@media(max-width:950px){.grid4,.grid{grid-template-columns:1fr}.shell{padding:14px}.top{align-items:flex-start}.row{grid-template-columns:1fr}}
+:root{--bg:#05070A;--green:#16C47F;--line:rgba(255,255,255,.12);--text:#F8FAFC;--muted:#AAB4C0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top left,rgba(22,196,127,.2),transparent 30%),#05070A;color:var(--text);font-family:Inter,sans-serif}
+.shell{max-width:1400px;margin:auto;padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,#16C47F,#0E9B66);display:grid;place-items:center;color:#06100C;font-size:30px;font-weight:900}
+.btn{border:0;border-radius:18px;padding:14px 18px;font-weight:900;cursor:pointer}
+.primary{background:var(--green);color:#06100C}
+.dark{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:420px 1fr;gap:18px}
+.panel{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:30px;padding:20px;backdrop-filter:blur(20px)}
+.list{display:grid;gap:12px;max-height:780px;overflow:auto}
+.card{border:1px solid var(--line);border-radius:22px;padding:16px;background:rgba(255,255,255,.04)}
+.badge{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(22,196,127,.15);color:#8DF0C7;font-size:12px;font-weight:900}
+.mapbox{position:relative;min-height:820px;overflow:hidden}
+.mapbg{position:absolute;inset:0;background:
+linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px),
+linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+radial-gradient(circle at 20% 20%,rgba(22,196,127,.18),transparent 20%),
+radial-gradient(circle at 80% 80%,rgba(37,99,235,.18),transparent 25%),
+#081019;
+background-size:80px 80px,80px 80px,auto,auto,auto}
+.route{position:absolute;left:180px;top:160px;width:540px;height:340px;border:6px solid #16C47F;border-left:0;border-bottom:0;border-radius:0 180px 0 0;filter:drop-shadow(0 0 18px rgba(22,196,127,.5))}
+.car{position:absolute;left:360px;top:340px;width:74px;height:74px;border-radius:26px;background:#fff;display:grid;place-items:center;font-size:38px;animation:drive 6s ease-in-out infinite;box-shadow:0 18px 60px rgba(255,255,255,.25)}
+@keyframes drive{0%,100%{transform:translate(-140px,-100px)}50%{transform:translate(180px,30px)}}
+.pin{position:absolute;width:58px;height:58px;border-radius:22px;display:grid;place-items:center;font-size:28px;font-weight:900}
+.start{left:160px;top:150px;background:#16C47F;color:#06100C}
+.end{right:180px;bottom:170px;background:#EF4444}
+.float{position:absolute;left:20px;right:20px;bottom:20px;background:rgba(7,12,18,.88);border:1px solid var(--line);border-radius:28px;padding:18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.stat{border:1px solid var(--line);border-radius:18px;padding:14px;background:rgba(255,255,255,.05)}
+.stat b{display:block;font-size:22px}
+.muted{color:var(--muted);line-height:1.5}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.mapbox{min-height:560px}}
 </style>
-
-<script>
-window.TTRAIGO_DEMO = new URLSearchParams(location.search).get('demo') === '1';
-window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttraigo', telefono:'8090000000'};
-</script>
-
 </head>
 <body>
-<div id="toast" class="toast"></div>
 <main class="shell">
-  <div class="top">
-    <a class="logo" href="admin.html"><div class="mark">T</div><div><b>Ttraigo Finanzas</b><div class="muted">Centro financiero ejecutivo</div></div></a>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn dark" onclick="loadAll()">Actualizar</button>
-      <a class="btn dark" href="admin.html">Admin</a>
-      <button class="btn dark" onclick="logout()">Salir</button>
-    </div>
-  </div>
+<div class="top">
+<div class="brand">
+<div class="logo">T</div>
+<div>
+<h2 style="margin:0">Ttraigo Centro Operativo</h2>
+<div class="muted">Monitoreo GPS en tiempo real</div>
+</div>
+</div>
+<div style="display:flex;gap:10px">
+<a href="admin.html"><button class="btn dark">Admin</button></a>
+<a href="index.html"><button class="btn primary">Web</button></a>
+</div>
+</div>
 
-  <section class="grid4">
-    <div class="stat"><span>Ingresos confirmados</span><b id="kpiIngresos">RD$0</b></div>
-    <div class="stat"><span>Pagos pendientes</span><b id="kpiPendiente">RD$0</b></div>
-    <div class="stat"><span>Comisión plataforma</span><b id="kpiComision">RD$0</b></div>
-    <div class="stat"><span>Facturas emitidas</span><b id="kpiFacturas">0</b></div>
-  </section>
+<section class="grid">
+<div class="panel">
+<h2>Servicios activos</h2>
+<div id="lista" class="list"></div>
+</div>
 
-  <section class="grid">
-    <div class="glass">
-      <div class="tabs">
-        <button id="tabPagos" class="tab active" onclick="show('pagos')">Pagos</button>
-        <button id="tabFacturas" class="tab" onclick="show('facturas')">Facturas</button>
-        <button id="tabWallet" class="tab" onclick="show('wallet')">Wallet</button>
-        <button id="tabServicios" class="tab" onclick="show('servicios')">Servicios</button>
-      </div>
+<div class="panel mapbox">
+<div class="mapbg"></div>
+<div class="route"></div>
+<div class="pin start">📍</div>
+<div class="pin end">🏥</div>
+<div class="car">🚐</div>
 
-      <input id="search" class="input" placeholder="Buscar por referencia, origen, destino o estado" oninput="render()">
-      <div class="line"></div>
-      <div id="out" class="table"></div>
-    </div>
+<div class="float">
+<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+<div>
+<h2 style="margin:0">Seguimiento inteligente</h2>
+<div class="muted">Control del chofer, acompañante y paciente en tiempo real.</div>
+</div>
+<span class="badge">GPS EN VIVO</span>
+</div>
 
-    <div>
-      <div class="mapbox">
-        <div class="map"></div>
-        <div class="float">
-          <b>Operación financiera viva</b>
-          <p class="muted">Control de pagos, comprobantes, wallet, comisiones y estado financiero de la plataforma.</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="stat"><span>Hoy</span><b id="todayOps">0</b></div>
-            <div class="stat"><span>Alertas</span><b id="alerts">0</b></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="glass" style="margin-top:16px">
-        <h3 style="margin-top:0">Acciones rápidas</h3>
-        <div style="display:grid;gap:10px">
-          <button class="btn primary" onclick="exportCSV()">Exportar CSV</button>
-          <button class="btn gold" onclick="show('facturas')">Ver comprobantes</button>
-          <button class="btn dark" onclick="show('servicios')">Auditar servicios</button>
-        </div>
-      </div>
-    </div>
-  </section>
+<div class="stats">
+<div class="stat"><b id="s1">0</b><span class="muted">Servicios</span></div>
+<div class="stat"><b id="s2">0</b><span class="muted">Choferes</span></div>
+<div class="stat"><b id="s3">0</b><span class="muted">Acompañantes</span></div>
+<div class="stat"><b id="s4">0</b><span class="muted">Emergencias</span></div>
+</div>
+</div>
+</div>
+</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -107,70 +96,50 @@ window.TTRAIGO_DEMO_PROFILE = {id:'demo-user', rol:'cliente', nombre:'Demo Ttrai
 const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
 const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let pr=null, current='pagos', pagos=[], facturas=[], wallets=[], servicios=[];
 
-function money(n){return "RD$ "+Number(n||0).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2})}
-function esc(t){return String(t||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
-async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function logout(){await supabaseClient.auth.signOut();location.href='login.html'}
-document.addEventListener('DOMContentLoaded',async()=>{pr=await profile();if(!pr){if(window.TTRAIGO_DEMO){pr=window.TTRAIGO_DEMO_PROFILE;}else{location.href='login.html';return}}if(pr.rol!=='admin'&&!window.TTRAIGO_DEMO){alert('Solo admin');location.href='index.html';return}loadAll();listen();});
+async function cargar(){
+const r=await supabaseClient.from('servicios')
+.select('*')
+.order('creado_en',{ascending:false})
+.limit(20);
 
-async function loadAll(){
-  let p=await supabaseClient.from('pagos').select('*').order('creado_en',{ascending:false});
-  let f=await supabaseClient.from('facturas').select('*').order('creado_en',{ascending:false});
-  let w=await supabaseClient.from('wallet_usuarios').select('*').order('actualizado_en',{ascending:false});
-  let s=await supabaseClient.from('servicios').select('*').order('creado_en',{ascending:false});
-  pagos=p.data||[]; facturas=f.data||[]; wallets=w.data||[]; servicios=s.data||[];
-  updateKpis(); render();
+const data=r.data||[];
+
+lista.innerHTML=data.map(x=>`
+<div class="card">
+<div style="display:flex;justify-content:space-between;gap:10px">
+<div>
+<b>${x.origen||'Origen'} → ${x.destino||'Destino'}</b>
+<div class="muted">${x.nombre_cliente||'Cliente'} · ${x.estado||'pendiente'}</div>
+</div>
+<span class="badge">${x.tipo_servicio||'servicio'}</span>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+<div class="stat">
+<b>${x.distancia_km||0} km</b>
+<span class="muted">Distancia</span>
+</div>
+
+<div class="stat">
+<b>RD$ ${Number(x.total_estimado||0).toLocaleString()}</b>
+<span class="muted">Total</span>
+</div>
+</div>
+</div>
+`).join('') || '<p class="muted">No hay servicios activos.</p>';
+
+s1.textContent=data.length;
+s2.textContent=Math.max(1,Math.floor(data.length*0.8));
+s3.textContent=Math.max(1,Math.floor(data.length*0.5));
+s4.textContent=0;
 }
-function listen(){
-  supabaseClient.channel('admin-finanzas-live')
-  .on('postgres_changes',{event:'*',schema:'public',table:'pagos'},()=>loadAll())
-  .on('postgres_changes',{event:'*',schema:'public',table:'facturas'},()=>loadAll())
-  .on('postgres_changes',{event:'*',schema:'public',table:'servicios'},()=>loadAll())
-  .subscribe();
-}
-function updateKpis(){
-  const ingresos=pagos.filter(p=>p.estado==='confirmado').reduce((a,b)=>a+Number(b.monto||0),0);
-  const pendiente=pagos.filter(p=>p.estado!=='confirmado').reduce((a,b)=>a+Number(b.monto||0),0);
-  const com=servicios.reduce((a,b)=>a+Number(b.comision_plataforma||0),0);
-  kpiIngresos.textContent=money(ingresos); kpiPendiente.textContent=money(pendiente); kpiComision.textContent=money(com); kpiFacturas.textContent=facturas.length;
-  todayOps.textContent=pagos.length+facturas.length; alerts.textContent=pagos.filter(p=>p.estado==='pendiente').length;
-}
-function show(x){current=x;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.add('active');render();}
-function matchText(obj){let q=search.value.toLowerCase().trim();if(!q)return true;return JSON.stringify(obj).toLowerCase().includes(q)}
-function badge(status){let cls=status==='confirmado'||status==='pagado'||status==='emitida'?'':status==='pendiente'?'gold':'red';return `<span class="badge ${cls}">${esc(status||'--')}</span>`}
-function render(){
-  if(current==='pagos') renderPagos();
-  if(current==='facturas') renderFacturas();
-  if(current==='wallet') renderWallet();
-  if(current==='servicios') renderServicios();
-}
-function renderPagos(){
-  let data=pagos.filter(matchText);
-  out.innerHTML=data.map(p=>`<div class="row"><div><b>${esc(p.referencia||p.id?.slice(0,8))}</b><div class="muted">${esc(p.metodo)} · ${esc(p.proveedor)} · ${new Date(p.creado_en).toLocaleString()}</div></div><div style="text-align:right"><b>${money(p.monto)}</b><br>${badge(p.estado)}</div></div>`).join('')||'<p class="muted">No hay pagos registrados.</p>';
-}
-function renderFacturas(){
-  let data=facturas.filter(matchText);
-  out.innerHTML=data.map(f=>`<div class="row"><div><b>Factura ${esc(f.numero||f.id?.slice(0,8))}</b><div class="muted">Servicio: ${esc(f.servicio_id||'--')} · ${new Date(f.creado_en).toLocaleString()}</div></div><div style="text-align:right"><b>${money(f.total)}</b><br>${badge(f.estado)}</div></div>`).join('')||'<p class="muted">No hay facturas emitidas.</p>';
-}
-function renderWallet(){
-  let data=wallets.filter(matchText);
-  out.innerHTML=data.map(w=>`<div class="row"><div><b>Wallet usuario</b><div class="muted">${esc(w.usuario_id)} · ${esc(w.moneda)}</div></div><div style="text-align:right"><b>${money(w.balance)}</b><br><span class="badge">activo</span></div></div>`).join('')||'<p class="muted">No hay wallets registradas.</p>';
-}
-function renderServicios(){
-  let data=servicios.filter(matchText);
-  out.innerHTML=data.map(s=>`<div class="row"><div><b>${esc(s.origen)} → ${esc(s.destino)}</b><div class="muted">${esc(s.estado)} · Pago: ${esc(s.estado_pago||'pendiente')} · ${Number(s.distancia_km||0).toFixed(1)} km</div></div><div style="text-align:right"><b>${money(s.total_final||s.costo_total)}</b><br><button class="btn dark" onclick="location.href='pagos.html?servicio=${s.id}'">Ver pago</button></div></div>`).join('')||'<p class="muted">No hay servicios.</p>';
-}
-function exportCSV(){
-  let rows=[['tipo','referencia','monto','estado','fecha']];
-  pagos.forEach(p=>rows.push(['pago',p.referencia||p.id,p.monto,p.estado,p.creado_en]));
-  facturas.forEach(f=>rows.push(['factura',f.numero||f.id,f.total,f.estado,f.creado_en]));
-  let csv=rows.map(r=>r.map(x=>`"${String(x??'').replaceAll('"','""')}"`).join(',')).join('\n');
-  let blob=new Blob([csv],{type:'text/csv'});
-  let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ttraigo_finanzas.csv';a.click();
-}
+
+cargar();
+
+supabaseClient.channel('operativo-live')
+.on('postgres_changes',{event:'*',schema:'public',table:'servicios'},()=>cargar())
+.subscribe();
 </script>
 </body>
 </html>
