@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Notificaciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.13)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 9%,rgba(22,196,127,.22),transparent 32%),radial-gradient(circle at 90% 88%,rgba(37,99,235,.18),transparent 38%),#05070A;color:var(--text)}a{color:inherit;text-decoration:none}.shell{max-width:1240px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px}.mark{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#16C47F,#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:28px}.navBtns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.25);color:#FCA5A5}.hero,.panel{border:1px solid var(--line);background:rgba(255,255,255,.075);border-radius:30px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.25)}.hero{border-radius:34px;padding:30px;margin-bottom:18px}h1{font-size:clamp(38px,5vw,66px);letter-spacing:-2px;margin:8px 0 12px}.muted{color:var(--muted);line-height:1.6}.grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.stat{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:20px;padding:14px}.stat b{display:block;font-size:28px}.stat span{font-size:12px;color:#AAB4C0}.input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:18px;padding:15px;color:#fff;outline:none;margin-top:10px}select.input option{color:#111}.list{display:grid;gap:10px;margin-top:12px;max-height:650px;overflow:auto}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:20px;padding:14px}.row.unread{border-color:rgba(22,196,127,.42);background:rgba(22,196,127,.08)}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25);color:#8DF0C7;font-size:12px;font-weight:900}.message{font-weight:900;white-space:pre-wrap}@media(max-width:960px){.grid,.grid3{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding:15px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+<nav class="nav">
+<a class="brand" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted">Notificaciones</div></div></a>
+<div class="navBtns"><a class="btn dark" href="cliente.html">Cliente</a><a class="btn dark" href="admin.html">Admin</a><a class="btn dark" href="index.html">Web</a></div>
+</nav>
+
+<section class="hero">
+<span class="badge">FASE 15</span>
+<h1>Notificaciones y mensajería interna.</h1>
+<p class="muted">Esta fase agrega bandeja de notificaciones, mensajes por servicio y alertas internas para cliente, chofer, acompañante y administración.</p>
+</section>
+
+<section class="grid">
+<div class="panel">
+<h2>Crear notificación</h2>
+<p class="muted">Uso administrativo o prueba: envía una notificación a cualquier usuario usando su ID.</p>
+<input id="usuarioId" class="input" placeholder="ID del usuario destinatario">
+<input id="servicioId" class="input" placeholder="ID servicio opcional">
+<select id="tipo" class="input">
+<option value="general">General</option>
+<option value="servicio">Servicio</option>
+<option value="pago">Pago</option>
+<option value="sos">SOS</option>
+<option value="plan">Plan / membresía</option>
+</select>
+<input id="titulo" class="input" placeholder="Título">
+<textarea id="mensaje" class="input" rows="5" placeholder="Mensaje"></textarea>
+<button class="btn primary" style="width:100%;margin-top:12px" onclick="crearNotificacion()">Enviar notificación</button>
+
+<h3>Mensaje por servicio</h3>
+<input id="chatServicio" class="input" placeholder="ID del servicio">
+<textarea id="chatMensaje" class="input" rows="4" placeholder="Mensaje del chat interno"></textarea>
+<button class="btn gold" style="width:100%;margin-top:12px" onclick="enviarMensaje()">Enviar mensaje</button>
+<p id="msg" class="message"></p>
+</div>
+
+<div class="panel">
+<h2>Mi bandeja</h2>
+<div class="grid3">
+<div class="stat"><b id="total">0</b><span>Total</span></div>
+<div class="stat"><b id="noLeidas">0</b><span>No leídas</span></div>
+<div class="stat"><b id="mensajes">0</b><span>Mensajes</span></div>
+</div>
+<button class="btn dark" onclick="marcarTodas()">Marcar todas como leídas</button>
+<div id="lista" class="list"></div>
+
+<h3 style="margin-top:24px">Mensajes recientes</h3>
+<div id="listaMensajes" class="list"></div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let perfil=null;
+
+function setMsg(t,c='#FCA5A5'){msg.textContent=t;msg.style.color=c}
+function esc(t){return String(t||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const pr=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=pr.data;
+ usuarioId.value=perfil.id;
+ cargar();
+ supabaseClient.channel('notificaciones-live')
+ .on('postgres_changes',{event:'*',schema:'public',table:'notificaciones'},cargar)
+ .on('postgres_changes',{event:'*',schema:'public',table:'mensajes_servicio'},cargar)
+ .subscribe();
+}
+
+async function crearNotificacion(){
+ try{
+  if(!usuarioId.value||!titulo.value||!mensaje.value)throw new Error('Completa usuario, título y mensaje.');
+  const r=await supabaseClient.from('notificaciones').insert([{
+    usuario_id:usuarioId.value,
+    servicio_id:servicioId.value||null,
+    titulo:titulo.value,
+    mensaje:mensaje.value,
+    tipo:tipo.value,
+    leida:false
+  }]);
+  if(r.error)throw r.error;
+  setMsg('Notificación enviada correctamente.','#16C47F');
+  titulo.value='';mensaje.value='';
+  cargar();
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+async function enviarMensaje(){
+ try{
+  if(!chatServicio.value||!chatMensaje.value)throw new Error('Completa ID servicio y mensaje.');
+  const r=await supabaseClient.from('mensajes_servicio').insert([{
+    servicio_id:chatServicio.value,
+    remitente_id:perfil.id,
+    remitente_rol:perfil.rol,
+    mensaje:chatMensaje.value
+  }]);
+  if(r.error)throw r.error;
+  setMsg('Mensaje enviado.','#16C47F');
+  chatMensaje.value='';
+  cargar();
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+async function cargar(){
+ const n=await supabaseClient.from('notificaciones').select('*').eq('usuario_id',perfil.id).order('creado_en',{ascending:false}).limit(50);
+ const data=n.data||[];
+ total.textContent=data.length;
+ noLeidas.textContent=data.filter(x=>!x.leida).length;
+
+ lista.innerHTML=data.map(x=>`
+ <div class="row ${!x.leida?'unread':''}">
+ <div>
+ <b>${esc(x.titulo)}</b>
+ <div class="muted">${esc(x.mensaje)}<br>${new Date(x.creado_en).toLocaleString()}</div>
+ </div>
+ <div style="text-align:right">
+ <span class="badge">${esc(x.tipo)}</span><br>
+ <button class="btn dark" onclick="marcar('${x.id}')">Leída</button>
+ </div>
+ </div>`).join('')||'<p class="muted">No tienes notificaciones.</p>';
+
+ const m=await supabaseClient.from('mensajes_servicio').select('*').order('creado_en',{ascending:false}).limit(30);
+ const ms=m.data||[];
+ mensajes.textContent=ms.length;
+ listaMensajes.innerHTML=ms.map(x=>`
+ <div class="row">
+ <div>
+ <b>Servicio: ${esc(x.servicio_id)}</b>
+ <div class="muted">${esc(x.remitente_rol)} · ${esc(x.mensaje)}<br>${new Date(x.creado_en).toLocaleString()}</div>
+ </div>
+ </div>`).join('')||'<p class="muted">No hay mensajes.</p>';
+}
+
+async function marcar(id){
+ await supabaseClient.from('notificaciones').update({leida:true}).eq('id',id);
+ cargar();
+}
+
+async function marcarTodas(){
+ await supabaseClient.from('notificaciones').update({leida:true}).eq('usuario_id',perfil.id);
+ cargar();
+}
+
+init();
+</script>
+</body>
+</html>
