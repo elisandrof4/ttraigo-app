@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Soporte</title>
+<style>
+body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1250px;margin:auto;padding:24px}
+.hero{background:linear-gradient(135deg,#16C47F,#0A8F63);color:#06100C;border-radius:30px;padding:28px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#111827;border-radius:24px;padding:24px;border:1px solid rgba(255,255,255,.08)}
+input,textarea,select{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px}
+button{padding:14px 18px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:12px}
+.dark{background:#202B3B;color:white}
+.danger{background:#EF4444;color:white}
+.list{display:grid;gap:12px;max-height:680px;overflow:auto}
+.item{padding:16px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08)}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.stat{background:rgba(255,255,255,.18);padding:18px;border-radius:18px}
+.stat b{display:block;font-size:28px}
+@media(max-width:900px){.grid,.kpi{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="hero">
+<h1>Fase 20 — Soporte, Tickets y Reclamaciones</h1>
+<p>Centro de ayuda para clientes, choferes, acompañantes y administración.</p>
+<div class="kpi">
+<div class="stat"><b id="kAbiertos">0</b><span>Abiertos</span></div>
+<div class="stat"><b id="kProceso">0</b><span>En proceso</span></div>
+<div class="stat"><b id="kCerrados">0</b><span>Cerrados</span></div>
+</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>Crear ticket</h2>
+<select id="categoria">
+<option value="viaje">Problema con viaje</option>
+<option value="pago">Pago / comprobante</option>
+<option value="chofer">Chofer</option>
+<option value="acompanante">Acompañante</option>
+<option value="seguridad">Seguridad / SOS</option>
+<option value="general">General</option>
+</select>
+<select id="prioridad">
+<option value="normal">Normal</option>
+<option value="alta">Alta</option>
+<option value="urgente">Urgente</option>
+</select>
+<input id="servicio" placeholder="ID servicio opcional">
+<input id="asunto" placeholder="Asunto">
+<textarea id="descripcion" rows="6" placeholder="Describe el problema"></textarea>
+<button onclick="crearTicket()">Crear ticket</button>
+<p id="msg"></p>
+</div>
+
+<div class="card">
+<h2>Responder / actualizar</h2>
+<input id="ticketId" placeholder="ID del ticket">
+<select id="estado">
+<option value="abierto">Abierto</option>
+<option value="en_proceso">En proceso</option>
+<option value="cerrado">Cerrado</option>
+</select>
+<textarea id="respuesta" rows="5" placeholder="Respuesta o actualización"></textarea>
+<button class="dark" onclick="responder()">Guardar respuesta</button>
+<button class="danger" onclick="cerrar()">Cerrar ticket</button>
+</div>
+</div>
+
+<div class="card" style="margin-top:20px">
+<h2>Tickets registrados</h2>
+<div id="lista" class="list"></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient=window.supabase.createClient(
+"https://lvqzkvahfklwzxbxbljv.supabase.co",
+"sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q"
+);
+
+let perfil=null;
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const p=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=p.data;
+ cargar();
+}
+
+async function crearTicket(){
+ try{
+  if(!asunto.value || !descripcion.value)throw new Error('Completa asunto y descripción.');
+
+  const r=await supabaseClient.from('tickets_soporte').insert([{
+   usuario_id:perfil.id,
+   servicio_id:servicio.value || null,
+   categoria:categoria.value,
+   prioridad:prioridad.value,
+   asunto:asunto.value,
+   descripcion:descripcion.value,
+   estado:'abierto'
+  }]).select().single();
+
+  if(r.error)throw r.error;
+
+  await supabaseClient.from('ticket_mensajes').insert([{
+    ticket_id:r.data.id,
+    usuario_id:perfil.id,
+    rol:perfil.rol,
+    mensaje:descripcion.value
+  }]);
+
+  msg.textContent='Ticket creado correctamente.';
+  msg.style.color='#16C47F';
+
+  asunto.value='';
+  descripcion.value='';
+  servicio.value='';
+  cargar();
+
+ }catch(e){
+  msg.textContent=e.message;
+  msg.style.color='#EF4444';
+ }
+}
+
+async function responder(){
+ try{
+  if(!ticketId.value || !respuesta.value)throw new Error('Completa ID del ticket y respuesta.');
+
+  const r=await supabaseClient.from('tickets_soporte').update({
+   estado:estado.value,
+   respuesta_admin:respuesta.value,
+   actualizado_en:new Date().toISOString()
+  }).eq('id',ticketId.value);
+
+  if(r.error)throw r.error;
+
+  await supabaseClient.from('ticket_mensajes').insert([{
+    ticket_id:ticketId.value,
+    usuario_id:perfil.id,
+    rol:perfil.rol,
+    mensaje:respuesta.value
+  }]);
+
+  msg.textContent='Respuesta guardada.';
+  msg.style.color='#16C47F';
+
+  respuesta.value='';
+  cargar();
+
+ }catch(e){
+  msg.textContent=e.message;
+  msg.style.color='#EF4444';
+ }
+}
+
+async function cerrar(){
+ estado.value='cerrado';
+ if(!respuesta.value)respuesta.value='Ticket cerrado.';
+ responder();
+}
+
+async function cargar(){
+ const r=await supabaseClient.from('tickets_soporte')
+ .select('*')
+ .order('creado_en',{ascending:false});
+
+ const data=r.data||[];
+
+ kAbiertos.textContent=data.filter(x=>x.estado==='abierto').length;
+ kProceso.textContent=data.filter(x=>x.estado==='en_proceso').length;
+ kCerrados.textContent=data.filter(x=>x.estado==='cerrado').length;
+
+ lista.innerHTML=data.map(x=>`
+ <div class="item">
+ <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+ <div>
+ <b>${x.asunto||'Sin asunto'}</b><br>
+ <span>${x.descripcion||''}</span><br><br>
+ <small>ID: ${x.id}</small>
+ </div>
+ <span class="badge">${x.estado}</span>
+ </div>
+ <p>Categoría: ${x.categoria} · Prioridad: ${x.prioridad}</p>
+ <p>Respuesta: ${x.respuesta_admin||'Pendiente'}</p>
+ <button class="dark" onclick="ticketId.value='${x.id}'">Seleccionar</button>
+ </div>
+ `).join('') || '<p>No hay tickets.</p>';
+}
+
+init();
+</script>
+</body>
+</html>
