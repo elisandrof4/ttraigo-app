@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cliente Realtime</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1380px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}
+.grid{display:grid;grid-template-columns:390px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+.map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px;box-sizing:border-box}
+button,.btn{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;text-decoration:none;display:inline-block}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}
+.item{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.muted{color:#AAB4C0;line-height:1.55}.small{font-size:12px;color:#AAB4C0}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.map{height:540px}}</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Cliente Realtime</b><div class="muted">Core Realtime Parte 1</div></div></div>
+<div><a class="btn dark" href="index.html">Inicio</a> <a class="btn dark" href="login.html">Login</a></div>
+</nav>
+
+<section class="grid">
+<div class="card">
+<h2>Pedir servicio con mapa real</h2>
+<p class="muted">Parte 1: GPS real, servicio guardado en Supabase y seguimiento básico.</p>
+<input id="origen" placeholder="Origen">
+<input id="destino" placeholder="Destino">
+<select id="tipo"><option value="viaje">Viaje normal</option><option value="medico">Cita médica</option><option value="acompanante">Con acompañante</option></select>
+<label class="small"><input id="acom" type="checkbox"> Requiere acompañante</label>
+<button onclick="activarGPS()">Activar GPS</button>
+<button class="dark" onclick="crearServicio()">Pedir servicio</button>
+<button class="dark" onclick="cargarMisServicios()">Actualizar mis servicios</button>
+<p id="msg"></p>
+<div class="item">Lat: <b id="lat">--</b></div>
+<div class="item">Lng: <b id="lng">--</b></div>
+<div class="item">Servicio activo: <b id="sid">--</b></div>
+<div id="lista"></div>
+</div>
+<div class="card"><div id="map" class="map"></div></div>
+</section>
+
+</div>
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ttraigo-realtime-core.js"></script>
+<script>
+const supabaseClient = rtCreateSupabase();
+let perfil=null, map=null, myMarker=null, watchId=null, currentLat=null, currentLng=null, servicioActivo=null;
+
+async function init(){
+  perfil = await rtRequireUser(supabaseClient);
+  if(!perfil) return;
+  map = rtCreateMap("map");
+  cargarMisServicios();
+}
+function activarGPS(){
+  watchId = rtStartGPS({
+    supabaseClient, perfil, rol:"cliente", servicioId:servicioActivo,
+    onPosition:p=>{
+      currentLat=p.lat; currentLng=p.lng;
+      lat.textContent=p.lat.toFixed(6); lng.textContent=p.lng.toFixed(6);
+      myMarker = rtSetMarker(myMarker,map,p.lng,p.lat,"#3B82F6","<b>Cliente</b>");
+      if(map) map.flyTo({center:[p.lng,p.lat],zoom:15});
+      rtMsg("msg","GPS cliente activo.","#16C47F");
+    },
+    onError:e=>rtMsg("msg","Error GPS: "+e,"#EF4444")
+  });
+}
+async function crearServicio(){
+  try{
+    if(!origen.value || !destino.value) throw new Error("Completa origen y destino.");
+    const precio = acom.checked || tipo.value==="acompanante" ? 1250 : 650;
+    const r = await supabaseClient.from("realtime_servicios").insert([{
+      cliente_id:perfil.id,
+      origen:origen.value,
+      destino:destino.value,
+      origen_lat:currentLat,
+      origen_lng:currentLng,
+      tipo_servicio:tipo.value,
+      requiere_acompanante:acom.checked || tipo.value==="acompanante",
+      estado:"pendiente",
+      precio_estimado:precio
+    }]).select().single();
+    if(r.error) throw r.error;
+    servicioActivo=r.data.id; sid.textContent=servicioActivo;
+    await supabaseClient.from("realtime_eventos").insert([{servicio_id:servicioActivo,usuario_id:perfil.id,rol:"cliente",evento:"servicio_creado",detalle:"Cliente solicitó servicio"}]);
+    rtMsg("msg","Servicio creado correctamente.","#16C47F");
+    cargarMisServicios();
+  }catch(e){rtMsg("msg",e.message,"#EF4444")}
+}
+async function cargarMisServicios(){
+  const r=await supabaseClient.from("realtime_servicios").select("*").eq("cliente_id",perfil.id).order("creado_en",{ascending:false}).limit(10);
+  const data=r.data||[];
+  lista.innerHTML=data.map(s=>`<div class="item"><b>${rtEscape(s.origen)} → ${rtEscape(s.destino)}</b><br><span class="badge">${s.estado}</span><br>${rtMoney(s.precio_estimado)}<br><small>${s.id}</small><br><button class="dark" onclick="servicioActivo='${s.id}';sid.textContent='${s.id}'">Seguir este</button></div>`).join("") || "<p class='muted'>No tienes servicios.</p>";
+}
+init();
+</script>
+</body>
+</html>

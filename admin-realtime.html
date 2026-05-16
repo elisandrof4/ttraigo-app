@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin PC Realtime</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<style>body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}
+.shell{max-width:1380px;margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}
+.grid{display:grid;grid-template-columns:390px 1fr;gap:18px}
+.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:20px}
+.map{height:720px;border-radius:24px;overflow:hidden;background:#0B1218}
+input,select,textarea{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#1F2937;color:white;margin-top:10px;box-sizing:border-box}
+button,.btn{padding:14px 16px;border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;cursor:pointer;margin-top:10px;text-decoration:none;display:inline-block}
+.dark{background:#202B3B;color:white}.danger{background:#EF4444;color:white}
+.item{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}
+.muted{color:#AAB4C0;line-height:1.55}.small{font-size:12px;color:#AAB4C0}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.map{height:540px}}</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Admin PC Realtime</b><div class="muted">Core Realtime Parte 1</div></div></div>
+<div><a class="btn dark" href="index.html">Inicio</a> <a class="btn dark" href="login.html">Login</a></div>
+</nav>
+
+<section class="grid">
+<div class="card">
+<h2>Admin PC — monitoreo en mapa</h2>
+<p class="muted">Panel separado para computadora. No va dentro de la app móvil.</p>
+<button onclick="cargarUbicaciones()">Actualizar ubicaciones</button>
+<button class="dark" onclick="cargarServicios()">Actualizar servicios</button>
+<p id="msg"></p>
+<div class="item">Ubicaciones: <b id="kubi">0</b></div>
+<div class="item">Servicios: <b id="ksrv">0</b></div>
+<div id="lista"></div>
+</div>
+<div class="card"><div id="map" class="map"></div></div>
+</section>
+
+</div>
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ttraigo-realtime-core.js"></script>
+<script>
+const supabaseClient = rtCreateSupabase();
+let perfil=null, map=null, markers=[];
+
+async function init(){
+  perfil = await rtRequireUser(supabaseClient);
+  if(!perfil) return;
+  map = rtCreateMap("map");
+  cargarUbicaciones();
+  cargarServicios();
+
+  supabaseClient.channel("admin-realtime-parte1")
+  .on("postgres_changes",{event:"INSERT",schema:"public",table:"realtime_ubicaciones"}, payload => pintarUbicacion(payload.new))
+  .on("postgres_changes",{event:"*",schema:"public",table:"realtime_servicios"}, payload => cargarServicios())
+  .subscribe();
+}
+function limpiarMarkers(){
+  markers.forEach(m => m && m.remove());
+  markers=[];
+}
+function pintarUbicacion(u){
+  if(!u.latitud || !u.longitud) return;
+  const color = u.rol==="chofer" ? "#16C47F" : u.rol==="acompanante" ? "#D8B76A" : "#3B82F6";
+  const html = `<b>${rtEscape(u.rol)}</b><br>${rtEscape(u.usuario_id)}<br>${new Date(u.creado_en).toLocaleString()}`;
+  markers.push(rtMarker(map,u.longitud,u.latitud,color,html));
+}
+async function cargarUbicaciones(){
+  limpiarMarkers();
+  const r=await supabaseClient.from("realtime_ubicaciones").select("*").order("creado_en",{ascending:false}).limit(100);
+  const data=r.data||[];
+  kubi.textContent=data.length;
+  data.forEach(pintarUbicacion);
+  if(data[0] && data[0].latitud && map) map.flyTo({center:[data[0].longitud,data[0].latitud],zoom:13});
+  rtMsg("msg","Ubicaciones cargadas.","#16C47F");
+}
+async function cargarServicios(){
+  const r=await supabaseClient.from("realtime_servicios").select("*").order("creado_en",{ascending:false}).limit(30);
+  const data=r.data||[];
+  ksrv.textContent=data.length;
+  lista.innerHTML=data.map(s=>`<div class="item"><b>${rtEscape(s.origen)} → ${rtEscape(s.destino)}</b><br><span class="badge">${s.estado}</span><br>${rtMoney(s.precio_estimado)}<br><small>${s.id}</small></div>`).join("") || "<p class='muted'>No hay servicios.</p>";
+}
+init();
+</script>
+</body>
+</html>
