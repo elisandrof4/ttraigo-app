@@ -1,57 +1,160 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ttraigo | Login Premium</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"><style>
-:root{--bg:#0B0F14;--panel:#111827;--text:#F5F7FA;--muted:#AAB4C0;--green:#16C47F;--blue:#12344D;--line:rgba(255,255,255,.12)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,rgba(22,196,127,.18),transparent 34%),radial-gradient(circle at bottom right,rgba(18,52,77,.7),transparent 42%),var(--bg);color:var(--text);min-height:100vh}a{text-decoration:none;color:inherit}.shell{max-width:1120px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px}.logo{display:flex;align-items:center;gap:12px}.mark{width:50px;height:50px;border-radius:18px;background:linear-gradient(135deg,var(--green),#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:26px;box-shadow:0 18px 45px rgba(22,196,127,.25)}.logo b{display:block;font-size:20px}.logo span{display:block;color:var(--muted);font-size:12px}.pill{border:1px solid var(--line);background:rgba(255,255,255,.07);backdrop-filter:blur(14px);padding:10px 14px;border-radius:999px;color:var(--muted);font-size:13px}.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:space-between}.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:center}.kicker{display:inline-flex;padding:10px 14px;border-radius:999px;background:rgba(22,196,127,.12);color:#8DF0C7;border:1px solid rgba(22,196,127,.24);font-weight:800;font-size:13px}.title{font-size:clamp(42px,7vw,76px);line-height:.95;letter-spacing:-2px;margin:18px 0}.title span{color:var(--green)}.subtitle{color:var(--muted);font-size:18px;line-height:1.65;max-width:620px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:15px 18px;border-radius:18px;font-weight:900;border:1px solid var(--line);transition:.25s}.btn:hover{transform:translateY(-2px)}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 40px rgba(22,196,127,.26)}.dark{background:rgba(255,255,255,.08);color:var(--text)}.row{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}.phone{min-height:620px;border-radius:44px;padding:14px;background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);box-shadow:0 40px 100px rgba(0,0,0,.45)}.screen{height:100%;border-radius:34px;overflow:hidden;background:#071015;position:relative;border:1px solid rgba(255,255,255,.08)}.mapfake{position:absolute;inset:0;background:linear-gradient(35deg,transparent 44%,rgba(22,196,127,.25) 45%,transparent 47%),linear-gradient(140deg,transparent 40%,rgba(255,255,255,.08) 41%,transparent 43%),radial-gradient(circle at 35% 35%,rgba(22,196,127,.25),transparent 22%),#0B1218}.float{position:absolute;left:18px;right:18px;bottom:18px;border-radius:26px;background:rgba(11,15,20,.86);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(18px);padding:18px}.muted{color:var(--muted)}.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 8px rgba(22,196,127,.12)}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}.feature,.glass{border:1px solid var(--line);background:rgba(255,255,255,.07);backdrop-filter:blur(18px);border-radius:24px;padding:20px}.feature p{color:var(--muted);font-size:14px;line-height:1.55}.input{width:100%;padding:15px 16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);outline:none}.input::placeholder{color:#7C8795}select.input option{color:#111}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.file{display:block;border:1px dashed rgba(255,255,255,.22);border-radius:20px;padding:14px;color:var(--muted);background:rgba(255,255,255,.04)}.preview{width:78px;height:78px;object-fit:cover;border-radius:18px;border:1px solid var(--line);margin-top:10px}.hidden{display:none!important}.tabs{display:flex;gap:10px;margin-bottom:16px}.tab{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);border-radius:16px;padding:12px;cursor:pointer;font-weight:900}.tab.active{background:var(--green);color:#06100C}.splash{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;animation:fadeOut .8s ease 1.4s forwards}.splash-inner{text-align:center;animation:pop .7s ease both}@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}@keyframes fadeOut{to{opacity:0;visibility:hidden}}@media(max-width:850px){.shell{padding:18px}.grid{grid-template-columns:1fr}.phone{min-height:520px;order:-1}.features{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.pill{display:none}}
-</style>
-<link rel="manifest" href="/manifest.json">
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Chofer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#05070A">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ttraigo">
-<link rel="icon" href="/ttraigo-icon.svg">
-<link rel="apple-touch-icon" href="/icon-512.svg">
+<style>
+:root{--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.13)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 9%,rgba(22,196,127,.22),transparent 32%),radial-gradient(circle at 90% 88%,rgba(37,99,235,.18),transparent 38%),#05070A;color:var(--text)}a{text-decoration:none;color:inherit}.shell{max-width:1220px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.mark{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#16C47F,#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:28px}.navBtns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.25);color:#FCA5A5}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}.grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:18px;align-items:start}.panel{border:1px solid var(--line);background:rgba(255,255,255,.075);backdrop-filter:blur(18px);border-radius:30px;padding:22px;box-shadow:0 34px 100px rgba(0,0,0,.34)}h1{font-size:42px;letter-spacing:-1px;margin:6px 0 8px}.muted{color:var(--muted);line-height:1.55}.statusCard{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}.stat{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:20px;padding:14px}.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#AAB4C0}.toggle{width:100%;font-size:18px;margin-top:12px}.online{background:#16C47F!important;color:#06100C!important}.offline{background:rgba(239,68,68,.18)!important;color:#FCA5A5!important;border:1px solid rgba(239,68,68,.28)!important}.list{display:grid;gap:12px;margin-top:14px}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:22px;padding:15px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25);color:#8DF0C7;font-size:12px;font-weight:900}.badge.red{background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.25);color:#FCA5A5}.mapbox{position:relative;min-height:650px;border-radius:34px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#071016}.map{position:absolute;inset:0;background:linear-gradient(38deg,transparent 42%,rgba(22,196,127,.32) 43%,rgba(22,196,127,.32) 45%,transparent 46%),linear-gradient(142deg,transparent 37%,rgba(255,255,255,.12) 38%,rgba(255,255,255,.12) 40%,transparent 41%),linear-gradient(90deg,transparent 50%,rgba(37,99,235,.25) 51%,transparent 52%),radial-gradient(circle at 30% 30%,rgba(22,196,127,.28),transparent 24%),radial-gradient(circle at 72% 72%,rgba(37,99,235,.26),transparent 30%),#0B1218}.route{position:absolute;left:120px;top:135px;width:330px;height:360px;border:6px solid rgba(22,196,127,.88);border-left:0;border-bottom:0;border-radius:0 150px 0 0;filter:drop-shadow(0 0 20px rgba(22,196,127,.7))}.pin{position:absolute;width:54px;height:54px;border-radius:21px;display:grid;place-items:center;color:#fff;font-size:26px;box-shadow:0 18px 55px rgba(0,0,0,.35)}.pin.start{left:98px;top:108px;background:#16C47F;color:#06100C}.pin.end{right:110px;top:405px;background:#EF4444}.car{position:absolute;left:288px;top:350px;width:64px;height:64px;border-radius:24px;background:#fff;color:#06100C;display:grid;place-items:center;font-size:32px;animation:drive 5s ease-in-out infinite;box-shadow:0 20px 55px rgba(255,255,255,.25)}@keyframes drive{0%,100%{transform:translate(-95px,-95px)}50%{transform:translate(100px,20px)}}.float{position:absolute;left:18px;right:18px;bottom:18px;border-radius:28px;background:rgba(8,13,20,.88);border:1px solid rgba(255,255,255,.15);padding:18px;backdrop-filter:blur(18px)}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.message{font-weight:900;line-height:1.5;white-space:pre-wrap}@media(max-width:950px){.grid{grid-template-columns:1fr}.mapbox{min-height:540px}}@media(max-width:560px){.shell{padding:15px}.statusCard,.summary{grid-template-columns:1fr}h1{font-size:34px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+<nav class="nav">
+<a class="brand" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted">App chofer</div></div></a>
+<div class="navBtns"><a class="btn dark" href="index.html">Web</a><button class="btn danger" onclick="logout()">Salir</button></div>
+</nav>
 
-</head><body><main class="shell"><nav class="nav" style="margin-bottom:24px"><a class="logo" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><span>Acceso seguro</span></div></a><a class="pill" href="index.html">Inicio</a></nav><section class="grid" style="align-items:start"><div class="glass"><div class="tabs"><button id="tabReg" class="tab active" onclick="showTab('reg')">Crear cuenta</button><button id="tabLog" class="tab" onclick="showTab('log')">Entrar</button></div><div id="registerBox"><h1 style="font-size:34px;margin:0 0 8px">Únete a Ttraigo</h1><p class="muted">Perfil seguro con foto. Choferes deben subir documentos obligatorios.</p><div class="formgrid"><input id="n" class="input" placeholder="Nombre completo"><input id="t" class="input" placeholder="Teléfono"><input id="c" class="input" placeholder="Cédula / ID"><input id="e" class="input" placeholder="Email"><input id="p" type="password" class="input" placeholder="Contraseña"><select id="r" class="input" onchange="roleFields()"><option value="cliente">Cliente</option><option value="chofer">Chofer</option><option value="acompanante">Acompañante</option></select></div><div style="margin-top:14px"><label class="file"><b>Foto de perfil obligatoria</b><input id="f" type="file" accept="image/*" class="input" style="margin-top:10px" onchange="previewFile('f','prevPerfil')"></label><img id="prevPerfil" class="preview hidden"></div><div id="driverFields" class="hidden" style="margin-top:16px"><div class="glass" style="background:rgba(18,52,77,.35);padding:16px"><h3 style="margin-top:0;color:var(--green)">Documentos del chofer</h3><div class="formgrid"><input id="lic" class="input" placeholder="Número de licencia"><input id="marca" class="input" placeholder="Marca vehículo"><input id="modelo" class="input" placeholder="Modelo vehículo"><input id="placa" class="input" placeholder="Placa"></div><div class="formgrid" style="margin-top:12px"><label class="file">Foto del vehículo<input id="fveh" type="file" accept="image/*" class="input" onchange="previewFile('fveh','pveh')"><img id="pveh" class="preview hidden"></label><label class="file">Foto licencia<input id="flic" type="file" accept="image/*" class="input" onchange="previewFile('flic','plic')"><img id="plic" class="preview hidden"></label><label class="file">Foto seguro<input id="fseg" type="file" accept="image/*" class="input" onchange="previewFile('fseg','pseg')"><img id="pseg" class="preview hidden"></label><label class="file">Matrícula / carta de ruta<input id="fdoc" type="file" accept="image/*" class="input" onchange="previewFile('fdoc','pdoc')"><img id="pdoc" class="preview hidden"></label></div></div></div><div id="compFields" class="hidden" style="margin-top:16px"><textarea id="exp" class="input" placeholder="Experiencia con pacientes, adultos mayores o acompañamiento"></textarea></div><button class="btn primary" style="width:100%;margin-top:18px" onclick="reg()">Crear cuenta segura</button><p id="m1" style="font-weight:800"></p></div><div id="loginBox" class="hidden"><h1 style="font-size:34px;margin:0 0 8px">Bienvenido</h1><p class="muted">Entra con tu correo y contraseña.</p><input id="le" class="input" placeholder="Email"><input id="lp" type="password" class="input" style="margin-top:12px" placeholder="Contraseña"><button class="btn primary" style="width:100%;margin-top:18px" onclick="log()">Entrar</button><button class="btn dark" style="width:100%;margin-top:10px" onclick="logout()">Cerrar sesión</button><p id="m2" style="font-weight:800"></p></div></div><div class="phone" style="min-height:650px"><div class="screen"><div class="mapfake"></div><div class="float" style="bottom:auto;top:26px"><div style="display:flex;justify-content:space-between;align-items:center"><div><b>Cuenta verificada</b><p class="muted" style="margin:4px 0 0">Más seguridad para todos.</p></div><div class="dot"></div></div></div><div class="float"><b>Registro premium</b><p class="muted">Cliente con foto, chofer con documentos, acompañante con experiencia.</p><div style="display:flex;justify-content:space-between"><span>Licencia</span><b style="color:var(--green)">Validable</b></div><div style="display:flex;justify-content:space-between;margin-top:8px"><span>Seguro</span><b style="color:var(--green)">Requerido</b></div><div style="display:flex;justify-content:space-between;margin-top:8px"><span>Vehículo</span><b style="color:var(--green)">Identificado</b></div></div></div></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
-const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function showTab(tab){registerBox.classList.toggle('hidden',tab!=='reg');loginBox.classList.toggle('hidden',tab!=='log');tabReg.classList.toggle('active',tab==='reg');tabLog.classList.toggle('active',tab==='log')}
-function roleFields(){driverFields.classList.toggle('hidden',r.value!=='chofer');compFields.classList.toggle('hidden',r.value!=='acompanante')}
-function fileToBase64(input){return new Promise(res=>{let file=input.files[0];if(!file)return res(null);let rd=new FileReader();rd.onload=()=>res(rd.result);rd.readAsDataURL(file)})}
-function previewFile(inputId,imgId){let file=document.getElementById(inputId).files[0];if(!file)return;let rd=new FileReader();rd.onload=()=>{let img=document.getElementById(imgId);img.src=rd.result;img.classList.remove('hidden')};rd.readAsDataURL(file)}
-async function profile(){let s=await supabaseClient.auth.getSession();if(!s.data.session)return null;let id=s.data.session.user.id;let r=await supabaseClient.from("usuarios").select("*").eq("id",id).single();return r.data}
-async function logout(){await supabaseClient.auth.signOut();location.href='login.html'}
-async function reg(){let perfil=await fileToBase64(f),veh=await fileToBase64(fveh),licfoto=await fileToBase64(flic),seg=await fileToBase64(fseg),doc=await fileToBase64(fdoc);if(!n.value||!t.value||!c.value||!e.value||!p.value||!perfil){m1.textContent='Completa datos básicos y foto de perfil';m1.style.color='#FCA5A5';return}if(r.value==='chofer'&&(!lic.value||!marca.value||!modelo.value||!placa.value||!veh||!licfoto||!seg||!doc)){m1.textContent='Chofer debe subir vehículo, licencia, seguro y matrícula/carta de ruta';m1.style.color='#FCA5A5';return}let a=await supabaseClient.auth.signUp({email:e.value,password:p.value,options:{data:{nombre:n.value,telefono:t.value,cedula:c.value,rol:r.value}}});if(a.error){m1.textContent=a.error.message;m1.style.color='#FCA5A5';return}let id=a.data.user?.id;let b=await supabaseClient.from('usuarios').insert([{id,nombre:n.value,telefono:t.value,email:e.value,rol:r.value,cedula_id:c.value,foto_base64:perfil,verificado:r.value==='cliente'}]);if(b.error){m1.textContent='Error perfil: '+b.error.message;m1.style.color='#FCA5A5';return}if(r.value==='chofer'){let ch=await supabaseClient.from('choferes').insert([{usuario_id:id,nombre:n.value,licencia:lic.value,vehiculo_marca:marca.value,vehiculo_modelo:modelo.value,placa:placa.value,foto_vehiculo:veh,foto_licencia:licfoto,foto_seguro:seg,foto_documento:doc,estado_verificacion:'pendiente'}]);if(ch.error){m1.textContent='Error chofer: '+ch.error.message;m1.style.color='#FCA5A5';return}}if(r.value==='acompanante'){await supabaseClient.from('acompanantes').insert([{usuario_id:id,cedula:c.value,experiencia:exp.value,foto_base64:perfil,estado_verificacion:'pendiente'}])}m1.textContent='Cuenta creada correctamente. Si Supabase pide confirmación, revisa tu correo.';m1.style.color='#16C47F'}
-async function log(){let a=await supabaseClient.auth.signInWithPassword({email:le.value,password:lp.value});if(a.error){m2.textContent=a.error.message;m2.style.color='#FCA5A5';return}let pr=await profile();location.href=pr.rol==='chofer'?'chofer.html':pr.rol==='acompanante'?'acompanante.html':pr.rol==='admin'?'admin.html':'cliente.html'}
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  });
-}
-</script>
-
-
-<div id="installTtraigo" style="position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;display:none;padding:14px 16px;border-radius:22px;background:rgba(5,7,10,.88);color:#F8FAFC;border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(18px);box-shadow:0 24px 80px rgba(0,0,0,.45);font-family:Inter,system-ui,sans-serif">
-  <b>Instalar Ttraigo</b>
-  <div style="color:#AAB4C0;font-size:13px;margin:4px 0 12px">Agrega la app a tu pantalla principal.</div>
-  <button id="installBtn" style="border:0;border-radius:16px;background:#16C47F;color:#06100C;font-weight:900;padding:12px 14px;width:100%">Instalar aplicación</button>
+<section class="grid">
+<div>
+<div class="panel">
+<h1>Panel del chofer</h1>
+<p class="muted">Activa tu disponibilidad para recibir viajes. Cuando aceptes un servicio, podrás cambiar su estado.</p>
+<div class="statusCard">
+<div class="stat"><b id="estadoChofer">Offline</b><span>Estado</span></div>
+<div class="stat"><b id="ganancias">RD$0</b><span>Ganancias estimadas</span></div>
 </div>
-<script>
-let deferredPromptTtraigo;
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPromptTtraigo = e;
-  const box = document.getElementById("installTtraigo");
-  if (box) box.style.display = "block";
-});
-document.addEventListener("click", async (e) => {
-  if (e.target && e.target.id === "installBtn" && deferredPromptTtraigo) {
-    deferredPromptTtraigo.prompt();
-    await deferredPromptTtraigo.userChoice;
-    deferredPromptTtraigo = null;
-    document.getElementById("installTtraigo").style.display = "none";
-  }
-});
-</script>
+<button id="btnOnline" class="btn toggle offline" onclick="toggleDisponibilidad()">Activarme</button>
+<p id="msg" class="message"></p>
+</div>
 
-</body></html>
+<div class="panel" style="margin-top:16px">
+<h2>Viajes disponibles</h2>
+<div id="disponibles" class="list"></div>
+</div>
+
+<div class="panel" style="margin-top:16px">
+<h2>Mis viajes</h2>
+<div id="misviajes" class="list"></div>
+</div>
+</div>
+
+<div class="mapbox">
+<div class="map"></div>
+<div class="route"></div>
+<div class="pin start">●</div>
+<div class="pin end">📍</div>
+<div class="car">🚘</div>
+<div class="float">
+<b>Modo chofer en vivo</b>
+<p class="muted" style="margin:6px 0 0">Al aceptar un servicio, el cliente verá estado, ruta y progreso del viaje.</p>
+<div class="summary">
+<div class="stat"><b>Online</b><span>Recibe viajes</span></div>
+<div class="stat"><b>GPS</b><span>Ubicación</span></div>
+<div class="stat"><b>Wallet</b><span>Ganancias</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let perfil=null, chofer=null, disponible=false;
+
+function money(n){return 'RD$ '+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function setMsg(t,c='#FCA5A5'){msg.textContent=t;msg.style.color=c}
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){ location.href='login.html'; return; }
+ const id=s.data.session.user.id;
+ const pr=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=pr.data;
+ if(!perfil){setMsg('Cuenta sin perfil.'); return;}
+ if(perfil.rol!=='chofer'){setMsg('Esta vista es solo para choferes.');}
+ const ch=await supabaseClient.from('choferes').select('*').eq('usuario_id',perfil.id).maybeSingle();
+ chofer=ch.data;
+ disponible=!!chofer?.disponible;
+ pintarEstado();
+ await actualizarUbicacion();
+ cargarViajes();
+ supabaseClient.channel('chofer-servicios')
+ .on('postgres_changes',{event:'*',schema:'public',table:'servicios'},()=>cargarViajes())
+ .subscribe();
+}
+
+function pintarEstado(){
+ estadoChofer.textContent=disponible?'Online':'Offline';
+ btnOnline.textContent=disponible?'Desactivarme':'Activarme';
+ btnOnline.className='btn toggle '+(disponible?'online':'offline');
+}
+
+async function toggleDisponibilidad(){
+ try{
+  disponible=!disponible;
+  pintarEstado();
+  if(chofer){
+    await supabaseClient.from('choferes').update({disponible}).eq('id',chofer.id);
+  }
+  setMsg(disponible?'Ya estás disponible para recibir viajes.':'Estás fuera de servicio.','#16C47F');
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+async function actualizarUbicacion(){
+ if(!navigator.geolocation||!chofer)return;
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  await supabaseClient.from('choferes').update({latitud:pos.coords.latitude,longitud:pos.coords.longitude,ultima_ubicacion:new Date().toISOString()}).eq('id',chofer.id);
+ },()=>{});
+}
+
+async function cargarViajes(){
+ const disp=await supabaseClient.from('servicios').select('*').eq('estado','solicitado').order('creado_en',{ascending:false}).limit(10);
+ disponibles.innerHTML=(disp.data||[]).map(s=>`<div class="row"><div><b>${s.origen} → ${s.destino}</b><div class="muted">${s.tipo_servicio} · ${new Date(s.creado_en).toLocaleString()}</div></div><div style="text-align:right"><b>${money(s.total_estimado)}</b><br><button class="btn primary" onclick="aceptar('${s.id}')">Aceptar</button></div></div>`).join('')||'<p class="muted">No hay viajes disponibles.</p>';
+
+ const mine=await supabaseClient.from('servicios').select('*').eq('chofer_id',perfil.id).order('creado_en',{ascending:false}).limit(10);
+ const data=mine.data||[];
+ ganancias.textContent=money(data.filter(x=>x.estado==='finalizado').reduce((a,b)=>a+Number(b.total_estimado||0),0));
+ misviajes.innerHTML=data.map(s=>`<div class="row"><div><b>${s.origen} → ${s.destino}</b><div class="muted">${s.estado} · ${s.tipo_servicio}</div></div><div style="display:grid;gap:8px"><span class="badge">${s.estado}</span>${botonesEstado(s)}</div></div>`).join('')||'<p class="muted">Todavía no tienes viajes.</p>';
+}
+
+function botonesEstado(s){
+ if(s.estado==='aceptado')return `<button class="btn gold" onclick="cambiarEstado('${s.id}','en_camino')">En camino</button>`;
+ if(s.estado==='en_camino')return `<button class="btn primary" onclick="cambiarEstado('${s.id}','iniciado')">Iniciar</button>`;
+ if(s.estado==='iniciado')return `<button class="btn danger" onclick="cambiarEstado('${s.id}','finalizado')">Finalizar</button>`;
+ return '';
+}
+
+async function aceptar(id){
+ try{
+  if(!disponible)throw new Error('Actívate primero para aceptar viajes.');
+  const r=await supabaseClient.from('servicios').update({estado:'aceptado',chofer_id:perfil.id,nombre_chofer:perfil.nombre,telefono_chofer:perfil.telefono,aceptado_en:new Date().toISOString()}).eq('id',id);
+  if(r.error)throw r.error;
+  setMsg('Viaje aceptado.','#16C47F');
+  cargarViajes();
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+async function cambiarEstado(id,estado){
+ try{
+  let payload={estado};
+  if(estado==='iniciado')payload.iniciado_en=new Date().toISOString();
+  if(estado==='finalizado')payload.finalizado_en=new Date().toISOString();
+  const r=await supabaseClient.from('servicios').update(payload).eq('id',id);
+  if(r.error)throw r.error;
+  setMsg('Estado actualizado: '+estado,'#16C47F');
+  cargarViajes();
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+async function logout(){await supabaseClient.auth.signOut();location.href='login.html'}
+init();
+</script>
+</body>
+</html>
