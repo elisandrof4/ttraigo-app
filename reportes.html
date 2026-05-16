@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Reportes y Finanzas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--gold:#D8B76A;--red:#EF4444;--line:rgba(255,255,255,.13)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 9%,rgba(22,196,127,.22),transparent 32%),radial-gradient(circle at 90% 88%,rgba(37,99,235,.18),transparent 38%),#05070A;color:var(--text)}a{color:inherit;text-decoration:none}.shell{max-width:1320px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.mark{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#16C47F,#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:28px}.navBtns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}.hero,.panel{border:1px solid var(--line);background:rgba(255,255,255,.075);border-radius:30px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.25)}.hero{border-radius:34px;padding:30px;margin-bottom:18px}h1{font-size:clamp(38px,5vw,66px);letter-spacing:-2px;margin:8px 0 12px}.muted{color:var(--muted);line-height:1.6}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.stat{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:22px;padding:18px}.stat b{display:block;font-size:30px}.stat span{font-size:12px;color:#AAB4C0}.list{display:grid;gap:10px;margin-top:12px;max-height:650px;overflow:auto}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:20px;padding:14px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25);color:#8DF0C7;font-size:12px;font-weight:900}.bar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:#16C47F;border-radius:999px}@media(max-width:980px){.grid,.grid4{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding:15px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+<nav class="nav">
+<a class="brand" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted">Reportes y finanzas</div></div></a>
+<div class="navBtns"><a class="btn dark" href="admin.html">Admin</a><a class="btn dark" href="centro-operativo.html">Centro</a><a class="btn gold" href="pagos.html">Pagos</a></div>
+</nav>
+
+<section class="hero">
+<span class="badge">FASE 12</span>
+<h1>Reportes inteligentes y finanzas.</h1>
+<p class="muted">Panel web para ver ingresos, servicios, usuarios, planes, pagos y métricas de crecimiento de Ttraigo.</p>
+</section>
+
+<section class="grid4">
+<div class="stat"><b id="kIngresos">RD$0</b><span>Ingresos estimados</span></div>
+<div class="stat"><b id="kServicios">0</b><span>Servicios</span></div>
+<div class="stat"><b id="kUsuarios">0</b><span>Usuarios</span></div>
+<div class="stat"><b id="kPlanes">0</b><span>Planes activos</span></div>
+</section>
+
+<section class="grid">
+<div class="panel">
+<h2>Servicios recientes</h2>
+<div id="serviciosList" class="list"></div>
+</div>
+
+<div class="panel">
+<h2>Resumen ejecutivo</h2>
+<div id="resumen" class="list"></div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function money(n){return 'RD$ '+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function pct(n){return Math.min(100,Math.max(0,Number(n||0)))}
+
+async function cargar(){
+ const servicios=await supabaseClient.from('servicios').select('*').order('creado_en',{ascending:false}).limit(100);
+ const usuarios=await supabaseClient.from('usuarios').select('*').limit(500);
+ const pagos=await supabaseClient.from('pagos').select('*').limit(500);
+ const planes=await supabaseClient.from('suscripciones_usuarios').select('*').eq('estado','activa').limit(500);
+
+ const sv=servicios.data||[];
+ const us=usuarios.data||[];
+ const pg=pagos.data||[];
+ const pl=planes.data||[];
+
+ const ingresosServicios=sv.reduce((a,b)=>a+Number(b.total_estimado||0),0);
+ const ingresosPagos=pg.filter(x=>x.estado==='pagado').reduce((a,b)=>a+Number(b.monto||0),0);
+
+ kIngresos.textContent=money(ingresosServicios+ingresosPagos);
+ kServicios.textContent=sv.length;
+ kUsuarios.textContent=us.length;
+ kPlanes.textContent=pl.length;
+
+ serviciosList.innerHTML=sv.slice(0,25).map(s=>`
+ <div class="row">
+ <div>
+ <b>${s.origen||'Origen'} → ${s.destino||'Destino'}</b>
+ <div class="muted">${s.nombre_cliente||'Cliente'} · ${s.estado||'pendiente'} · ${new Date(s.creado_en).toLocaleString()}</div>
+ </div>
+ <div style="text-align:right"><span class="badge">${s.tipo_servicio||'servicio'}</span><br><b>${money(s.total_estimado)}</b></div>
+ </div>`).join('')||'<p class="muted">Sin servicios.</p>';
+
+ const clientes=us.filter(x=>x.rol==='cliente').length;
+ const choferes=us.filter(x=>x.rol==='chofer').length;
+ const acomp=us.filter(x=>x.rol==='acompanante').length;
+ const finalizados=sv.filter(x=>x.estado==='finalizado').length;
+ const activos=sv.filter(x=>!['finalizado','cancelado'].includes(x.estado)).length;
+
+ resumen.innerHTML=[
+  ['Clientes registrados',clientes,clientes],
+  ['Choferes registrados',choferes,choferes],
+  ['Acompañantes registrados',acomp,acomp],
+  ['Servicios activos',activos,activos],
+  ['Servicios finalizados',finalizados,finalizados],
+  ['Pagos registrados',pg.length,pg.length],
+  ['Membresías activas',pl.length,pl.length],
+ ].map(x=>`
+ <div class="stat">
+ <b>${x[1]}</b>
+ <span>${x[0]}</span>
+ <div class="bar"><i style="width:${pct(x[2]*8)}%"></i></div>
+ </div>`).join('');
+}
+
+cargar();
+supabaseClient.channel('reportes-live')
+.on('postgres_changes',{event:'*',schema:'public',table:'servicios'},cargar)
+.on('postgres_changes',{event:'*',schema:'public',table:'pagos'},cargar)
+.on('postgres_changes',{event:'*',schema:'public',table:'usuarios'},cargar)
+.subscribe();
+</script>
+</body>
+</html>
