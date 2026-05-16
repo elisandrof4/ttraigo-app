@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Instalar App</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#16C47F">
+<style>
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 10%,rgba(22,196,127,.25),transparent 30%),#05070A;color:white;font-family:Arial,sans-serif;display:grid;place-items:center}
+.card{width:min(680px,92%);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:30px;padding:30px;box-shadow:0 30px 90px rgba(0,0,0,.35)}
+.logo{width:80px;height:80px;border-radius:28px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:44px;font-weight:900;margin-bottom:18px}
+h1{font-size:44px;margin:0 0 10px}
+p{color:#AAB4C0;line-height:1.6}
+.btn{border:0;border-radius:18px;padding:16px 20px;background:#16C47F;color:#06100C;font-weight:900;font-size:16px;cursor:pointer}
+.dark{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:white}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.step{background:rgba(255,255,255,.06);border-radius:18px;padding:14px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="logo">T</div>
+<h1>Instalar Ttraigo</h1>
+<p>Esta fase convierte Ttraigo en una PWA instalable en celular. En Android aparecerá la opción “Instalar app” o “Agregar a pantalla de inicio”.</p>
+
+<div class="actions">
+<button id="installBtn" class="btn">Instalar app</button>
+<a href="index.html"><button class="btn dark">Volver</button></a>
+</div>
+
+<div class="step"><b>Android:</b> abre Chrome → menú ⋮ → Instalar app.</div>
+<div class="step"><b>iPhone:</b> abre Safari → compartir → Agregar a pantalla de inicio.</div>
+<div class="step"><b>Computadora:</b> Chrome mostrará icono de instalar en la barra.</div>
+
+<p id="msg"></p>
+</div>
+
+<script>
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("msg").textContent = "Ttraigo está listo para instalarse.";
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+  if (!deferredPrompt) {
+    document.getElementById("msg").textContent = "Si no aparece el instalador, usa el menú del navegador y elige Agregar a pantalla de inicio.";
+    return;
+  }
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+});
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>
