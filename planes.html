@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Planes y Membresías</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#05070A">
+<style>
+:root{--text:#F8FAFC;--muted:#AAB4C0;--green:#16C47F;--red:#EF4444;--gold:#D8B76A;--line:rgba(255,255,255,.13)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 9%,rgba(22,196,127,.22),transparent 32%),radial-gradient(circle at 90% 88%,rgba(37,99,235,.18),transparent 38%),#05070A;color:var(--text)}a{color:inherit;text-decoration:none}.shell{max-width:1240px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px}.mark{width:54px;height:54px;border-radius:20px;background:linear-gradient(135deg,#16C47F,#0A8F63);display:grid;place-items:center;color:#06100C;font-weight:900;font-size:28px}.navBtns{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:18px;padding:14px 16px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--green);color:#06100C;box-shadow:0 18px 42px rgba(22,196,127,.24)}.dark{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}.gold{background:rgba(216,183,106,.16);border:1px solid rgba(216,183,106,.28);color:#F8DA91}.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.25);color:#FCA5A5}.hero{border:1px solid var(--line);background:rgba(255,255,255,.075);backdrop-filter:blur(18px);border-radius:34px;padding:30px;box-shadow:0 34px 100px rgba(0,0,0,.34);margin-bottom:18px}h1{font-size:clamp(38px,5vw,66px);letter-spacing:-2px;margin:8px 0 12px}.muted{color:var(--muted);line-height:1.6}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.panel{border:1px solid var(--line);background:rgba(255,255,255,.075);border-radius:30px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.25)}.plan{position:relative;overflow:hidden}.plan.featured{border-color:rgba(22,196,127,.38);background:linear-gradient(180deg,rgba(22,196,127,.17),rgba(255,255,255,.065))}.badge{display:inline-flex;border-radius:999px;padding:8px 11px;background:rgba(22,196,127,.13);border:1px solid rgba(22,196,127,.25);color:#8DF0C7;font-size:12px;font-weight:900}.badge.gold{background:rgba(216,183,106,.15);border-color:rgba(216,183,106,.28);color:#F8DA91}.price{font-size:38px;font-weight:900;margin:18px 0}ul{padding-left:20px;color:#C8D2E2;line-height:1.85}.calc{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px;margin-top:18px}.input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:18px;padding:15px;color:#fff;outline:none;margin-top:10px}select.input option{color:#111}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.stat{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:20px;padding:14px}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:#AAB4C0}.list{display:grid;gap:10px;margin-top:12px}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:20px;padding:14px}.message{font-weight:900;white-space:pre-wrap}@media(max-width:960px){.grid,.calc{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding:15px}.statgrid{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+<nav class="nav">
+<a class="brand" href="index.html"><div class="mark">T</div><div><b>Ttraigo</b><div class="muted">Planes y paquetes</div></div></a>
+<div class="navBtns"><a class="btn dark" href="cliente.html">Cliente</a><a class="btn dark" href="index.html">Web</a><button class="btn danger" onclick="logout()">Salir</button></div>
+</nav>
+
+<section class="hero">
+<span class="badge gold">Ttraigo Care / Plus</span>
+<h1>Compra paquetes de servicios con descuento.</h1>
+<p class="muted">Además de pedir viajes normales, el usuario puede comprar planes con viajes incluidos, kilómetros por viaje, prioridad y cobro automático de excedente si viaja más lejos.</p>
+</section>
+
+<section id="planes" class="grid"></section>
+
+<section class="calc">
+<div class="panel">
+<h2>Calculadora de excedente</h2>
+<p class="muted">Ejemplo: si el plan incluye 15 km y el viaje fue de 22 km, se cobran 7 km extras.</p>
+<select id="planSelect" class="input" onchange="calcular()"></select>
+<input id="kmViaje" class="input" type="number" value="22" step="0.1" oninput="calcular()" placeholder="KM del viaje real">
+<div class="statgrid">
+<div class="stat"><b id="kmIncluidos">0</b><span>KM incluidos</span></div>
+<div class="stat"><b id="kmExtra">0</b><span>KM extra</span></div>
+<div class="stat"><b id="cargoExtra">RD$0</b><span>Cargo excedente</span></div>
+</div>
+<button class="btn primary" style="width:100%;margin-top:14px" onclick="comprar()">Comprar plan seleccionado</button>
+<p id="msg" class="message"></p>
+</div>
+
+<div class="panel">
+<h2>Mis planes activos</h2>
+<div id="misPlanes" class="list"></div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://lvqzkvahfklwzxbxbljv.supabase.co";
+const SUPABASE_KEY="sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let perfil=null, planes=[];
+
+function money(n){return 'RD$ '+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function setMsg(t,c='#FCA5A5'){msg.textContent=t;msg.style.color=c}
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){ location.href='login.html'; return; }
+ const id=s.data.session.user.id;
+ const pr=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=pr.data;
+ await cargarPlanes();
+ await cargarMisPlanes();
+}
+
+async function cargarPlanes(){
+ const r=await supabaseClient.from('planes_ttraigo').select('*').eq('activo',true).order('precio',{ascending:true});
+ planes=r.data||[];
+ document.getElementById('planes').innerHTML=planes.map((p,i)=>`
+ <article class="panel plan ${i===1?'featured':''}">
+ <span class="badge">${p.tipo}</span>
+ <h2>${p.nombre}</h2>
+ <p class="muted">${p.descripcion||''}</p>
+ <div class="price">${money(p.precio)}</div>
+ <ul>
+ <li>${p.viajes_incluidos} viajes incluidos</li>
+ <li>${p.km_incluidos_por_viaje} km por viaje</li>
+ <li>${p.descuento_porcentaje}% descuento</li>
+ <li>Excedente: ${money(p.tarifa_km_excedente)} por km</li>
+ <li>${p.prioridad?'Prioridad incluida':'Servicio estándar'}</li>
+ </ul>
+ <button class="btn primary" style="width:100%" onclick="seleccionar('${p.id}')">Seleccionar</button>
+ </article>`).join('');
+ planSelect.innerHTML=planes.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
+ calcular();
+}
+
+function seleccionar(id){planSelect.value=id;calcular();window.scrollTo({top:document.querySelector('.calc').offsetTop-10,behavior:'smooth'})}
+
+function calcular(){
+ const p=planes.find(x=>x.id===planSelect.value);
+ if(!p)return;
+ const km=Number(kmViaje.value||0);
+ const incluido=Number(p.km_incluidos_por_viaje||0);
+ const extra=Math.max(0,km-incluido);
+ const cargo=extra*Number(p.tarifa_km_excedente||0);
+ kmIncluidos.textContent=incluido+' km';
+ kmExtra.textContent=extra.toFixed(1)+' km';
+ cargoExtra.textContent=money(cargo);
+}
+
+async function comprar(){
+ try{
+  const p=planes.find(x=>x.id===planSelect.value);
+  if(!p)throw new Error('Selecciona un plan.');
+  const fin=new Date();
+  fin.setDate(fin.getDate()+30);
+  const r=await supabaseClient.from('suscripciones_usuarios').insert([{
+    usuario_id:perfil.id,
+    plan_id:p.id,
+    nombre_plan:p.nombre,
+    viajes_disponibles:p.viajes_incluidos,
+    km_incluidos_por_viaje:p.km_incluidos_por_viaje,
+    tarifa_km_excedente:p.tarifa_km_excedente,
+    fecha_fin:fin.toISOString(),
+    estado:'activa'
+  }]);
+  if(r.error)throw r.error;
+  setMsg('Plan comprado correctamente. Pendiente integrar pago real en Fase de Pagos.','#16C47F');
+  cargarMisPlanes();
+ }catch(e){setMsg('Error real: '+(e.message||e));}
+}
+
+async function cargarMisPlanes(){
+ const r=await supabaseClient.from('suscripciones_usuarios').select('*').eq('usuario_id',perfil.id).order('creado_en',{ascending:false});
+ const data=r.data||[];
+ misPlanes.innerHTML=data.map(p=>`<div class="row"><div><b>${p.nombre_plan}</b><div class="muted">${p.viajes_disponibles} viajes · ${p.km_incluidos_por_viaje} km incluidos · vence ${new Date(p.fecha_fin).toLocaleDateString()}</div></div><span class="badge">${p.estado}</span></div>`).join('')||'<p class="muted">No tienes planes activos.</p>';
+}
+
+async function logout(){await supabaseClient.auth.signOut();location.href='login.html'}
+init();
+</script>
+</body>
+</html>
