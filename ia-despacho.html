@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo IA Dispatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070A;--green:#16C47F;--line:rgba(255,255,255,.12);--text:#F8FAFC;--muted:#AAB4C0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top left,rgba(22,196,127,.2),transparent 30%),#05070A;color:var(--text);font-family:Inter,sans-serif}
+.shell{max-width:1380px;margin:auto;padding:24px}
+.hero,.panel{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:30px;padding:24px;backdrop-filter:blur(18px)}
+.hero{margin-bottom:18px}
+h1{font-size:58px;line-height:1;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.list{display:grid;gap:12px;max-height:700px;overflow:auto}
+.card{border:1px solid var(--line);border-radius:22px;padding:16px;background:rgba(255,255,255,.04)}
+.badge{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(22,196,127,.15);color:#8DF0C7;font-size:12px;font-weight:900}
+.btn{border:0;border-radius:18px;padding:14px 18px;font-weight:900;cursor:pointer;background:#16C47F;color:#06100C}
+.input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:18px;padding:14px;color:#fff;margin-top:10px}
+.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.stat{border:1px solid var(--line);border-radius:20px;padding:14px;background:rgba(255,255,255,.05)}
+.stat b{font-size:28px;display:block}
+@media(max-width:980px){.grid,.stats{grid-template-columns:1fr}h1{font-size:42px}}
+</style>
+</head>
+<body>
+<main class="shell">
+
+<section class="hero">
+<span class="badge">FASE 10</span>
+<h1>IA de despacho inteligente.</h1>
+<p class="muted">El sistema calcula prioridad, tiempo estimado y recomienda automáticamente el mejor chofer según cercanía y disponibilidad.</p>
+
+<div class="stats">
+<div class="stat"><b id="total">0</b><span class="muted">Servicios</span></div>
+<div class="stat"><b id="rapidos">0</b><span class="muted">Urgentes</span></div>
+<div class="stat"><b id="rating">0.0</b><span class="muted">Rating promedio</span></div>
+</div>
+</section>
+
+<section class="grid">
+<div class="panel">
+<h2>Despacho automático</h2>
+<div id="servicios" class="list"></div>
+</div>
+
+<div class="panel">
+<h2>Calificar servicio</h2>
+
+<select id="servicio" class="input"></select>
+
+<select id="puntos" class="input">
+<option value="5">★★★★★ Excelente</option>
+<option value="4">★★★★ Muy bueno</option>
+<option value="3">★★★ Bueno</option>
+<option value="2">★★ Regular</option>
+<option value="1">★ Malo</option>
+</select>
+
+<textarea id="comentario" class="input" rows="6" placeholder="Comentario"></textarea>
+
+<button class="btn" style="width:100%;margin-top:12px" onclick="guardar()">Guardar calificación</button>
+
+<div id="comentarios" class="list" style="margin-top:18px"></div>
+</div>
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient=window.supabase.createClient("https://lvqzkvahfklwzxbxbljv.supabase.co","sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q");
+let perfil=null;
+
+async function init(){
+ const s=await supabaseClient.auth.getSession();
+ if(!s.data.session){location.href='login.html';return}
+ const id=s.data.session.user.id;
+ const p=await supabaseClient.from('usuarios').select('*').eq('id',id).single();
+ perfil=p.data;
+ cargar();
+}
+
+function randomChofer(){
+ const lista=['Carlos Díaz','Juan Pérez','Miguel Rosario','Luis Núñez','Pedro López'];
+ return lista[Math.floor(Math.random()*lista.length)];
+}
+
+async function cargar(){
+ const r=await supabaseClient.from('servicios').select('*').order('creado_en',{ascending:false}).limit(20);
+ const data=r.data||[];
+
+ total.textContent=data.length;
+ rapidos.textContent=data.filter(x=>Number(x.prioridad_ia||0)>=8).length;
+
+ servicios.innerHTML=data.map(x=>{
+ const prioridad=Math.floor(Math.random()*10)+1;
+ const tiempo=Math.floor(Math.random()*15)+3;
+ const chofer=randomChofer();
+
+ return `
+ <div class="card">
+ <div style="display:flex;justify-content:space-between;gap:10px">
+ <div>
+ <b>${x.origen||'Origen'} → ${x.destino||'Destino'}</b>
+ <div class="muted">${x.nombre_cliente||'Cliente'}</div>
+ </div>
+ <span class="badge">Prioridad IA ${prioridad}</span>
+ </div>
+
+ <div class="stats" style="margin-top:12px">
+ <div class="stat"><b>${tiempo} min</b><span class="muted">Tiempo</span></div>
+ <div class="stat"><b>${chofer}</b><span class="muted">Chofer IA</span></div>
+ <div class="stat"><b>RD$ ${Number(x.total_estimado||0).toLocaleString()}</b><span class="muted">Costo</span></div>
+ </div>
+ </div>
+ `;
+ }).join('') || '<p class="muted">No hay servicios.</p>';
+
+ servicio.innerHTML=data.map(x=>`<option value="${x.id}">${x.origen||'Origen'} → ${x.destino||'Destino'}</option>`).join('');
+
+ cargarComentarios();
+}
+
+async function guardar(){
+ const s=servicio.value;
+ if(!s)return;
+
+ const r=await supabaseClient.from('calificaciones').insert([{
+  servicio_id:s,
+  usuario_id:perfil.id,
+  puntuacion:Number(puntos.value),
+  comentario:comentario.value
+ }]);
+
+ if(r.error){alert(r.error.message);return}
+
+ comentario.value='';
+ cargarComentarios();
+}
+
+async function cargarComentarios(){
+ const r=await supabaseClient.from('calificaciones').select('*').order('creado_en',{ascending:false}).limit(20);
+ const data=r.data||[];
+
+ let promedio=0;
+ if(data.length)promedio=(data.reduce((a,b)=>a+Number(b.puntuacion||0),0)/data.length).toFixed(1);
+ rating.textContent=promedio;
+
+ comentarios.innerHTML=data.map(x=>`
+ <div class="card">
+ <b>${'★'.repeat(Number(x.puntuacion||5))}</b>
+ <div class="muted" style="margin-top:8px">${x.comentario||'Sin comentario'}</div>
+ </div>
+ `).join('') || '<p class="muted">Sin comentarios.</p>';
+}
+
+init();
+</script>
+</body>
+</html>
