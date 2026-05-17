@@ -50,9 +50,69 @@ function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.re
 function msg(id,t,c='white'){let e=document.getElementById(id);if(e){e.textContent=t;e.style.color=c}}
 function isNative(){return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}
 async function cargarPerfil(){let s=await supabaseClient.auth.getSession();if(!s.data.session){perfil=null;perfilTxt.textContent='Sin sesión';return}let id=s.data.session.user.id;let p=await supabaseClient.from('usuarios').select('*').eq('id',id).maybeSingle();perfil=p.data||{id,email:s.data.session.user.email};perfilTxt.textContent=(perfil.nombre||perfil.email||perfil.id)+' · '+(perfil.rol||'cliente')}
-async function crearCuenta(){try{let a=await supabaseClient.auth.signUp({email:email.value.trim(),password:password.value});if(a.error)throw a.error;let id=a.data.user?.id;if(id)await supabaseClient.from('usuarios').upsert([{id,nombre:nombre.value,email:email.value.trim(),rol:rol.value,realtime_rol:rol.value}],{onConflict:'id'});msg('loginMsg','Cuenta creada.','#16C47F');cargarPerfil()}catch(e){msg('loginMsg','Error: '+e.message,'#EF4444')}}
-async function entrar(){try{let a=await supabaseClient.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(a.error)throw a.error;cargarPerfil();msg('loginMsg','Entraste.','#16C47F')}catch(e){msg('loginMsg','Error: '+e.message,'#EF4444')}}
-async function salir(){await supabaseClient.auth.signOut();cargarPerfil()}
+async function crearCuenta() {
+
+  const nombre = document.getElementById("nombre").value.trim();
+  const telefono = document.getElementById("telefono").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const rol = document.getElementById("rol").value;
+
+  if (!nombre || !telefono || !email || !password || !rol) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  try {
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const uid = data.user.id;
+
+    const { error: perfilError } = await supabaseClient
+      .from("usuarios")
+      .insert([
+        {
+          id: uid,
+          nombre,
+          telefono,
+          email,
+          rol,
+          realtime_online: true,
+          realtime_rol: rol,
+          realtime_lat: 0,
+          realtime_lng: 0,
+          realtime_ultima_conexion: new Date().toISOString()
+        }
+      ]);
+
+    if (perfilError) {
+      console.log(perfilError);
+      alert("Error guardando perfil");
+      return;
+    }
+
+    alert("Cuenta creada correctamente");
+
+    location.reload();
+
+  } catch (err) {
+
+    console.log(err);
+
+    alert("Error inesperado");
+
+  }
+
+}async function salir(){await supabaseClient.auth.signOut();cargarPerfil()}
 async function getPos(){if(isNative()&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Geolocation){let G=window.Capacitor.Plugins.Geolocation;try{await G.requestPermissions()}catch(e){}let p=await G.getCurrentPosition({enableHighAccuracy:true,timeout:12000,maximumAge:2000});return {lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy||0,speed:p.coords.speed||0,heading:p.coords.heading||0}}return new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy||0,speed:p.coords.speed||0,heading:p.coords.heading||0}),rej,{enableHighAccuracy:true,timeout:12000,maximumAge:2000}))}
 async function saveGPS(r,p){await supabaseClient.from('usuarios').update({realtime_online:true,realtime_rol:r,realtime_lat:p.lat,realtime_lng:p.lng,realtime_ultima_conexion:new Date().toISOString()}).eq('id',perfil.id);await supabaseClient.from('realtime_ubicaciones').insert([{usuario_id:perfil.id,servicio_id:servicioActivo||servicioChofer.value||servicioAcom.value||null,rol:r,latitud:p.lat,longitud:p.lng,precision_metros:p.accuracy,velocidad:p.speed,rumbo:p.heading}])}
 function activarGPS(r){if(!perfil){alert('Primero entra');return}let mid=r==='cliente'?'clienteMsg':r==='chofer'?'choferMsg':'acomMsg';async function tick(){try{let p=await getPos();current=p;await saveGPS(r,p);msg(mid,(isNative()?'GPS nativo':'GPS web')+' guardando en Supabase','#16C47F')}catch(e){msg(mid,'GPS error: '+(e.message||e),'#EF4444')}}tick();clearInterval(timers[r]);timers[r]=setInterval(tick,r==='chofer'?5000:8000)}
