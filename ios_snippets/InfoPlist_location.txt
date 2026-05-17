@@ -1,0 +1,10 @@
+Agregar en ios/App/App/Info.plist:
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Ttraigo usa tu ubicación para mostrar el viaje y asignar servicios.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Ttraigo usa tu ubicación en segundo plano mientras estás activo en un servicio.</string>
+<key>UIBackgroundModes</key>
+<array>
+  <string>location</string>
+</array>

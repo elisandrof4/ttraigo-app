@@ -1,0 +1,9 @@
+RLS YA LO TRABAJAMOS EN EL PAQUETE ANTERIOR.
+No ejecutes más cambios destructivos sin probar login.
+
+ORDEN SEGURO:
+1. Probar app-mobile-production en web.
+2. Compilar Android.
+3. Probar GPS foreground.
+4. Probar background chofer.
+5. Luego endurecer RLS si todo funciona.

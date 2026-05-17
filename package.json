@@ -1,8 +1,10 @@
 {
-  "name": "ttraigo-mobile-corrected",
+  "name": "ttraigo-mobile-production",
   "version": "1.0.0",
   "scripts": {
-    "android": "npm install && npx cap add android && npx cap sync && npx cap open android"
+    "android": "npm install && npx cap add android && npx cap sync && npx cap open android",
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android"
   },
   "dependencies": {
     "@capacitor/android": "latest",
@@ -10,6 +12,7 @@
     "@capacitor/core": "latest",
     "@capacitor/geolocation": "latest",
     "@capacitor/push-notifications": "latest",
-    "@capacitor/camera": "latest"
+    "@capacitor/camera": "latest",
+    "@capgo/background-geolocation": "latest"
   }
 }
