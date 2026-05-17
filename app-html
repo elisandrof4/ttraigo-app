@@ -1,19 +1,26 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ttraigo Mobile Corregida</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo App</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
 <style>
-body{margin:0;background:#05070A;color:#fff;font-family:Arial,sans-serif}.shell{max-width:1000px;margin:auto;padding:18px}.card{background:#111827;border-radius:22px;padding:18px;margin:12px 0}input,select{width:100%;padding:13px;border-radius:14px;background:#1F2937;color:#fff;border:1px solid #333;margin-top:8px}button{padding:13px 15px;border:0;border-radius:14px;background:#16C47F;color:#06100C;font-weight:900;margin-top:10px}.dark{background:#263244;color:#fff}.danger{background:#EF4444;color:#fff}.item{padding:12px;background:#1A2330;border-radius:14px;margin-top:10px}.muted{color:#AAB4C0}.tabs{display:flex;gap:8px;flex-wrap:wrap}.screen{display:none}.active{display:block}
+*{box-sizing:border-box}body{margin:0;background:#05070A;color:white;font-family:Arial,sans-serif}.shell{max-width:1250px;margin:auto;padding:18px}.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.brand{display:flex;align-items:center;gap:12px}.logo{width:52px;height:52px;border-radius:18px;background:#16C47F;color:#06100C;display:grid;place-items:center;font-size:28px;font-weight:900}.tabs{display:flex;gap:8px;flex-wrap:wrap}button,.btn{border:0;border-radius:15px;padding:12px 14px;font-weight:900;cursor:pointer;background:#16C47F;color:#06100C;text-decoration:none;display:inline-block}.dark{background:#202B3B;color:white}.gold{background:#D8B76A;color:#06100C}.danger{background:#EF4444;color:white}.grid{display:grid;grid-template-columns:370px 1fr;gap:16px}.card{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:18px}.map{height:620px;border-radius:22px;background:#0B1218;overflow:hidden}input,select,textarea{width:100%;padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.13);background:#1F2937;color:white;margin-top:9px}.item{padding:13px;border-radius:16px;background:#1A2330;border:1px solid rgba(255,255,255,.08);margin-top:10px}.muted{color:#AAB4C0;line-height:1.55}.badge{display:inline-block;padding:6px 9px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}.screen{display:none}.screen.active{display:block}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.kpi{background:#1A2330;padding:11px;border-radius:14px}@media(max-width:900px){.grid{grid-template-columns:1fr}.map{height:460px}.kpis{grid-template-columns:1fr}.tabs button{flex:1}}
 </style>
 </head>
 <body>
 <div class="shell">
-<h1>Ttraigo App Mobile Corregida</h1>
-<p class="muted">Cliente · Chofer · Acompañante. El admin queda fuera, solo PC/web.</p>
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Ttraigo</b><div class="muted">App unificada: cliente · chofer · acompañante</div></div></div>
 <div class="tabs">
-<button onclick="show('login')">Login</button><button class="dark" onclick="show('cliente')">Cliente</button><button class="dark" onclick="show('chofer')">Chofer</button><button class="dark" onclick="show('acompanante')">Acompañante</button>
+<button onclick="show('login')">Login</button>
+<button class="dark" onclick="show('cliente')">Cliente</button>
+<button class="dark" onclick="show('chofer')">Chofer</button>
+<button class="dark" onclick="show('acompanante')">Acompañante</button>
+<a class="btn gold" href="admin-realtime.html">Admin PC</a>
 </div>
+</nav>
 
 <section id="login" class="screen active">
   <div class="grid">
@@ -64,106 +71,183 @@ body{margin:0;background:#05070A;color:#fff;font-family:Arial,sans-serif}.shell{
   </div>
 </section>
 
-<section id="cliente" class="screen card">
-<h2>Cliente</h2><input id="origen" placeholder="Origen"><input id="destino" placeholder="Destino">
-<button onclick="activarGPS('cliente')">GPS nativo</button><button class="dark" onclick="crearServicio()">Pedir servicio</button><button class="danger" onclick="sos()">SOS</button>
-<p id="clienteMsg"></p><div class="item">Servicio: <b id="servicioTxt">--</b></div>
+<section id="cliente" class="screen">
+<div class="grid"><div class="card">
+<h2>Cliente — pedir servicio</h2>
+<input id="cOrigen" placeholder="Origen"><input id="cDestino" placeholder="Destino">
+<select id="cTipo"><option value="viaje">Viaje</option><option value="medico">Cita médica</option><option value="acompanante">Con acompañante</option></select>
+<label class="muted"><input id="cAcom" type="checkbox" style="width:auto"> Requiere acompañante</label>
+<button onclick="activarGPS('cliente')">Activar GPS</button><button class="dark" onclick="crearServicio()">Pedir servicio</button><button class="gold" onclick="calcularRutaCliente()">Calcular ruta/precio</button><button class="danger" onclick="sosCliente()">SOS</button>
+<p id="clienteMsg"></p>
+<div class="kpis"><div class="kpi"><b id="cKm">0 km</b><br><span class="muted">Distancia</span></div><div class="kpi"><b id="cEta">0 min</b><br><span class="muted">ETA</span></div><div class="kpi"><b id="cPrecio">RD$0</b><br><span class="muted">Precio</span></div></div>
+<div class="item">Servicio activo: <b id="servicioActivoTxt">--</b></div><div id="misServicios"></div>
+</div><div class="card"><div id="mapCliente" class="map"></div></div></div>
 </section>
 
-<section id="chofer" class="screen card">
-<h2>Chofer</h2><input id="servicioChofer" placeholder="ID servicio">
-<button onclick="toggleOnline('chofer')">Online / Offline</button><button class="dark" onclick="activarGPS('chofer')">GPS nativo</button><button class="dark" onclick="cargarPendientes()">Ver pendientes</button><button onclick="aceptarServicio()">Aceptar</button>
-<p id="choferMsg"></p><div id="pendientes"></div>
+<section id="chofer" class="screen">
+<div class="grid"><div class="card">
+<h2>Chofer — online y aceptar</h2>
+<input id="chServicio" placeholder="ID servicio"><button onclick="toggleOnline('chofer')">Online / Offline</button><button class="dark" onclick="activarGPS('chofer')">Activar GPS</button><button class="dark" onclick="cargarPendientes()">Ver pendientes</button><button class="gold" onclick="aceptarServicio()">Aceptar seleccionado</button><button class="danger" onclick="cambiarEstado('finalizado')">Finalizar</button>
+<p id="choferMsg"></p><div class="item">Online: <b id="chOnline">--</b></div><div id="pendientes"></div>
+</div><div class="card"><div id="mapChofer" class="map"></div></div></div>
 </section>
 
-<section id="acompanante" class="screen card">
-<h2>Acompañante</h2><input id="servicioAcom" placeholder="ID servicio">
-<button onclick="toggleOnline('acompanante')">Online / Offline</button><button class="dark" onclick="activarGPS('acompanante')">GPS nativo</button><button onclick="tomarAcompanamiento()">Tomar servicio</button>
-<p id="acomMsg"></p>
+<section id="acompanante" class="screen">
+<div class="grid"><div class="card">
+<h2>Acompañante — asistencia</h2>
+<input id="aServicio" placeholder="ID servicio"><button onclick="toggleOnline('acompanante')">Online / Offline</button><button class="dark" onclick="activarGPS('acompanante')">Activar GPS</button><button class="gold" onclick="tomarAcompanamiento()">Tomar servicio</button>
+<p id="acomMsg"></p><div class="item">Online: <b id="aOnline">--</b></div>
+</div><div class="card"><div id="mapAcom" class="map"></div></div></div>
 </section>
 </div>
 
+<script src="config-mapas.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const supabaseClient=window.supabase.createClient("https://lvqzkvahfklwzxbxbljv.supabase.co","sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q");
-let perfil=null,current={lat:null,lng:null},servicioActivo=null,timers={};
-function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+// Usando tus credenciales unificadas verificadas del proyecto ttraigo
+const supabaseClient = window.supabase.createClient("https://lvqzkvahfklwzxbxbljv.supabase.co", "sb_publishable_A122LY08w-r23qZADKtXlA__zPm6E8Q");
+
+let perfil=null,maps={},markers={},current={lat:null,lng:null},servicioActivo=null,watches={};
+
 function msg(id,t,c='white'){let e=document.getElementById(id);if(e){e.textContent=t;e.style.color=c}}
-function isNative(){return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}
-async function cargarPerfil(){let s=await supabaseClient.auth.getSession();if(!s.data.session){perfil=null;perfilTxt.textContent='Sin sesión';return}let id=s.data.session.user.id;let p=await supabaseClient.from('usuarios').select('*').eq('id',id).maybeSingle();perfil=p.data||{id,email:s.data.session.user.email};perfilTxt.textContent=(perfil.nombre||perfil.email||perfil.id)+' · '+(perfil.rol||'cliente')}
+function money(n){return 'RD$ '+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');setTimeout(initMaps,200)}
+function hasMapbox(){return typeof MAPBOX_TOKEN!=='undefined'&&MAPBOX_TOKEN&&!MAPBOX_TOKEN.includes('PON_AQUI')}
+function makeMap(id){if(maps[id])return maps[id];if(!hasMapbox()){document.getElementById(id).innerHTML='<div style="padding:20px"><h2>Falta token Mapbox</h2><p>Verifica config-mapas.js</p></div>';return null}mapboxgl.accessToken=MAPBOX_TOKEN;maps[id]=new mapboxgl.Map({container:id,style:typeof TTRAIGO_MAP_STYLE!=='undefined'?TTRAIGO_MAP_STYLE:'mapbox://styles/mapbox/dark-v11',center:typeof TTRAIGO_DEFAULT_CENTER!=='undefined'?TTRAIGO_DEFAULT_CENTER:[-69.9312,18.4861],zoom:12});maps[id].addControl(new mapboxgl.NavigationControl());return maps[id]}
+function initMaps(){['mapLogin','mapCliente','mapChofer','mapAcom'].forEach(makeMap)}
+function setMarker(mapId,lng,lat,color,label){let map=makeMap(mapId);if(!map||!lat||!lng)return;if(markers[mapId])markers[mapId].setLngLat([lng,lat]);else markers[mapId]=new mapboxgl.Marker({color}).setLngLat([lng,lat]).setPopup(new mapboxgl.Popup().setHTML(label||'Ttraigo')).addTo(map);map.flyTo({center:[lng,lat],zoom:15})}
+
+async function cargarPerfil(){let s=await supabaseClient.auth.getSession();if(!s.data.session){perfil=null;perfilTxt.textContent='Sin sesión';return}let id=s.data.session.user.id;let p=await supabaseClient.from('usuarios').select('*').eq('id',id).maybeSingle();perfil=p.data||{id,email:s.data.session.user.email,rol:'cliente'};perfilTxt.textContent=(perfil.nombre||perfil.email||perfil.id)+' · '+(perfil.rol||'cliente');if(document.getElementById('chOnline')) chOnline.textContent=perfil.realtime_online?'Sí':'No';if(document.getElementById('aOnline')) aOnline.textContent=perfil.realtime_online?'Sí':'No'}
+
+function evaluarCamposChofer() {
+  const selectRol = document.getElementById('rol');
+  const contenedorChofer = document.getElementById('camposChofer');
+  if (selectRol && contenedorChofer) {
+    if (selectRol.value === 'chofer') {
+      contenedorChofer.style.display = 'block';
+    } else {
+      contenedorChofer.style.display = 'none';
+    }
+  }
+}
+
 async function crearCuenta() {
-
-  const nombre = document.getElementById("nombre").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const rol = document.getElementById("rol").value;
-
-  if (!nombre || !telefono || !email || !password || !rol) {
-    alert("Completa todos los campos");
-    return;
-  }
-
   try {
+    if (!email.value || !password.value) throw new Error('Completa correo y contraseña.');
+    msg('loginMsg', 'Creando credenciales en Autenticación...', '#D8B76A');
 
-    const { data, error } = await supabaseClient.auth.signUp({
-      email,
-      password
+    let a = await supabaseClient.auth.signUp({
+      email: email.value.trim(),
+      password: password.value
     });
+    if (a.error) throw a.error;
 
-    if (error) {
-      alert(error.message);
-      return;
+    let id = a.data.user?.id;
+    if (!id) throw new Error('No se pudo obtener el ID único del usuario.');
+
+    let urlFotoPerfil = "";
+    let urlFotoCedula = "";
+    let urlFotoLicencia = "";
+    let urlFotoMatricula = "";
+
+    // --- BUCKET AVATARS ---
+    const inputPerfil = document.getElementById('fotoPerfilInput'); 
+    if (inputPerfil && inputPerfil.files.length > 0) {
+      msg('loginMsg', 'Subiendo foto de perfil...', '#D8B76A');
+      const file = inputPerfil.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${id}_perfil.${fileExt}`;
+      let upload = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
+      if (!upload.error) {
+        const { data } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+        urlFotoPerfil = data.publicUrl;
+      }
     }
 
-    const uid = data.user.id;
-
-    const { error: perfilError } = await supabaseClient
-      .from("usuarios")
-      .insert([
-        {
-          id: uid,
-          nombre,
-          telefono,
-          email,
-          rol,
-          realtime_online: true,
-          realtime_rol: rol,
-          realtime_lat: 0,
-          realtime_lng: 0,
-          realtime_ultima_conexion: new Date().toISOString()
-        }
-      ]);
-
-    if (perfilError) {
-      console.log(perfilError);
-      alert("Error guardando perfil");
-      return;
+    // --- BUCKET DOCUMENTOS ---
+    const inputCedula = document.getElementById('fotoCedulaInput'); 
+    if (inputCedula && inputCedula.files.length > 0) {
+      msg('loginMsg', 'Subiendo documento de Identidad...', '#D8B76A');
+      const file = inputCedula.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${id}_cedula.${fileExt}`;
+      let upload = await supabaseClient.storage.from('documentos').upload(fileName, file, { upsert: true });
+      if (!upload.error) {
+        const { data } = supabaseClient.storage.from('documentos').getPublicUrl(fileName);
+        urlFotoCedula = data.publicUrl;
+      }
     }
 
-    alert("Cuenta creada correctamente");
+    const inputLicencia = document.getElementById('fotoLicenciaInput'); 
+    if (inputLicencia && inputLicencia.files.length > 0 && rol.value === 'chofer') {
+      msg('loginMsg', 'Subiendo licencia de conducir...', '#D8B76A');
+      const file = inputLicencia.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${id}_licencia.${fileExt}`;
+      let upload = await supabaseClient.storage.from('documentos').upload(fileName, file, { upsert: true });
+      if (!upload.error) {
+        const { data } = supabaseClient.storage.from('documentos').getPublicUrl(fileName);
+        urlFotoLicencia = data.publicUrl;
+      }
+    }
 
-    location.reload();
+    const inputMatricula = document.getElementById('fotoMatriculaInput'); 
+    if (inputMatricula && inputMatricula.files.length > 0 && rol.value === 'chofer') {
+      msg('loginMsg', 'Subiendo matrícula vehicular...', '#D8B76A');
+      const file = inputMatricula.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${id}_matricula.${fileExt}`;
+      let upload = await supabaseClient.storage.from('documentos').upload(fileName, file, { upsert: true });
+      if (!upload.error) {
+        const { data } = supabaseClient.storage.from('documentos').getPublicUrl(fileName);
+        urlFotoMatricula = data.publicUrl;
+      }
+    }
 
-  } catch (err) {
+    // Guardar datos consolidados en la tabla 'usuarios'
+    msg('loginMsg', 'Sincronizando perfil de usuario...', '#D8B76A');
+    const datosUsuario = {
+      id: id,
+      nombre: nombre.value,
+      email: email.value.trim(),
+      rol: rol.value,
+      realtime_rol: rol.value,
+      telefono: document.getElementById('telefonoInput')?.value || '', 
+      cedula: document.getElementById('cedulaInput')?.value || '',     
+      foto_perfil: urlFotoPerfil,
+      foto_cedula: urlFotoCedula,
+      foto_licencia: urlFotoLicencia,
+      foto_matricula: urlFotoMatricula
+    };
 
-    console.log(err);
+    let { error: upsertError } = await supabaseClient.from('usuarios').upsert([datosUsuario], { onConflict: 'id' });
+    if (upsertError) throw upsertError;
 
-    alert("Error inesperado");
+    msg('loginMsg', '¡Cuenta creada con éxito con todos tus documentos adjuntos!', '#16C47F');
+    await cargarPerfil();
 
+  } catch (e) {
+    msg('loginMsg', 'Error: ' + e.message, '#EF4444');
+    console.error(e);
   }
+}
 
-}async function salir(){await supabaseClient.auth.signOut();cargarPerfil()}
-async function getPos(){if(isNative()&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Geolocation){let G=window.Capacitor.Plugins.Geolocation;try{await G.requestPermissions()}catch(e){}let p=await G.getCurrentPosition({enableHighAccuracy:true,timeout:12000,maximumAge:2000});return {lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy||0,speed:p.coords.speed||0,heading:p.coords.heading||0}}return new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy||0,speed:p.coords.speed||0,heading:p.coords.heading||0}),rej,{enableHighAccuracy:true,timeout:12000,maximumAge:2000}))}
-async function saveGPS(r,p){await supabaseClient.from('usuarios').update({realtime_online:true,realtime_rol:r,realtime_lat:p.lat,realtime_lng:p.lng,realtime_ultima_conexion:new Date().toISOString()}).eq('id',perfil.id);await supabaseClient.from('realtime_ubicaciones').insert([{usuario_id:perfil.id,servicio_id:servicioActivo||servicioChofer.value||servicioAcom.value||null,rol:r,latitud:p.lat,longitud:p.lng,precision_metros:p.accuracy,velocidad:p.speed,rumbo:p.heading}])}
-function activarGPS(r){if(!perfil){alert('Primero entra');return}let mid=r==='cliente'?'clienteMsg':r==='chofer'?'choferMsg':'acomMsg';async function tick(){try{let p=await getPos();current=p;await saveGPS(r,p);msg(mid,(isNative()?'GPS nativo':'GPS web')+' guardando en Supabase','#16C47F')}catch(e){msg(mid,'GPS error: '+(e.message||e),'#EF4444')}}tick();clearInterval(timers[r]);timers[r]=setInterval(tick,r==='chofer'?5000:8000)}
-async function toggleOnline(r){if(!perfil)return;let nuevo=!perfil.realtime_online;await supabaseClient.from('usuarios').update({realtime_online:nuevo,realtime_rol:r,realtime_ultima_conexion:new Date().toISOString()}).eq('id',perfil.id);perfil.realtime_online=nuevo;msg(r==='chofer'?'choferMsg':'acomMsg',nuevo?'Online':'Offline','#16C47F')}
-async function crearServicio(){try{let r=await supabaseClient.from('realtime_servicios').insert([{cliente_id:perfil.id,origen:origen.value,destino:destino.value,origen_lat:current.lat,origen_lng:current.lng,estado:'pendiente',precio_estimado:650}]).select().single();if(r.error)throw r.error;servicioActivo=r.data.id;servicioTxt.textContent=servicioActivo;msg('clienteMsg','Servicio creado.','#16C47F')}catch(e){msg('clienteMsg',e.message,'#EF4444')}}
-async function sos(){await supabaseClient.from('realtime_sos_mapa').insert([{servicio_id:servicioActivo,usuario_id:perfil.id,rol:'cliente',latitud:current.lat,longitud:current.lng,mensaje:'SOS cliente',estado:'abierta'}]);msg('clienteMsg','SOS enviado.','#EF4444')}
-async function cargarPendientes(){let r=await supabaseClient.from('realtime_servicios').select('*').eq('estado','pendiente').order('creado_en',{ascending:false}).limit(20);pendientes.innerHTML=(r.data||[]).map(s=>`<div class="item"><b>${s.origen} → ${s.destino}</b><br><small>${s.id}</small><br><button onclick="servicioChofer.value='${s.id}'">Seleccionar</button></div>`).join('')||'No hay pendientes'}
-async function aceptarServicio(){await supabaseClient.from('realtime_servicios').update({chofer_id:perfil.id,estado:'chofer_asignado'}).eq('id',servicioChofer.value);msg('choferMsg','Aceptado','#16C47F')}
-async function tomarAcompanamiento(){await supabaseClient.from('realtime_servicios').update({acompanante_id:perfil.id}).eq('id',servicioAcom.value);msg('acomMsg','Asignado','#16C47F')}
-cargarPerfil();
+async function entrar(){try{let a=await supabaseClient.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(a.error)throw a.error;await cargarPerfil();msg('loginMsg','Entraste correctamente.','#16C47F')}catch(e){msg('loginMsg','Error: '+e.message,'#EF4444')}}
+async function salir(){await supabaseClient.auth.signOut();perfil=null;perfilTxt.textContent='Sin sesión';msg('loginMsg','Sesión cerrada.','#16C47F')}
+async function toggleOnline(r){if(!perfil){msg(r==='chofer'?'choferMsg':'acomMsg','Primero entra con tu cuenta.','#EF4444');return}let nuevo=!perfil.realtime_online;await supabaseClient.from('usuarios').update({realtime_online:nuevo,realtime_rol:r,realtime_ultima_conexion:new Date().toISOString()}).eq('id',perfil.id);perfil.realtime_online=nuevo;if(r==='chofer')chOnline.textContent=nuevo?'Sí':'No';else aOnline.textContent=nuevo?'Sí':'No';msg(r==='chofer'?'choferMsg':'acomMsg',nuevo?'Online':'Offline','#16C47F')}
+
+function activarGPS(r){if(!perfil){msg(r==='cliente'?'clienteMsg':r==='chofer'?'choferMsg':'acomMsg','Primero entra con tu cuenta.','#EF4444');return}if(!navigator.geolocation){alert('GPS no disponible');return}let mapId=r==='cliente'?'mapCliente':r==='chofer'?'mapChofer':'mapAcom', msgId=r==='cliente'?'clienteMsg':r==='chofer'?'choferMsg':'acomMsg';watches[r]=navigator.geolocation.watchPosition(async pos=>{current.lat=pos.coords.latitude;current.lng=pos.coords.longitude;setMarker(mapId,current.lng,current.lat,r==='chofer'?'#16C47F':r==='acompanante'?'#D8B76A':'#3B82F6','<b>'+r+'</b>');await supabaseClient.from('usuarios').update({realtime_online:true,realtime_rol:r,realtime_lat:current.lat,realtime_lng:current.lng,realtime_ultima_conexion:new Date().toISOString()}).eq('id',perfil.id);await supabaseClient.from('realtime_ubicaciones').insert([{usuario_id:perfil.id,servicio_id:servicioActivo||chServicio.value||aServicio.value||null,rol:r,latitud:current.lat,longitud:current.lng,precision_metros:pos.coords.accuracy||0,velocidad:pos.coords.speed||0,rumbo:pos.coords.heading||0}]);msg(msgId,'GPS activo y guardando en Supabase.','#16C47F')},err=>msg(msgId,'GPS error: '+err.message,'#EF4444'),{enableHighAccuracy:true,maximumAge:2000,timeout:12000})}
+async function crearServicio(){try{if(!perfil)throw new Error('Primero entra.');if(!cOrigen.value||!cDestino.value)throw new Error('Completa origen y destino.');let precio=cAcom.checked||cTipo.value==='acompanante'?1250:650;let r=await supabaseClient.from('realtime_servicios').insert([{cliente_id:perfil.id,origen:cOrigen.value,destino:cDestino.value,origen_lat:current.lat,origen_lng:current.lng,tipo_servicio:cTipo.value,requiere_acompanante:cAcom.checked,estado:'pendiente',precio_estimado:precio}]).select().single();if(r.error)throw r.error;servicioActivo=r.data.id;servicioActivoTxt.textContent=servicioActivo;msg('clienteMsg','Reserva creada con éxito.','#16C47F');cargarMisServicios()}catch(e){msg('clienteMsg','Error: '+e.message,'#EF4444')}}
+async function cargarMisServicios(){if(!perfil)return;let r=await supabaseClient.from('realtime_servicios').select('*').eq('cliente_id',perfil.id).order('creado_en',{ascending:false}).limit(8);misServicios.innerHTML=(r.data||[]).map(s=>`<div class="item"><b>${s.origen} → ${s.destino}</b><br><span class="badge">${s.estado}</span><br>${money(s.precio_estimado)}<br><small>${s.id}</small><br><button class="dark" onclick="servicioActivo='${s.id}';servicioActivoTxt.textContent='${s.id}'">Usar</button></div>`).join('')||'<p class="muted">No hay servicios.</p>'}
+async function calcularRutaCliente(){if(!current.lat||!current.lng){msg('clienteMsg','Activa GPS primero.','#EF4444');return}let km=5.2,eta=14,precio=(cAcom.checked?1000:0)+150+(km*65)+(eta*8);cKm.textContent=km.toFixed(1)+' km';cEta.textContent=eta+' min';cPrecio.textContent=money(precio);if(servicioActivo)await supabaseClient.from('realtime_servicios').update({distancia_calculada_km:km,eta_min:eta,tarifa_dinamica:precio,precio_estimado:precio}).eq('id',servicioActivo);msg('clienteMsg','Ruta/precio calculado base.','#16C47F')}
+async function sosCliente(){if(!perfil){msg('clienteMsg','Primero entra.','#EF4444');return}await supabaseClient.from('realtime_sos_mapa').insert([{servicio_id:servicioActivo,usuario_id:perfil.id,rol:'cliente',latitud:current.lat,longitud:current.lng,mensaje:'SOS cliente',estado:'abierta'}]);msg('clienteMsg','SOS enviado.','#EF4444')}
+async function cargarPendientes(){let r=await supabaseClient.from('realtime_servicios').select('*').eq('estado','pendiente').order('creado_en',{ascending:false}).limit(20);pendientes.innerHTML=(r.data||[]).map(s=>`<div class=\"item\"><b>${s.origen} → ${s.destino}</b><br>${money(s.precio_estimado)}<br><small>${s.id}</small><br><button onclick=\"chServicio.value='${s.id}'\">Seleccionar</button></div>`).join('')||'<p class="muted">No hay pendientes.</p>'}
+async function aceptarServicio(){if(!perfil||!chServicio.value){msg('choferMsg','Entra y selecciona servicio.','#EF4444');return}await supabaseClient.from('realtime_servicios').update({chofer_id:perfil.id,estado:'chofer_asignado'}).eq('id',chServicio.value);msg('choferMsg','Servicio aceptado.','#16C47F');cargarPendientes()}
+async function cambiarEstado(e){if(!chServicio.value){msg('choferMsg','Selecciona servicio.','#EF4444');return}await supabaseClient.from('realtime_servicios').update({estado:e}).eq('id',chServicio.value);msg('choferMsg','Estado: '+e,'#16C47F')}
+async function tomarAcompanamiento(){if(!perfil||!aServicio.value){msg('acomMsg','Entra y escribe servicio.','#EF4444');return}await supabaseClient.from('realtime_servicios').update({acompanante_id:perfil.id}).eq('id',aServicio.value);msg('acomMsg','Acompañante asignado.','#16C47F')}
+
+initMaps();cargarPerfil();
 </script>
 </body>
 </html>
