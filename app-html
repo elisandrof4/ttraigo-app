@@ -15,12 +15,53 @@ body{margin:0;background:#05070A;color:#fff;font-family:Arial,sans-serif}.shell{
 <button onclick="show('login')">Login</button><button class="dark" onclick="show('cliente')">Cliente</button><button class="dark" onclick="show('chofer')">Chofer</button><button class="dark" onclick="show('acompanante')">Acompañante</button>
 </div>
 
-<section id="login" class="screen active card">
-<h2>Login</h2>
-<input id="email" placeholder="Correo"><input id="password" type="password" placeholder="Contraseña"><input id="nombre" placeholder="Nombre">
-<select id="rol"><option value="cliente">Cliente</option><option value="chofer">Chofer</option><option value="acompanante">Acompañante</option></select>
-<button onclick="crearCuenta()">Crear cuenta</button><button class="dark" onclick="entrar()">Entrar</button><button class="danger" onclick="salir()">Salir</button>
-<p id="loginMsg"></p><div class="item">Usuario: <b id="perfilTxt">Sin sesión</b></div>
+<section id="login" class="screen active">
+  <div class="grid">
+    <div class="card">
+      <h2>Entrar / crear cuenta</h2>
+      <p class="muted">El admin NO va dentro de la app móvil. Admin separado en PC/web.</p>
+      
+      <input id="email" placeholder="Correo">
+      <input id="password" type="password" placeholder="Contraseña mínimo 6 caracteres">
+      <input id="nombre" placeholder="Nombre completo">
+      <input id="telefonoInput" placeholder="Número de Teléfono (Ej: 8296563893)">
+      <input id="cedulaInput" placeholder="Número de Cédula/ID (Sin guiones)">
+      
+      <label class="muted" style="display:block; margin-top:10px;">Selecciona tu rol en Ttraigo:</label>
+      <select id="rol" onchange="evaluarCamposChofer()">
+        <option value="cliente">Cliente</option>
+        <option value="chofer">Chofer</option>
+        <option value="acompanante">Acompañante</option>
+      </select>
+
+      <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+        <label class="muted"><b>Foto de perfil obligatoria:</b></label>
+        <input type="file" id="fotoPerfilInput" accept="image/*">
+        
+        <label class="muted" style="display:block; margin-top:10px;"><b>Foto de Cédula / ID obligatoria:</b></label>
+        <input type="file" id="fotoCedulaInput" accept="image/*,application/pdf">
+      </div>
+
+      <div id="camposChofer" style="display:none; margin-top:10px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 14px;">
+        <h4 style="margin:0 0 10px 0; color:#D8B76A;">Documentos del Vehículo y Conducción</h4>
+        <label class="muted"><b>Foto de Licencia de Conducir:</b></label>
+        <input type="file" id="fotoLicenciaInput" accept="image/*,application/pdf">
+        
+        <label class="muted" style="display:block; margin-top:10px;"><b>Foto de Matrícula del Vehículo:</b></label>
+        <input type="file" id="fotoMatriculaInput" accept="image/*,application/pdf">
+      </div>
+
+      <div style="margin-top:20px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button onclick="crearCuenta()" style="flex:1;">Crear cuenta</button>
+        <button class="dark" onclick="entrar()">Entrar</button>
+        <button class="danger" onclick="salir()">Salir</button>
+      </div>
+      
+      <p id="loginMsg"></p>
+      <div class="item">Usuario: <b id="perfilTxt">Sin sesión</b></div>
+    </div>
+    <div class="card"><div id="mapLogin" class="map"></div></div>
+  </div>
 </section>
 
 <section id="cliente" class="screen card">
