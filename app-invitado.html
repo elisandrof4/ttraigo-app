@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ttraigo | Invitado, Mandados y Diligencias</title>
+<style>
+:root{--bg:#05070A;--card:#111827;--soft:#1A2330;--green:#16C47F;--gold:#D8B76A;--red:#EF4444;--muted:#AAB4C0;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0%,rgba(22,196,127,.20),transparent 34%),#05070A;color:white;font-family:Arial,sans-serif}.shell{max-width:1280px;margin:auto;padding:18px}.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.logo{width:54px;height:54px;border-radius:18px;background:var(--green);color:#06100C;display:grid;place-items:center;font-size:30px;font-weight:900}.tabs{display:flex;gap:8px;flex-wrap:wrap}button,.btn{border:0;border-radius:15px;padding:12px 14px;font-weight:900;cursor:pointer;background:var(--green);color:#06100C;text-decoration:none;display:inline-block}.dark{background:#202B3B;color:white}.gold{background:var(--gold);color:#06100C}.danger{background:var(--red);color:white}.grid{display:grid;grid-template-columns:390px 1fr;gap:16px}.card{background:rgba(17,24,39,.94);border:1px solid var(--line);border-radius:24px;padding:18px}.hero{display:grid;grid-template-columns:1fr 1fr;gap:16px}.phone{min-height:620px;border-radius:34px;border:1px solid rgba(255,255,255,.15);background:linear-gradient(145deg,#07100d,#0c1525);padding:18px;position:relative;overflow:hidden}.screen{display:none}.screen.active{display:block}input,select,textarea{width:100%;padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.13);background:#1F2937;color:white;margin-top:9px}textarea{min-height:92px;resize:vertical}.item{padding:13px;border-radius:16px;background:var(--soft);border:1px solid rgba(255,255,255,.08);margin-top:10px}.muted{color:var(--muted);line-height:1.55}.badge{display:inline-block;padding:6px 9px;border-radius:999px;background:rgba(22,196,127,.16);color:#8DF0C7;font-weight:900;font-size:12px}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.kpi{background:#1A2330;padding:11px;border-radius:14px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.service{padding:14px;border-radius:18px;background:#1A2330;border:1px solid rgba(255,255,255,.08);cursor:pointer}.service.active{outline:2px solid var(--green);background:#10231b}.mapfake{height:430px;border-radius:24px;background:linear-gradient(120deg,rgba(22,196,127,.20),transparent 22%),linear-gradient(35deg,transparent 45%,rgba(255,255,255,.10) 46%,rgba(255,255,255,.10) 48%,transparent 49%),linear-gradient(130deg,transparent 30%,rgba(22,196,127,.20) 31%,rgba(22,196,127,.20) 33%,transparent 34%),#0B1218;position:relative;overflow:hidden}.pin{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--green);box-shadow:0 0 0 12px rgba(22,196,127,.18);left:35%;top:38%}.pin2{background:var(--gold);left:72%;top:62%;box-shadow:0 0 0 12px rgba(216,183,106,.18)}.car{position:absolute;right:17%;top:32%;font-size:34px;background:white;color:#111827;border-radius:20px;padding:12px}.route{position:absolute;left:38%;top:42%;width:220px;height:120px;border-top:5px solid var(--green);border-right:5px solid var(--green);border-radius:0 40px 0 0;opacity:.9}.floating{position:absolute;left:24px;right:24px;bottom:24px;background:rgba(5,7,10,.86);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:18px}@media(max-width:980px){.grid,.hero{grid-template-columns:1fr}.phone{min-height:520px}.mapfake{height:360px}.kpis,.service-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+<div class="brand"><div class="logo">T</div><div><b>Ttraigo</b><div class="muted">Movilidad asistida, mandados y diligencias</div></div></div>
+<div class="tabs"><button onclick="show('invitado')">Invitado</button><button class="dark" onclick="show('cliente')">Cliente</button><button class="dark" onclick="show('chofer')">Chofer</button><button class="dark" onclick="show('acompanante')">Acompañante</button><button class="gold" onclick="show('vista')">Ver por dentro</button></div>
+</nav>
+
+<section id="invitado" class="screen active">
+<div class="hero">
+<div class="card">
+<span class="badge">Modo invitado sin crear cuenta</span>
+<h1>Prueba Ttraigo por dentro</h1>
+<p class="muted">Esta pantalla permite ver la experiencia sin depender del registro. Mantiene la esencia original: movilidad asistida, acompañamiento y servicios seguros para personas, citas, clínicas, bancos, compras, mandados y diligencias.</p>
+<h3>¿Qué necesitas?</h3>
+<div class="service-grid">
+<div class="service active" onclick="selectServicio(this,'viaje')"><b>🚘 Viaje asistido</b><br><span class="muted">Traslado seguro</span></div>
+<div class="service" onclick="selectServicio(this,'acompanante')"><b>🤝 Acompañante</b><br><span class="muted">Apoyo personal</span></div>
+<div class="service" onclick="selectServicio(this,'mandado')"><b>📦 Mandado</b><br><span class="muted">Comprar / retirar / entregar</span></div>
+<div class="service" onclick="selectServicio(this,'diligencia')"><b>🏛️ Diligencia</b><br><span class="muted">Banco, clínica, oficina</span></div>
+</div>
+<input id="guestName" placeholder="Nombre del invitado">
+<input id="guestPhone" placeholder="Teléfono">
+<input id="guestPickup" placeholder="Origen / dirección de recogida">
+<input id="guestDrop" placeholder="Destino / lugar de entrega o diligencia">
+<textarea id="guestDetail" placeholder="Detalles: qué hay que buscar, comprar, retirar, acompañar o entregar"></textarea>
+<button onclick="simularSolicitud()">Simular solicitud</button>
+<button class="dark" onclick="show('vista')">Ver panel interno</button>
+<p id="guestMsg"></p>
+<div class="kpis"><div class="kpi"><b id="kTipo">Viaje</b><br><span class="muted">Tipo</span></div><div class="kpi"><b id="kEta">8 min</b><br><span class="muted">Llegada</span></div><div class="kpi"><b id="kPrecio">RD$650</b><br><span class="muted">Estimado</span></div></div>
+</div>
+<div class="phone"><div class="mapfake"><div class="route"></div><div class="pin"></div><div class="pin pin2"></div><div class="car">🚘</div></div><div class="floating"><b>Servicio especial para pacientes, adultos mayores y diligencias</b><p class="muted">Chofer + acompañante + seguimiento familiar + mandados seguros.</p><span class="badge">Vista demo activa</span></div></div>
+</div>
+</section>
+
+<section id="cliente" class="screen"><div class="grid"><div class="card"><h2>Cliente</h2><p class="muted">Aquí el cliente podrá pedir viajes, acompañamiento, mandados y diligencias.</p><select><option>Viaje asistido</option><option>Acompañante</option><option>Mandado</option><option>Diligencia</option></select><input placeholder="Origen"><input placeholder="Destino"><textarea placeholder="Instrucciones especiales"></textarea><button onclick="demoOk('clienteMsg','Solicitud demo creada')">Pedir servicio demo</button><p id="clienteMsg"></p></div><div class="card"><div class="mapfake"><div class="route"></div><div class="pin"></div><div class="pin pin2"></div><div class="car">🚘</div></div></div></div></section>
+
+<section id="chofer" class="screen"><div class="grid"><div class="card"><h2>Chofer</h2><p class="muted">El chofer ve solicitudes de viaje, mandado o diligencia y acepta servicios cercanos.</p><div class="item"><b>Solicitud #TTR-1029</b><br><span class="badge">Mandado</span><br>Retirar receta en farmacia y entregar en residencia.</div><div class="item"><b>Solicitud #TTR-1030</b><br><span class="badge">Viaje asistido</span><br>Clínica → Casa con acompañante.</div><button onclick="demoOk('choferMsg','Servicio aceptado en modo demo')">Aceptar demo</button><p id="choferMsg"></p></div><div class="card"><div class="mapfake"><div class="route"></div><div class="pin"></div><div class="pin pin2"></div><div class="car">🚘</div></div></div></div></section>
+
+<section id="acompanante" class="screen"><div class="grid"><div class="card"><h2>Acompañante</h2><p class="muted">El acompañante ayuda en clínicas, bancos, compras, oficinas públicas, citas médicas y destinos sensibles.</p><div class="item"><b>Servicio asignado</b><br><span class="badge">Acompañamiento médico</span><br>Confirmar llegada, asistir al cliente y reportar progreso.</div><button onclick="demoOk('acomMsg','Acompañante confirmado en modo demo')">Confirmar demo</button><p id="acomMsg"></p></div><div class="card"><div class="mapfake"><div class="route"></div><div class="pin"></div><div class="pin pin2"></div><div class="car">🤝</div></div></div></div></section>
+
+<section id="vista" class="screen"><div class="card"><h2>Lo que hemos logrado por dentro</h2><div class="grid"><div><div class="item"><b>✅ Cliente</b><br>Puede solicitar viaje, acompañante, mandado o diligencia.</div><div class="item"><b>✅ Chofer</b><br>Puede ver solicitudes y aceptar servicios.</div><div class="item"><b>✅ Acompañante</b><br>Puede dar seguimiento y confirmar asistencia.</div><div class="item"><b>✅ Admin PC</b><br>Debe quedar separado de la app móvil para control operativo.</div></div><div><div class="item"><b>✅ Mapbox</b><br>Preparado para mapa real y rutas.</div><div class="item"><b>✅ Supabase</b><br>Preparado para usuarios, servicios, GPS y realtime.</div><div class="item"><b>✅ Mobile</b><br>Preparado para Capacitor, APK y GPS nativo.</div><div class="item"><b>✅ Modo invitado</b><br>Permite revisar la app sin crear cuenta.</div></div></div></div></section>
+</div>
+<script>
+let selected="viaje";
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function selectServicio(el,tipo){selected=tipo;document.querySelectorAll('.service').forEach(s=>s.classList.remove('active'));el.classList.add('active');const nombres={viaje:"Viaje",acompanante:"Acompañante",mandado:"Mandado",diligencia:"Diligencia"};const precios={viaje:"RD$650",acompanante:"RD$1,250",mandado:"RD$450",diligencia:"RD$850"};document.getElementById("kTipo").textContent=nombres[tipo];document.getElementById("kPrecio").textContent=precios[tipo]}
+function simularSolicitud(){const nombre=document.getElementById("guestName").value||"Invitado";document.getElementById("guestMsg").style.color="#16C47F";document.getElementById("guestMsg").textContent="Solicitud demo creada para "+nombre+". Puedes revisar cómo se vería por dentro sin crear cuenta."}
+function demoOk(id,text){document.getElementById(id).style.color="#16C47F";document.getElementById(id).textContent=text}
+</script>
+</body>
+</html>
